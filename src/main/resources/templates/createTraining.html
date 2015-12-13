@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>Create Job Code</title>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <div th:fragment="header">
+    	<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['orgchart']}]}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+        <script src="/js/jquery-te-1.4.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-te-1.4.0.css" />
+     <style type="text/css">
+         #chart_div {
+             overflow-x: scroll;
+             width: 100%;
+         }
+
+         #chart_div table {
+                border-collapse: separate;
+            }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function(){
+            	$("textarea").jqte();
+            	
+            	
+            	
+                console.log('hello..in js code');
+                var jobCodeViewModel = function(){
+                    var self = this;
+
+                    self.jobCodes = ko.observableArray();
+                    self.selectedJobCode = ko.observable();
+                    self.selectedCategory = ko.observableArray();
+                    self.categories = ko.observableArray();
+                    self.selectedsubCategories = ko.observableArray();
+                    self.subCategories = ko.observableArray();
+                    self.description = ko.observable("");
+                    self.availableFocus = ko.observableArray(['Tools', 'Concepts', 'Application']);
+                    self.availablelevels = ko.observableArray(['Beginner', 'Intermediate', 'Advanced']);
+                    self.chosenLevel =  ko.observableArray();
+                    self.chosenFocus =  ko.observableArray();
+                    self.content = ko.observableArray();
+                    self.title= ko.observableArray();
+                    self.id=ko.observableArray();
+                    self.userID=ko.observableArray();
+                    self.categoriesContent=ko.observableArray();
+                    
+                    
+
+                    self.selectedJobCode.subscribe(function() {
+                        console.log('selectedJobTitle changed..value =  ' + self.selectedJobCode());
+                        if(self.selectedJobCode() == null)
+                            return;
+                        console.log('Printing title....'+self.selectedJobCode().firstLevelCategories);
+                        self.categories(self.selectedJobCode().firstLevelCategories);
+                    });
+
+
+                    self.selectedCategory.subscribe(function(){
+                                console.log('selectedCategory changed... value = '+ self.selectedCategory())
+                                if(self.selectedCategory() == null)
+                                return;
+                                console.log('Selected Categories');
+                                console.log(self.selectedCategory());
+                                //console.log(self.selectedCategory().subCategories);
+                                //console.log('the length of the selected category..... '+self.selectedCategory().length);
+                                var aList = self.selectedCategory();
+                                if(aList == null)
+                                    return;
+
+                                //clear all subcategories first
+                                self.subCategories.removeAll();
+
+                                $(aList).each(function(i){
+                                    console.log(aList[i]);
+                                    var entry = aList[i];
+                                    var subCats = entry.subCategories;
+                                    if(subCats != null) {
+                                        console.log('subcats size = ' + subCats.length);
+                                        $(subCats).each(function(j){
+                                            self.subCategories.push(subCats[j]);
+                                        });
+                                    }
+                                });
+
+
+                            }
+
+                    )
+					
+                    var map = {};
+                    
+                     $('#createContentForCategory').submit(function() {
+                    		var categoryContent =$('#categoryContent').val();
+                    		map[self.selectedCategory()[0].id]=categoryContent;
+                    		 $('#myModal').modal('hide');
+                    		 event.preventDefault();
+                    	});
+                    
+                    
+                    
+                    
+                    self.submitDataToServer = function() {
+                        console.log('self.submitDataToServer');
+
+ 						var trainingModuleSearchParams = {};
+						var content=document.querySelector('#content').parentNode.previousSibling.innerText;
+						//var title=document.querySelector('#title').innerText;
+ 						trainingModuleSearchParams["jobCodeID"]=self.selectedJobCode().id;
+ 						trainingModuleSearchParams["focus"]=self.chosenFocus;
+ 						trainingModuleSearchParams["content"]=content;
+ 						trainingModuleSearchParams["level"]=self.chosenLevel;
+ 						trainingModuleSearchParams["title"]=self.title;
+ 						trainingModuleSearchParams['categoriesContent']=map;
+                         var jsObj = ko.toJS(trainingModuleSearchParams);
+                         var jobcode = jsObj["jobCodeID"];
+ 						var content = jsObj["content"];
+ 						var title  = jsObj["title"];
+ 						var level = jsObj.level[0];
+ 						var focus = jsObj.focus[0];
+ 						
+ 						var trainingmodule={"jobCodeID" : jobcode ,"content" : content ,"level" : level , "focus":focus , "title" :title , "categoriesContent" : map};
+                        var jsObj = JSON.stringify(trainingmodule);
+                        console.log("object : "+ jsObj);
+                        $.ajax({
+                            url:"/trainingModule/create",
+                            type:"post",
+                            data: jsObj ,
+                            contentType:"application/json; charset=utf-8",
+                            crossDomain: true,
+                            dataType:"html",
+                            success: function(html){
+                            	$("html, body").animate({ scrollTop: 0 }, "slow");
+                            	$('.jqte_editor').html('');
+                            	document.getElementById("createtrainingModule").reset();
+                            	$("#result").html('<div class="alert alert-success"><button type="button" class="close">×</button>Successfully created training module !!</div>');
+                                window.setTimeout(function() {
+                                      $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                                          $(this).remove(); 
+                                      });
+                                  }, 5000);
+                                $('.alert .close').on("click", function(e){
+                                      $(this).parent().fadeTo(500, 0).slideUp(500);
+                                   });
+                                
+                            },
+                            failure: function(html){
+                                console.log('failure in ajax response:');
+                            }
+
+                        });
+                        console.log('made ajax call');
+
+
+                    };
+
+                    self.init = function(){
+                        $.getJSON("/jobcode/getListForUserJobcodeTraining", function(data)
+                        {
+                            console.log(data);
+                            $.each(data, function(index)
+                            {
+                                console.log(data[index])
+                                self.jobCodes.push(data[index]);
+                                
+                            });
+                            
+                            try {
+                            	                               self.drawGraph(data);
+                            	                           }catch(e) {
+                                                            console.log('Error while rendering graph');
+                            	                                console.log(e);
+                                                        }
+                            
+                            
+                        });
+
+                        
+                        
+                        self.drawGraph = function(data){
+                            console.log('Inside drawGraph function. Printing data');
+                            console.log(data);
+                            var vdata = new google.visualization.DataTable();
+                            vdata.addColumn('string', 'Category');
+                            vdata.addColumn('string', 'ParentCategory');
+                            vdata.addRow(['Jobcode', '']);
+                            $.each(data, function(i, entry){
+                                console.log(entry.positionName);
+                                vdata.addRow([entry.positionName, 'Jobcode']);
+                                console.log('Printing first level categories');
+                                console.log(entry.firstLevelCategories);
+                                if (entry.firstLevelCategories === null) { return; }
+                                $.each(entry.firstLevelCategories, function(j, catEntry){
+                                    console.log(catEntry);
+                                    vdata.addRow([catEntry.title, entry.positionName]);
+                                    if (catEntry.subCategories === null) { return; }
+                                    $.each(catEntry.subCategories, function(k, subCatEntry){
+                                        console.log(subCatEntry);
+                                        vdata.addRow([subCatEntry.title, catEntry.title]);
+                                    });
+
+                                });
+                            });
+                            console.log('Printing vdata...');
+                            console.log(vdata);
+                            console.log(vdata);
+                            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+                            chart.draw(vdata, {allowHtml:true, allowCollapse: true, size : 'small'});
+                            for (d in vdata) {
+                                chart.collapse(i, true);
+                            }
+                };
+                        
+                       
+                        
+                        
+                        
+                        $( "#createtrainingModule" ).submit(function( event ) {
+                            console.log('submitting the form to server');
+                            self.submitDataToServer();
+                            event.preventDefault();
+                        }); 
+
+                    }
+                };
+				
+                
+                
+                
+                
+
+
+                
+                
+                
+                
+                
+                
+                
+                var jobCodeModel = new jobCodeViewModel();
+                jobCodeModel.init();
+                ko.applyBindings(jobCodeModel);
+            });
+            
+            
+            
+                     
+            
+        </script>
+    </div>
+
+</head>
+<body>
+
+<div th:fragment="content">
+    <div class="container">
+    	<div id="result"></div>
+    	<div class="row">
+             <div class="col-lg-12">
+                 <div id="chart_div"></div>
+             </div>
+          </div>
+
+        <h4 align="center">Category Tree Hierarchy</h4>
+
+        <form id="createtrainingModule">
+            <div class="form-group">
+                <label for="jobtitle">Job Title</label>
+                <select id="jobtitle" class="form-control" 
+                        data-bind="options: jobCodes,
+                        optionsText: 'positionName',
+                        value: selectedJobCode,
+                        optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="jobcategory">Category</label>
+                <select name="firstLevelCategories" id="jobcategory" class="form-control"  
+                            data-bind="options:categories ,
+                            selectedOptions: selectedCategory,
+                            optionsText: 'title', optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add Content To Category</button>
+            
+            
+            <div class="form-group">
+                <label for="focus">Focus</label>
+                <select id="focus" class="form-control" name="focus"  data-bind="options: availableFocus, selectedOptions: chosenFocus, optionsCaption: 'Choose...'">
+					
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="level">Level</label>
+                <select id="level" class="form-control" name="level" data-bind="options: availablelevels , selectedOptions: chosenLevel, optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text"  name="title" id="title"  class="form-control" 
+                            data-bind="value: title"/>
+                
+            </div>
+            
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea rows="4"  name="content" id="content"  class="form-control"
+                            data-bind="value: content">
+                </textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        
+      
+        
+               
+    
+       </div>    
+        
+      
+        
+        
+        
+       
+       	
+       
+       
+       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form id="createContentForCategory" >
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Add Content To Selected Category</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="input-group">
+                                <textarea rows="4" cols="70" id="categoryContent" class="form-control" placeholder="Add content here" aria-describedby="basic-addon1"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                        	<button type="submit" id="addCategoryContent" class="btn btn-primary">Add</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+ 
+        
+        
+        
+        
+</div>  
+ 
+    
+
+
+
+
+
+</body>
+</html>

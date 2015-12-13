@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      th:include="../../templates/layout :: page" >
+  <head>
+    <title>CareerPath</title>
+  </head>
+  <body>
+
+  <!-- This page is not used anymore. home.html will replace index.html and HomeController maps to home.html-->
+  <div th:fragment="content">
+
+
+      <h1>Welcome to Career Path!</h1>
+      <p>Click <a th:href="@{/login}">here</a> to take a test.</p>
+
+  </div>
+
+  </body>
+</html>
+

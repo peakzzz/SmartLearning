@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      th:fragment="page">
+
+<head>
+    <title>Career Path</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/css/bootstrap.css}"/>
+    <link href="../../static/css/bootstrap-social.css" rel="stylesheet" th:href="@{/css/bootstrap-social.css}"/>      
+    <link href="../../static/css/font-awesome.css" rel="stylesheet" th:href="@{/css/font-awesome.css}"/>      
+    <link href="../static/css/core.css" rel="stylesheet" media="screen" th:href="@{/css/core.css}" />
+
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+
+    <div th:include="this :: header"/>
+
+</head>
+<body>
+
+<div sec:authorize="isAnonymous()">
+    <div th:replace="fragments/header :: 'anonymousheader'"></div>
+</div>
+
+
+<div sec:authorize="hasRole('ROLE_USER')">
+    <div th:replace="fragments/header :: 'candidateheader'"></div>
+</div>
+
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <div th:replace="fragments/header :: 'header'"></div>
+</div>
+
+<div th:include="this :: content"/>
+
+<div th:replace="fragments/footer :: footer">&copy; 2013 Layout footer</div>
+
+</body>
+</html>

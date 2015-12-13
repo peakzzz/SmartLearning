@@ -1,0 +1,81 @@
+{
+    "questionnaire": {
+        "title": "Evaluation Questionnaire",
+         "id" : "23456",
+        "category": "QA",
+        "sections": [
+        	{
+        		"sectionName": "Black Box Testing",
+        		"sectionWeightage": "50",
+        		"questions": [
+	            	{
+		                "question_no": "1",
+		                "question_text": "Enter your proficiency in UNIX",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	},
+					{
+		                "question_no": "2",
+		                "question_text": "Enter your proficiency in Java",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	},
+					{
+		                "question_no": "3",
+		                "question_text": "Enter your proficiency in manual testing",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	}
+        		]
+        	},
+        	{
+        		"sectionName": "White Box Testing",
+        		"sectionWeightage": "50",
+        		"questions": [
+	            	{
+		                "question_no": "1",
+		                "question_text": "Enter your proficiency in UNIX",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	},
+					{
+		                "question_no": "2",
+		                "question_text": "Enter your proficiency in Java",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	},
+					{
+		                "question_no": "3",
+		                "question_text": "Enter your proficiency in manual testing",
+		                "answerType": "MultiChoice",
+		                "optionA": "",
+		                "optionB": "",
+		                "optionC": "",
+		                "optionD": "",
+		                "correctAnswer": "A"
+	            	}
+        		]
+        	}
+        ]
+    }
+}

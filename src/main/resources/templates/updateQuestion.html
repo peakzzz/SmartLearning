@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Build A Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+                width:auto;
+            }
+            input[type=text] {
+                width: 400 px;
+                height: 50 px;
+            }
+            table {
+                color: #777;
+            }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.answer-radio').change(function(){
+                    $('.answer-radio').each(function(){
+                        var id = $(this).attr('id').split('-')[1];
+                        var hiddenId = 'option-'+id;
+                        $('#'+hiddenId).val($(this).is(":checked"));
+                    })
+                })
+            })
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+<div id="container">
+    <h4>Edit Question</h4>
+    <form th:object="${question}" th:action="@{/question/{id}(id=${question.id})}" th:method="put" class="form">
+        <div class="form-group">
+        <table class="ques-table">
+            <tr>
+                <td><label>Question Text</label></td>
+                <td>
+                    <textarea rows="3" cols="50" th:field="*{questionText}" th:value="${questionText}" class="form-control"/>
+                    <input type="hidden" th:field="*{categoryID}" th:value="${categoryID}"/>
+                    <input type="hidden" th:field="*{multipleChoice}" th:value="${multipleChoice}"/>
+                    <input type="hidden" th:field="*{trueOrFalse}" th:value="${trueOrFalse}" class="trueOrFalse"/>
+                    <input type="hidden" th:field="*{type}" th:value="${type}"/>
+                    <input type="hidden" th:field="*{userID}" th:value="${userID}"/>
+                </td>
+            </tr>
+
+
+            <tr th:each="option,optionStat:*{options}" th:if="${question.multipleChoice}==true">
+                <td th:if="${option.correctOption}==true" width="100px" align="right">
+                    <input type="checkbox" checked="checked" th:field="*{options[__${optionStat.index}__].correctOption}" th:value="${option.correctOption}" class="form-control"/>
+                </td>
+                <td th:if="${option.correctOption}==false" width="100px" align="right">
+                    <input type="checkbox" th:field="*{options[__${optionStat.index}__].correctOption}" th:value="${option.correctOption}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="text" th:field="*{options[__${optionStat.index}__].text}" value="${option.text}" class="form-control"/>
+                </td>
+            </tr>
+
+            <tr th:each="option,optionStat:*{options}" th:if="${question.trueOrFalse}==true">
+                <td align="right">
+                    <input type="radio" name="isCorrectOption" th:value="${option.correctOption}" class="answer-radio" th:id="${'radio-'+option.id}" th:checked="${option.correctOption}" />
+                    <input type="hidden" th:field="*{options[__${optionStat.index}__].correctOption}" th:id="${'option-'+option.id}"/>
+                    <input type="hidden" th:field="*{options[__${optionStat.index}__].text}" value="${option.text}"/>
+
+                    <input type="hidden" th:field="*{options[__${optionStat.index}__].id}" th:value="${option.id}"/>
+                    <input type="hidden" th:field="*{options[__${optionStat.index}__].questionID}" th:value="${option.questionID}"/>
+                </td>
+                <td th:text="${option.text}"></td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Level</label>
+                </td>
+                <td>
+                    <select th:field="*{level}" class="form-control">
+                        <option th:if="${level}=='Beginner'" selected="selected" value="Beginner">Beginner</option>
+                        <option th:unless="${level}=='Beginner'" value="Beginner">Beginner</option>
+                        <option th:if="${level}=='Intermediate'" selected="selected" value="Intermediate">Intermediate</option>
+                        <option th:unless="${level}=='Intermediate'" value="Intermediate">Intermediate</option>
+                        <option th:if="${level}=='Expert'" selected="selected" value="Expert">Expert</option>
+                        <option th:unless="${level}=='Expert'" value="Expert">Expert</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Focus</label>
+                </td>
+                <td>
+                    <select th:field="*{focus}" class="form-control">
+                        <option th:if="${focus}=='Concept'" selected="selected" value="Concept">Concept</option>
+                        <option th:unless="${focus}=='Concept'" value="Concept">Concept</option>
+                        <option th:if="${focus}=='Skills'" selected="selected" value="Skills">Skills</option>
+                        <option th:unless="${focus}=='Skills'" value="Skills">Skills</option>
+                        <option th:if="${focus}=='Depth'" selected="selected" value="Depth">Depth</option>
+                        <option th:unless="${focus}=='Depth'" value="Depth">Depth</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Save" class="btn btn-primary"/></td>
+                <td><a th:href="@{/question/{id}(id=${question.id})}">
+                    <input type="button" value="Cancel" class="btn btn-primary" id="cancel-btn"/></a>
+                </td>
+            </tr>
+        </table>
+        </div>
+    </form>
+</div>
+</div>
+</body>
+</html>

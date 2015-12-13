@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Search Test Set</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 80%;
+                height: 50 px;
+            }
+            .display-table {
+                border-collapse:collapse;
+                width: 100%;
+            }
+            .display-table th {
+                height: 50px;
+            }
+            th {
+                background-color: #777;
+                color: white;
+            }
+        </style>
+        <script>
+            $(document).ready(function(){
+                $('.set-category').click(function(){
+                    $('.'+this.id).toggle();
+                })
+                $('.container-row').click(function(){
+                    var id = $(this).attr('id');
+                    $('.'+id).toggle();
+                })
+                $('.pageNo').click(function(){
+                    pageno = $(this).attr('id');
+                    $('.page').val(pageno);
+                    $('.form').submit();
+                })
+            });
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div id="search-form">
+            <h4>Search Testsets</h4>
+            <form th:object="${searchParams}" th:action="@{/testset/search}" method="get" class="form">
+                <div id="searchDiv" class="form-group">
+                    <table>
+                        <tr>
+                            <td>Testset Title</td>
+                            <td>
+                                <input type="text" th:field="*{title}" class="form-control" th:text="${title}" placeholder="Test set Title"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Level</td>
+                            <td>
+                                <select th:field="*{level}" class="form-control">
+                                    <option value="">--select--</option>
+                                    <option th:if="${level}=='Beginner'" selected="selected" value="Beginner">Beginner</option>
+                                    <option th:unless="${level}=='Beginner'" value="Beginner">Beginner</option>
+                                    <option th:if="${level}=='Intermediate'" selected="selected" value="Intermediate">Intermediate</option>
+                                    <option th:unless="${level}=='Intermediate'" value="Intermediate">Intermediate</option>
+                                    <option th:if="${level}=='Expert'" selected="selected" value="Expert">Expert</option>
+                                    <option th:unless="${level}=='Expert'" value="Expert">Expert</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Category
+                            </td>
+                            <td>
+                                <select th:field="*{categoryID}" class="form-control">
+                                    <option value="" th:unless="${categoryID}" selected="selected">--select--</option>
+                                    <option value="" th:if="${categoryID}">--select--</option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}" th:if="${categoryID}==${category.id}" selected="selected"></option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}" th:unless="${categoryID}==${category.id}"></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="submit" value="Search" class="btn btn-primary"/>
+                                <input type="hidden" name="page" value="1" class="page"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+        <div id="containerDiv">
+            <h4>Search Results</h4>
+            <input type="hidden" th:if="${totalpages}" th:value="${totalpages}"/>
+            <ul class="pagination" th:if="${totalpages}">
+                <li th:if="${page &gt; 1}"><span th:id="${page-1}" class="pageNo">Prev</span></li>
+                <li th:each="i:${#numbers.sequence(1,totalpages)}">
+                    <span th:text="${i}" th:id="${i}" class="pageNo" th:unless="${page==i}"></span>
+                    <span th:text="${i}" th:id="${i}" class="pageNo" th:if="${page==i}" style="background-color:#e7e7e7"></span>
+                </li>
+                <li th:if="${page &lt; totalpages}"><span th:id="${page+1}" class="pageNo">Next</span></li>
+            </ul>
+            <span th:if="${#lists.isEmpty(results)}">No results found for the selected criteria</span>
+            <table class="table" th:unless="${#lists.isEmpty(results)}">
+                <tr>
+                    <th width="10%">Sr. No.</th>
+                    <th width="40%">Title</th>
+                    <th width="15%">Cut Off</th>
+                    <th width="20%">Level</th>
+                    <th width="15%">No. of sets</th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <table class="table" th:each="testset,setStat:${results}">
+                            <tr th:id="${testset.id}" class="container-row">
+                                <td width="10%" th:text="${setStat.index+1}"></td>
+                                <td width="40%"><a th:href="@{|/testset/${testset.id}|}"><span th:text="${testset.title}"></span></a></td>
+                                <td width="15%" th:text="${testset.cutoff}"></td>
+                                <td width="20%" th:text="${testset.level}"></td>
+                                <td width="15%" th:text="${#lists.size(testset.testSetCategories)}" th:if="${not #lists.isEmpty(testset.testSetCategories)}"></td>
+                                <td width="15%" th:text="0" th:if="${#lists.isEmpty(testset.testSetCategories)}"></td>
+                            </tr>
+                            <tr th:class="${testset.id}" style="display:none">
+                                <td colspan="5">
+                                    <div width="100%" style="border:1px solid #ddd; border-radius:8px" align="center">
+                                        <table width="100%" th:if="${not #lists.isEmpty(testset.testSetCategories)}" valign="middle">
+                                            <tr>
+                                                <td><label>Title</label></td>
+                                                <td><label>Category</label></td>
+                                                <td><label>Cut-off</label></td>
+                                                <td><label>Weightage</label></td>
+                                                <td><label>No. of Questions</label></td>
+                                            </tr>
+                                            <tr th:each="setCategory:${testset.testSetCategories}">
+                                                <td><a th:href="@{|/testset/${testset.id}/${setCategory.id}|}"><span th:text="${setCategory.title}"></span></a></td>
+                                                <td th:text="${setCategory.category.title}"></td>
+                                                <td th:text="${setCategory.cutoff}"></td>
+                                                <td th:text="${setCategory.weightage}"></td>
+                                                <td th:text="${#lists.size(setCategory.questionList)}" th:if="${not #lists.isEmpty(setCategory.questionList)}"></td>
+                                                <td th:text="0" th:if="${#lists.isEmpty(setCategory.questionList)}"></td>
+                                                <!--<td><a href="@{|/testset/${testset.id}/${setCategory.id}|}"><input type="button" class="btn btn-primary" value="View"/></a></td>-->
+                                            </tr>
+                                        </table>
+                                        <div th:if="${#lists.isEmpty(testset.testSetCategories)}">No set Categories</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/libs-release" }
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE") }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'AssessTool'
+    version =  '0.1.0'
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+    maven { url "http://repo.spring.io/snapshot" }
+    maven { url "http://repo.spring.io/milestone" }
+    maven { url "http://repo.spring.io/release" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework:spring-web")
+    compile("org.springframework:spring-webmvc")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    compile ("org.springframework:spring-core:3.0.5")
+    compile ("org.codehaus.jackson:jackson-mapper-asl:1.9.2")
+    compile("org.webjars:bootstrap:3.1.1")
+    compile 'org.json:json:20140107'
+    compile("org.springframework.data:spring-data-mongodb")
+    compile("org.springframework.data:spring-data-rest-webmvc")
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.thymeleaf.extras:thymeleaf-extras-springsecurity3")
+    compile("org.springframework:spring-orm")
+    compile("org.springframework:spring-jdbc")
+    compile("org.springframework:spring-aop")
+    compile("org.springframework:spring-aspects")
+    compile("org.apache.commons:commons-lang3:3.3.2")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("postgresql:postgresql:9.0-801.jdbc4")
+    testCompile("junit:junit")
+    testCompile("commons-io:commons-io:2.4")
+    testCompile("org.apache.commons:commons-lang3:3.3.2")
+
+    testCompile("org.springframework:spring-test:3.2.0.RELEASE")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+task wrapper(type: Wrapper) { gradleVersion = '1.11' }

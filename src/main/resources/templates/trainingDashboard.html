@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>Admin Dashboard</title>
+    <div th:fragment="header">
+       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+       <script src="http://code.highcharts.com/highcharts.js"></script>
+       <script src="http://code.highcharts.com/highcharts-more.js"></script>
+       <script src="http://code.highcharts.com/modules/exporting.js"></script>
+       <script>
+       $(function () {
+    	   $
+   		.ajax({
+   			url : "/graph/candidateTaining",
+   			type : "GET",
+   			contentType : "application/json; charset=utf-8",
+   			dataType : "json",
+   			success : function(
+   					data) {
+   				var jobCodeJsonString = JSON
+   				.stringify(data);
+   				console
+   				.log('success after ajax response'
+   						+ jobCodeJsonString);
+   				var t = $.parseJSON(jobCodeJsonString);
+   				var jobcodemodule = t['jobCodeModule'];
+   				var jobcode = jobcodemodule['jobcode'];
+   				var count = jobcodemodule['count'];
+   				trainingModuleProgress(jobcode, count);
+   			},
+			failure : function(data){
+				console
+				.log('failure in ajax response:'
+						+ data);
+				
+				}
+			});
+    	   
+    	   
+    	   function trainingModuleProgress(jobcode, count){
+    	    $('#spider').highcharts({
+
+    	        chart: {
+    	            polar: true,
+    	            type: 'line'
+    	        },
+
+    	        title: {
+    	            text: 'Training Modules vs Users',
+    	            x: -80
+    	        },
+
+    	        pane: {
+    	            size: '80%'
+    	        },
+
+    	        xAxis: {
+    	            categories: jobcode,
+    	            tickmarkPlacement: 'on',
+    	            lineWidth: 0
+    	        },
+
+    	        yAxis: {
+    	            gridLineInterpolation: 'polygon',
+    	            lineWidth: 0,
+    	            min: 0
+    	        },
+
+    	        tooltip: {
+    	            shared: true,
+    	            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/></span>'
+    	        },
+
+    	        legend: {
+    	            align: 'right',
+    	            verticalAlign: 'top',
+    	            y: 70,
+    	            layout: 'vertical'
+    	        },
+
+    	        series: [{
+    	            name: 'Users',
+    	            data: count,
+    	            pointPlacement: 'on'
+    	        }]
+
+    	    });
+    	    
+    	    
+    	   }
+    	});
+       
+       
+       </script>
+  
+					
+	</div>
+    
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+         <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header text-center" >Training Module Progress</h1>
+                    <br></br>
+                    <div id="spider"></div>
+                </div>
+                
+                
+                
+                
+                
+                
+                
+          </div>
+            <!-- /.row -->
+	             
+    	
+    </div>
+</div>
+</body>
+</html>

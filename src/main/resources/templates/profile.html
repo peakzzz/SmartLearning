@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+      <head>
+			<div th:fragment="header">
+				<title>User Profile</title>
+				
+				<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+				<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    			<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"></link>		
+		
+    			<script>
+    				$(function() {
+    					$("#datepicker").datepicker();
+					});
+    			</script>
+    			
+			</div>
+      </head>
+      <body>
+		<div th:fragment="content">
+		  <div class="container">
+		       <div class="modal-header">
+                   <h2 class="text-center">User Profile</h2>
+                   <p class="bg-danger" th:unless="${#strings.isEmpty(error)}" th:text="${error}"></p>
+                   <p class="bg-success" th:unless="${#strings.isEmpty(message)}" th:text="${message}"></p>
+              </div>
+			  <form id="updateForm" th:action="@{/user/update}" method="post">
+			  
+			    <div class="form-group">
+			    
+			      <div class="col-xs-6">
+			        <label for="usr.user.fname">First Name:</label>
+			        <input class="form-control" th:field="${usr.user.fname}" type="text"/>
+			      </div>
+			      
+			      <div class="col-xs-6">
+			        <label for="usr.user.lname">Last Name:</label>
+			        <input class="form-control" th:field="${usr.user.lname}" type="text"/>
+			      </div>
+			      
+			      <div class="col-xs-6">
+					<input type="hidden" th:field="${usr.user.role}" />		
+					<input type="hidden" th:field="${usr.user.id}" />
+					<input type="hidden" th:field="${usr.user.login}" />
+			        <label for="usr.user.login">Email:</label>
+			        <input class="form-control" th:field="${usr.user.login}" type="email" disabled=""/>
+			      </div>
+			      
+			      <div class="col-xs-6">
+			        <label for="usr.user.password">password:</label>
+			        <input class="form-control" th:field="${usr.user.password}" type="password"/>
+			      </div>
+			      
+			      <div class="col-xs-6"  th:unless="${usr.user.isAdmin()}">
+					 <label for="usr.user.birthDate" class="control-label">Date of Birth</label>
+				     <input type="text" th:id="datepicker" th:field="${usr.user.birthDate}" class="form-control" placeholder="Date of Birth" required=""/>
+				  </div>
+				  
+				  <div class="col-xs-6" th:unless="${usr.user.isAdmin()}">
+					 <label for="usr.user.profession" class="control-label">Profession</label>
+				      <select class="form-control"  th:field="${usr.user.profession}">
+							<option th:each="prof : ${usr.professions}" 
+      							th:value="${prof}"
+      							th:text="${prof}"></option>
+					  </select>
+				  </div>
+				  
+				  <div class="col-xs-6" th:unless="${usr.user.isAdmin()}">
+					 <label for="usr.user.education" class="control-label">Education</label>
+				      <select class="form-control"  th:field="${usr.user.education}">
+							<option th:each="edu : ${usr.educations}" 
+      							th:value="${edu}"
+      							th:text="${edu}"></option>
+					  </select>
+				  </div>
+				  
+				  <div class="col-xs-6" th:unless="${usr.user.isAdmin()}">
+					 <label  for="usr.user.careerLevel" class="control-label">Career Level</label>
+				      <select class="form-control" th:field="${usr.user.careerLevel}">
+							<option th:each="cl : ${usr.careerLevels}" 
+      							th:value="${cl}"
+      							th:text="${cl}"></option>
+					  </select>
+				  </div>
+							
+				    <div class="col-xs-12" th:unless="${usr.user.isAdmin()}">
+					    <div class="panel panel-default">
+					          <div class="panel-heading">
+					            <h4 class="panel-title">
+					              <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Select jobs of your interest</a>
+					            </h4>
+					          </div>
+					          <div id="collapse1" class="panel-collapse collapse in">
+					            <div class="panel-body">
+						          <!-- <table class="table table-striped table-condensed">
+									<tbody>
+										<tr th:each="row, rowStat : ${usr.jcList}">
+											<td>
+												<input type="hidden" 
+													th:field="${usr.jcList[__${rowStat.index}__].jobCode.id}" />
+												<input type="hidden" 
+													th:field="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" />
+												<input type="checkbox" 
+													th:text="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" 
+													th:field="${usr.jcList[__${rowStat.index}__].selected}" />
+											</td>
+										</tr>
+									</tbody>
+								</table> -->
+									<div class="row" >
+								    	<div class="col-sm-6" style="background-color:#F5F5F5;border-color:#DDD;" 
+								    	th:each="row, rowStat : ${usr.jcList}">
+											<input type="hidden" 
+												th:field="${usr.jcList[__${rowStat.index}__].jobCode.id}" />
+											<input type="hidden" 
+												th:field="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" />
+											<input type="checkbox" 
+												th:text="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" 
+												th:field="${usr.jcList[__${rowStat.index}__].selected}" />									    	
+								    	</div>
+									</div>
+					            </div>
+					          </div>
+				         </div>
+					</div>
+				</div>
+			    <div class="form-group">
+			           <button class="btn btn-primary" id="updateBtn" name="updateBtn">Update</button>
+			    </div>
+			  </form>
+		  </div>
+    	</div>
+    </body>
+</html>

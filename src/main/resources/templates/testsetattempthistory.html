@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Results</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+            padding: 10px 15px 10px 15px;
+            }
+        </style>
+        <script>
+            $(document).ready(function(){
+                $('.question').click(function(){
+                    id = $(this).attr('id');
+                    $('#option-'+id).toggle();
+                })
+            });
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container" th:each="testid:${results}">
+        <div th:if="${not #maps.isEmpty(average) and #maps.containsKey(average, testid)}">
+            <label>Average: <span th:text="${average[__${testid}__]}"/></label>
+        </div>
+        <div class="attempts" th:each="attempt:${attemptmap[__${testid}__]}">
+        <div style="background-color:#eee;padding: 10px 10px 10px 10px;" align="center">
+            <table>
+                <tr>
+                    <td><label>Date</label></td>
+                    <td th:text="${attempt.attemptDate}"></td>
+                </tr>
+                <tr>
+                    <td><label>Score</label></td>
+                    <td th:text="${attempt.score}"></td>
+                </tr>
+                <tr>
+                    <td>Progress</td>
+                    <td><span th:text="${attempt.progress+'%'}"/></td>
+                </tr>
+            </table>
+        </div>
+        <div class="test-set-categories">
+            <table class="table" valign="middle">
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Category</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                </tr>
+                <tr th:each="setcategory,categoryStat:${attempt.categoryWiseRecords}">
+                    <td th:text="${categoryStat.index+1}"></td>
+                    <td th:text="${setcategory.category.title}"></td>
+                    <td th:text="${setcategory.score}"></td>
+                    <td th:if="${setcategory.cutoffReached}==true">Pass</td>
+                    <td th:if="${setcategory.cutoffReached}==false">Fail</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

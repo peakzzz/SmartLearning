@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Build A Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.addQuesBtn').click(function(){
+                    var num     = $('#quesDiv').length-1;
+                    var newNum  = new Number(num + 1);
+
+                    var newElem = $('.question1').clone().attr('id', 'quesDiv').attr('class', 'question'+newNum);
+                    var newElemHtml = newElem.html().replace('questions['+num+']', 'questions['+newNum+']');
+                    $.each([1, 2, 3, 4, 5], function(index, value) {
+                        newElemHtml = newElemHtml.replace('questions['+num+']', 'questions['+newNum+']');
+                    });
+                    $('.containerDiv').append(newElemHtml);
+                });
+            });
+        </script>
+    </div>
+
+</head>
+
+<body>
+<div th:fragment="content">
+
+    <div class="container">
+
+        <h6>Create a Test</h6>
+        <form th:object="${questionnaire}" th:action="@{/questionnaire/create}" method="post">
+            <div id="containerDiv" class="containerDiv">
+                <div>
+                    <table>
+                        <tr>
+                            <td>Test Title</td>
+                            <td><input type="text" th:field="*{title}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Category</td>
+                            <td><input type="text" th:field="*{category}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Section Name</td>
+                            <td><input type="text" th:field="*{sections[0].sectionname}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Weightage</td>
+                            <td><input type="text" th:field="*{sections[0].sectionweightage}"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="question1" id="quesDiv">
+                    <table>
+                        <tr>
+                            <td>Question text</td>
+                            <td><textarea rows="3" cols="50" id="quesText" th:field="*{sections[0].questions[0].question_text}"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td>Option 1</td>
+                            <td><input type="text" th:field="*{sections[0].questions[0].optiona}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Option 2</td>
+                            <td><input type="text" id="optionb" th:field="*{sections[0].questions[0].optionb}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Option 3</td>
+                            <td><input type="text" id="optionc" th:field="*{sections[0].questions[0].optionc}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Option 4</td>
+                            <td><input type="text" id="optiond" th:field="*{sections[0].questions[0].optiond}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Correct Answer</td>
+                            <td><input type="text" id="answer" th:field="*{sections[0].questions[0].correctanswer}"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div align="center" style="margin-top: 10px">
+                <button id="addQuesBtn" class="addQuesBtn" type="button">Add Question</button>
+            </div>
+            <input type="submit" value="CREATE TEST"/>
+        </form>
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+</body>
+</html>
+ 

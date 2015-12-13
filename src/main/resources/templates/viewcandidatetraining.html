@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>Create Job Code</title>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <div th:fragment="header">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+        <script src="/js/jquery-te-1.4.0.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="/css/demo.css" /> -->
+    <link rel="stylesheet" type="text/css" href="/css/jquery-te-1.4.0.css" />
+        <script type="text/javascript">
+            $(document).ready(function(){
+                console.log('hello..in js code');
+                
+                
+                
+                
+                
+                var jobCodeViewModel = function(){
+                    var self = this;
+
+                    self.jobCodes = ko.observableArray();
+                    self.selectedJobCode = ko.observable();
+                    self.selectedCategory = ko.observableArray();
+                    self.categories = ko.observableArray();
+                    self.selectedsubCategories = ko.observableArray();
+                    self.subCategories = ko.observableArray();
+                    self.description = ko.observable("");
+                    self.availableFocus = ko.observableArray(['Tools', 'Concepts', 'Application']);
+                    self.availablelevels = ko.observableArray(['Beginner', 'Intermediate', 'Advanced']);
+                    self.chosenLevel =  ko.observableArray();
+                    self.chosenFocus =  ko.observableArray();
+                    
+                    
+
+                    self.selectedJobCode.subscribe(function() {
+                        console.log('selectedJobTitle changed..value =  ' + self.selectedJobCode());
+                        if(self.selectedJobCode() == null)
+                            return;
+                        console.log('Printing title....'+self.selectedJobCode().firstLevelCategories);
+                        self.categories(self.selectedJobCode().firstLevelCategories);
+                    });
+
+
+                    self.selectedCategory.subscribe(function(){
+                                console.log('selectedCategory changed... value = '+ self.selectedCategory())
+                                if(self.selectedCategory() == null)
+                                return;
+                                console.log('Selected Categories');
+                                console.log(self.selectedCategory());
+                                //console.log(self.selectedCategory().subCategories);
+                                //console.log('the length of the selected category..... '+self.selectedCategory().length);
+                                var aList = self.selectedCategory();
+                                if(aList == null)
+                                    return;
+
+                                //clear all subcategories first
+                                self.subCategories.removeAll();
+
+                                $(aList).each(function(i){
+                                    console.log(aList[i]);
+                                    var entry = aList[i];
+                                    var subCats = entry.subCategories;
+                                    if(subCats != null) {
+                                        console.log('subcats size = ' + subCats.length);
+                                        $(subCats).each(function(j){
+                                            self.subCategories.push(subCats[j]);
+                                        });
+                                    }
+                                });
+
+
+                            }
+
+                    )
+
+                    self.submitDataToServer = function() {
+                        console.log('self.submitDataToServer');
+
+ 						var trainingModuleSearchParams = {};
+ 						if(self.selectedJobCode())
+ 							{
+ 							
+ 							trainingModuleSearchParams["jobcodeID"]=self.selectedJobCode().id;
+ 							}
+ 						
+ 						if(self.selectedCategory().length !== 0 )
+ 							{
+ 						trainingModuleSearchParams["categoryID"]=self.selectedCategory()[0].id;
+ 							}
+ 						if(self.chosenFocus)
+ 							{
+ 							trainingModuleSearchParams["focus"]=self.chosenFocus;
+ 							
+ 							}
+ 						if(self.chosenLevel)
+ 							{
+ 							trainingModuleSearchParams["level"]=self.chosenLevel;
+ 							}
+ 						
+ 						
+
+                         var jsObj = ko.toJS(trainingModuleSearchParams);
+                        
+                        console.log(jsObj);
+						var jobcode = jsObj["jobcodeID"];
+						var category = jsObj["categoryID"];
+						var level = jsObj.level[0];
+						var focus = jsObj.focus[0];
+						//var param ='jobcodeID='+jobcode+'and'+'categoryID='+category+'and'+'level='+level+'and'+'focus='+focus;
+						 var obj={"jobcodeID" : jobcode ,"categoryID" : category ,"level" : level , "focus":focus  };
+						 var jsObj = JSON.stringify(obj);
+						 
+                        $.ajax({
+                            url:"/trainingModule/getTrainingModuleDetails",
+                            type:"post",
+                            data: jsObj ,
+                            contentType:"application/json; charset=utf-8",
+                            crossDomain: true,
+                            dataType:"html",
+                            success: function(html){
+                            	console.log(html);
+                            	$("#accordion").replaceWith($('#accordion', $(html)));
+                            	$('.editor').jqte();
+                            	$(".jqte_editor").prop('contenteditable','false');
+                            },
+                            failure: function(html){
+                                console.log('failure in ajax response:' + data);
+                            }
+
+                        });
+                        console.log('made ajax call');
+
+
+                    };
+
+                    self.init = function(){
+                        $.getJSON("/jobcode/getListForUserJobcodeTraining", function(data)
+                        {
+                            console.log(data);
+                            $.each(data, function(index)
+                            {
+                                console.log(data[index])
+                                self.jobCodes.push(data[index]);
+                            });
+                        });
+						
+                        
+                        
+                        
+                        
+                    	/* window.editModules = function(clicked_id)
+                    	{
+                    		
+                    		alert("came  in edit !!"+clicked_id);
+                    	} */
+                    
+                    	$('#my_modal').on('show.bs.modal', function(e) {
+                    		
+                    		var moduleid = $(e.relatedTarget).attr('id');
+                    		alert(moduleid);
+                    		
+                    		
+                    		
+                    		var jobCodeID=document.getElementById(moduleid).querySelector('#jobCodeID').innerText;
+                    	    var level = document.getElementById(moduleid).querySelector('#level').innerText;
+                    	    var title= document.getElementById(moduleid).querySelector('#title').innerText;
+                    	    var focus = document.getElementById(moduleid).querySelector('#focus').innerText;
+                    	    var content = document.getElementById(moduleid).querySelector('#content').innerText;
+                    	    var categoryId = document.getElementById(moduleid).querySelector('#categoryId').innerText;
+                    	    var categoryContent = document.getElementById(moduleid).querySelector('#categoryContent').innerText;
+                    	    $(e.currentTarget).find('input[name="id"]').val(moduleid);
+                    	    $(e.currentTarget).find('input[name="title"]').val(title);
+                    	    $(e.currentTarget).find('input[name="focus"]').val(focus);
+                    	    $(e.currentTarget).find('input[name="level"]').val(level);
+                    	    $(e.currentTarget).find('input[name="content"]').val(content);
+                    	    $(e.currentTarget).find('input[name="jobCodeID"]').val(jobCodeID);
+                    	    $(e.currentTarget).find('input[name="categoryId"]').val(categoryId);
+                    	    $(e.currentTarget).find('input[name="categoryContent"]').val(categoryContent);
+                    	    
+                    	});
+                    
+                        $( "#trainingModule" ).submit(function( event ) {
+                            console.log('submitting the form to server');
+                            self.submitDataToServer();
+                            event.preventDefault();
+                        });
+						
+                        window.completeModules= function (clicked_id)
+                        {
+                        	
+                        	var param = "id="+clicked_id;
+                        	$.ajax({
+                                url:"/trainingModule/completeTraining?"+param,
+                                type:"post",
+                               
+                                contentType:"application/json",
+                                crossDomain: true,
+                                dataType:"html",
+                                success: function(html){
+                                	$("#accordion").replaceWith($('#accordion', $(html)));
+                                	$("#result").html('<div class="alert alert-success"><button type="button" class="close">×</button>Successfully completed training module !!</div>');
+                                    window.setTimeout(function() {
+                                          $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                                              $(this).remove(); 
+                                          });
+                                      }, 5000);
+                                    $('.alert .close').on("click", function(e){
+                                          $(this).parent().fadeTo(500, 0).slideUp(500);
+                                       });
+                                   
+                               
+                                	
+                                	
+                                	
+                                	
+                                },
+                                failure: function(html){
+                                    console.log('failure in ajax response:' + data);
+                                }
+
+                            });
+                        	
+                        }
+                        
+                        
+                    }
+                };
+
+                var jobCodeModel = new jobCodeViewModel();
+                jobCodeModel.init();
+                ko.applyBindings(jobCodeModel);
+            });
+        </script>
+    </div>
+
+</head>
+<body>
+
+<div th:fragment="content">
+    <div class="container">
+    	<div id="result"></div>
+        <form id="trainingModule">
+            <div class="form-group">
+                <label for="jobtitle">Job Title</label>
+                <select id="jobtitle" class="form-control"
+                        data-bind="options: jobCodes,
+                        optionsText: 'positionName',
+                        value: selectedJobCode,
+                        optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="jobcategory">Category</label>
+                <select name="firstLevelCategories" id="jobcategory"  class="form-control"
+                            data-bind="options:categories ,
+                            selectedOptions: selectedCategory,
+                            optionsText: 'title' , optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            
+            
+            
+            <div class="form-group">
+                <label for="focus">Focus</label>
+                <select id="focus" class="form-control" name="focus" data-bind="options: availableFocus, selectedOptions: chosenFocus, optionsCaption: 'Choose...'">
+					
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="level">Level</label>
+                <select id="level" class="form-control" name="level" data-bind="options: availablelevels , selectedOptions: chosenLevel, optionsCaption: 'Choose...'">
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+       
+       <br></br><br></br>
+        
+         <div class="panel-group" id="accordion">
+        <div class="panel panel-default" th:each="cate : ${tmList}">
+            <div class="panel-heading" >
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" th:href="${'#'+cate.id}" >Training Module: <span th:utext="${cate.title}"></span> </a>
+                </h4>
+            </div>
+            <div th:id="${cate.id}"  class="panel-collapse collapse">
+                <div class="panel-body">
+                				
+                 				
+                 				<b>Focus:</b> <div id="focus" th:utext="${cate.focus}" />
+                 				<b>Level:</b> <div id="level" th:utext="${cate.level}" />
+                 				<div th:each="entry : ${cate.categoriesContent}">
+                 				
+                 				
+                 				<b>Category Related Content:</b> <textarea class="editor" id="categoryContent"  th:text="${entry.value}" rows="4" cols="70"> </textarea>
+            					</div>
+            					
+            					
+            					<b>Jobcode Related Content:</b> <textarea class="editor" id="content" th:utext="${cate.content}" ></textarea>  <a href="#my_modal"  th:id="${cate.id}" data-toggle="modal"   class="btn btn-large btn-info" style="float:right;" onclick="completeModules(this.id);">Complete Training</a>  
+                </div>
+            </div>
+        </div>
+      </div>  
+        
+        
+        
+        
+        
+        
+        
+    
+       </div>    
+        
+   </div>     
+        
+        
+        
+       
+        
+        
+        
+        
+
+ 
+    
+
+
+
+
+
+</body>
+</html>

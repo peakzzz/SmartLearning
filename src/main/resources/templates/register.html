@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+  <head>
+    <title>Register</title>
+    <div th:fragment="header">
+    	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"></link>		
+		
+    	<script>
+						$(function() {
+							$("#datepicker").datepicker();
+						});
+					</script>
+    </div>
+    
+  </head>
+  <body>
+
+    <div th:fragment="content">
+
+        <!--User Register modal-->
+        <div id="loginModal" class="modal show" style="overflow-y: auto;"  tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="text-center">Register</h2>
+                        <p class="bg-danger" th:unless="${#strings.isEmpty(error)}" th:text="${error}"></p>
+                        <p class="bg-success" th:unless="${#strings.isEmpty(message)}" th:text="${message}"></p>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/user/createcandidate}" method="post" data-toggle="validator" role="form">
+                            <div class="form-group">
+                            	<label for="fname" class="control-label">First Name</label>
+                                <input type="text" th:field="${usr.user.fname}" class="form-control" placeholder="John" required=""/>
+                            </div>
+                            <div class="form-group">
+                                 <label for="lname" class="control-label">Last Name</label>
+                                <input type="text" th:field="${usr.user.lname}"  class="form-control" placeholder="Doe" required=""/>
+                            </div> 
+                            <div class="form-group">
+                            	<label for="login" class="control-label">Email</label>
+    							<input type="email" th:field="${usr.user.login}" class="form-control" placeholder="johndoe@gmail.com" data-error="Bruh, that email address is invalid" required=""/>
+    							<div class="help-block with-errors"></div>                                
+                            </div>  
+							<div class="form-group">
+								<label for="password" class="control-label">Password</label>
+							     <input type="password" th:field="${usr.user.password}" data-minlength="6" class="form-control" placeholder="Password" required=""/>
+							     <span class="help-block">Minimum of 6 characters</span>
+							</div>
+							 
+							<div class="form-group">
+								 <label for="usr.user.birthDate" class="control-label">Date of Birth</label>
+							     <input type="text" th:id="datepicker" th:field="${usr.user.birthDate}" class="form-control" placeholder="Date of Birth" required=""/>
+							</div>
+							
+							<div class="form-group">
+								 <label for="usr.user.profession" class="control-label">Profession</label>
+							      <select class="form-control" th:field="${usr.user.profession}">
+										<option th:each="prof : ${usr.professions}" 
+		          							th:value="${prof}"
+		          							th:text="${prof}"></option>
+								  </select>
+							</div>
+							
+							
+							<div class="form-group">
+								 <label for="usr.user.education" class="control-label">Education Level</label>
+							      <select class="form-control" th:field="${usr.user.education}">
+										<option th:each="edu : ${usr.educations}" 
+		          							th:value="${edu}"
+		          							th:text="${edu}"></option>
+								  </select>
+							</div>
+							
+							<div class="form-group">
+								 <label for="usr.user.careerLevel" class="control-label">Career Level</label>
+							      <select class="form-control" th:field="${usr.user.careerLevel}">
+										<option th:each="cl : ${usr.careerLevels}" 
+		          							th:value="${cl}"
+		          							th:text="${cl}"></option>
+								  </select>
+							</div>
+							
+							<div class="form-group">
+							    <div class="panel panel-default">
+							          <div class="panel-heading">
+							            <h4 class="panel-title">
+							              <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Select jobs of your interest</a>
+							            </h4>
+							          </div>
+							          <div id="collapse1" class="panel-collapse collapse">
+							            <div class="panel-body">
+									    <div class="row" >
+									    	<div class="col-sm-6" style="background-color:#F5F5F5;border-color:#DDD" 
+									    	th:each="row, rowStat : ${usr.jcList}">
+												<input type="hidden" 
+													th:field="${usr.jcList[__${rowStat.index}__].jobCode.id}" />
+												<input type="hidden" 
+													th:field="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" />
+												<input type="checkbox" 
+													th:text="${usr.jcList[__${rowStat.index}__].jobCode.positionName}" 
+													th:field="${usr.jcList[__${rowStat.index}__].selected}" />									    	
+									    	</div>
+										</div>
+							            </div>
+							          </div>
+						         </div>							
+							</div>
+							
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block">Register</button>
+                            </div>
+		                    <div class="modal-footer">
+		                        <span class="pull-left"><a href="/user/loginPage">Sign in</a></span>
+		                        <span class="pull-right"><a href="/">Cancel</a></span>
+		                    </div>                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </body>
+</html>

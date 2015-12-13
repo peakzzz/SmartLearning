@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Update Test Set</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+        </style>
+        <script>
+            // <![CDATA[
+            $(document).ready(function(){
+                $('.set-category').click(function(){
+                    $('.'+this.id).toggle();
+                });
+                $('#remove-set-btn').click(function(){
+                    confirm("Are you sure you want to remove Category Set from test?");
+                });
+                var count = 0;
+                $('#containerDiv').on('click', '#add-test-category', function(){
+                    var num     = count;
+                    var newNum  = num + 1;
+                    var newElem = $('.set-category-'+num).clone().attr('id', 'test-set-category').attr('class', 'set-category-'+newNum).css('display', 'inline');
+                    var newElemHtml = newElem[0].outerHTML.replace('add-test-cat-btn-'+num, 'add-test-cat-btn-'+newNum).replace(/disabled="disabled"/g, "").replace('add-test-category-id', 'add-test-category').replace('cutoff-'+num, 'cutoff-'+newNum).replace('weightage-'+num, 'weightage-'+newNum);
+                    $(this).removeAttr('id');
+                    $(this).hide();
+                    $('#containerDiv').append(newElemHtml);
+                    count++;
+                });
+                $('.form').submit(function(){
+                    var errors = "";
+                    for(var i=0; i < count; i++) {
+                        weightage = $('#weightage-'+(i+1)).val();
+                        cutoff = $('#cutoff-'+(i+1)).val();
+
+                        if(weightage < cutoff) {
+                            errors = errors + "\nWeightage for set "+(i+1)+" is less than cutoff";
+                        }
+                    }
+                    if(errors!="") {
+                        $('#client-error').html("Errors:\n"+errors);
+                        $('#client-error').show();
+                        return false;
+                    }
+                })
+
+            });
+            // ]]>
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div id="message" th:if="${message}" th:text="${message}" style="background-color:#CCEBF5; font-weight:bold; padding: 5px 5px 5px 5px">
+        </div>
+        <div id="error" th:if="${error}" th:text="${error}" style="background-color:#FFCCCC; font-weight:bold; padding: 5px 5px 5px 5px">
+        </div>
+        <div id="client-error" th:unless="${error}" style="background-color:#FFCCCC; font-weight:bold; padding: 5px 5px 5px 5px; display:none;">
+        </div>
+
+        <h4>Edit Test Set</h4>
+        <form th:method="post" th:action="@{|/testset/update/${testset.id}|}" name="testset-form" class="form">
+            <div id="containerDiv" class="form-group">
+                <table>
+                    <tr>
+                        <td>Title</td>
+                        <td>
+                            <input type="text" th:value="${testset.title}" th:field="*{testset.title}" class="form-control"/>
+                            <input type="hidden" th:value="${testset.jobCodeID}" th:field="*{testset.jobCodeID}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Level</td>
+                        <td>
+                            <select th:field="*{testset.level}" class="form-control">
+                                <option th:if="${testset.level}=='Beginner'" selected="selected" value="Beginner">Beginner</option>
+                                <option th:unless="${testset.level}=='Beginner'" value="Beginner">Beginner</option>
+                                <option th:if="${testset.level}=='Intermediate'" selected="selected" value="Intermediate">Intermediate</option>
+                                <option th:unless="${testset.level}=='Intermediate'" value="Intermediate">Intermediate</option>
+                                <option th:if="${testset.level}=='Expert'" selected="selected" value="Expert">Expert</option>
+                                <option th:unless="${testset.level}=='Expert'" value="Expert">Expert</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cut-off</td>
+                        <td>
+                            <input type="number" class="form-control" th:value="${testset.cutoff}" th:field="*{testset.cutoff}" pattern="\d*"/>
+                        </td>
+                    </tr>
+                </table>
+            <div th:if="${not #lists.isEmpty(testset.testSetCategories)}">
+                <h4>Category Sets</h4>
+                <div th:each="setcategory,categoryStat:${testset.testSetCategories}" class="set-category">
+                <table>
+                    <tr>
+                        <td>Category</td>
+                        <td th:text="${setcategory.category.title}"></td>
+                       <input type="hidden" th:field="*{testset.testSetCategories[__${categoryStat.index}__].categoryID}" th:value="${setcategory.categoryID}"/>
+                        <input type="hidden" th:field="*{testset.testSetCategories[__${categoryStat.index}__].id}" th:value="${setcategory.id}"/>
+                    </tr>
+                    <tr>
+                        <td>Title</td>
+                        <td>
+                            <input type="text" th:field="*{testset.testSetCategories[__${categoryStat.index}__].title}" th:value="${setcategory.title}" class="form-control"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cut-off</td>
+                        <td>
+                            <input type="number" th:field="*{testset.testSetCategories[__${categoryStat.index}__].cutoff}" th:value="${setcategory.cutoff}" class="form-control"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Weightage</td>
+                        <td>
+                            <input type="number" th:field="*{testset.testSetCategories[__${categoryStat.index}__].weightage}" th:value="${setcategory.weightage}" class="form-control"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>No. of Questions</td>
+                        <td th:text="${#lists.size(setcategory.questionList)}" th:if="${not #lists.isEmpty(setcategory.questionList)}"></td>
+                        <td th:text="0" th:if="${#lists.isEmpty(setcategory.questionList)}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <a th:href="@{|/testset/${testset.id}/${setcategory.id}|}"><input type="button" value="Edit" class="btn btn-primary"/></a>
+                            <a th:href="@{|/testset/setcategory/delete/${testset.id}/${setcategory.id}|}"><input type="button" value="Remove" class="btn btn-primary" id="remove-set-btn"/></a>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+                <input type="button" value="+" title="Add more categories" class="add-test-cat-btn-0" id="add-test-category"/>
+                <div id="test-set-category" class="set-category-0" aria-disabled="true" style="display:none">
+                    <table>
+                        <tr>
+                            <td>Category</td>
+                            <td>
+                                <select name="set-category" class="form-control" disabled="disabled">
+                                    <option th:text="${category.title}" th:value="${category.id}" th:each="category:${categories}"/>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Set Title</td>
+                            <td>
+                                <input type="text" class="form-control" name="set-title" disabled="disabled"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Cut-Off</td>
+                            <td><input type="number" name="set-cutoff" pattern="\d*" class="form-control" min="1" max="100" disabled="disabled" id="cutoff-0"/></td>
+                        </tr>
+                        <tr>
+                            <td>Weightage</td>
+                            <td><input type="number" name="set-weightage" pattern="\d*" class="form-control" min="1" max="100" disabled="disabled" id="weightage-0"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="+" title="Add more categories" class="add-test-cat-btn-0" id="add-test-category-id"/>
+                            </td>
+                            <hr/>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Update"/>
+            <a th:if="${origin}" th:href="@{|${origin}|}"><input type="button" class="btn btn-primary" value="Cancel"/></a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

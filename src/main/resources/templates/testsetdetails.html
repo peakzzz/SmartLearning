@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>View TestSet Details</title>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container ">
+        <div class="vertical-center">
+            <div>
+                <dl class="dl-horizontal">
+                    <dt>Title:</dt>
+                    <dd><div th:utext="${testset.title}"/></dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Level:</dt>
+                    <dd><div th:utext="${testset.level}"/></dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Cutoff:</dt>
+                    <dd><div th:utext="${testset.cutoff}"/></dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Sections:</dt>
+                    <dd>
+                        <ul th:each="l : ${testset.testSetCategories}">
+                            <strong><li th:text="${l.category.title}"></li></strong>
+                            Cutoff -  <span th:text="${l.cutoff}"></span><br/>
+                            Weightage -  <span th:text="${l.weightage}"></span>
+                        </ul>
+                    </dd>
+                </dl>
+            </div>
+
+            <!--<a style="float: right" th:href="@{/testset/list}" method="get" class="btn btn-success btn-sm">-->
+                <!--Back </a>-->
+
+            <span><a style="float: left" th:href="@{/testset/list}" method="get" class="btn btn-info">Back</a></span>
+
+            <a style="float: right" th:href="@{/testset/show/{id}(id=${testset.id})}" method="get" class="btn btn-success">
+                <i class="glyphicon glyphicon-pencil"></i>
+                Take Test </a>
+
+
+
+            <!--<button th:href="@{/testset/show/{id}(id=${testset.id})}" method="get" style="float: right" type="submit" class="btn btn-success btn-sm">-->
+            <!--&lt;!&ndash;<button th:href="@{/showtest.html/{id}(id=${l.id})}" style="float: right" type="button" class="btn btn-success btn-sm">&ndash;&gt;-->
+                <!--<span class="glyphicon glyphicon-pencil"></span> Take Test</button>-->
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

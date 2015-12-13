@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Build A Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 80%;
+                height: 50 px;
+            }
+            .display-table {
+                border-collapse:collapse;
+                width: 100%;
+            }
+            .display-table th {
+                height: 50px;
+            }
+            th {
+                background-color: #777;
+                color: white;
+            }
+
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.container-row').click(function(){
+                    var id = $(this).attr('id');
+                    $('.'+id).toggle();
+                })
+
+                $('.pageNo').click(function(){
+                    pageno = $(this).attr('id');
+                    $('.page').val(pageno);
+                    $('.form').submit();
+                })
+
+            })
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div id="search-form">
+            <h4>Search Questions</h4>
+            <form th:object="${searchParam}" th:action="@{/question/search}" method="get" class="form">
+                <div id="searchDiv" class="form-group">
+                    <table>
+                        <tr>
+                            <td>
+                                Question Keywords
+                            </td>
+                            <td>
+                                <textarea rows="1" cols="50" th:field="*{text}" class="form-control" th:value="${text}" placeholder="Keywords"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Category
+                            </td>
+                            <td>
+                                <select th:field="*{categoryID}" class="form-control">
+                                    <option value="" th:unless="${categoryID}" selected="selected">--select--</option>
+                                    <option value="" th:if="${categoryID}">--select--</option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}" th:if="${categoryID}==${category.id}" selected="selected"></option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}" th:unless="${categoryID}==${category.id}"></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Level</td>
+                            <td>
+                                <select th:field="*{level}" class="form-control">
+                                    <option value="">--select--</option>
+                                    <option th:if="${level}=='Beginner'" selected="selected" value="Beginner">Beginner</option>
+                                    <option th:unless="${level}=='Beginner'" value="Beginner">Beginner</option>
+                                    <option th:if="${level}=='Intermediate'" selected="selected" value="Intermediate">Intermediate</option>
+                                    <option th:unless="${level}=='Intermediate'" value="Intermediate">Intermediate</option>
+                                    <option th:if="${level}=='Expert'" selected="selected" value="Expert">Expert</option>
+                                    <option th:unless="${level}=='Expert'" value="Expert">Expert</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Focus</td>
+                            <td>
+                                <select th:field="*{focus}" class="form-control">
+                                    <option value="">--select--</option>
+                                    <option th:if="${focus}=='Concept'" selected="selected" value="Concept">Concept</option>
+                                    <option th:unless="${focus}=='Concept'" value="Concept">Concept</option>
+                                    <option th:if="${focus}=='Skills'" selected="selected" value="Skills">Skills</option>
+                                    <option th:unless="${focus}=='Skills'" value="Skills">Skills</option>
+                                    <option th:if="${focus}=='Depth'" selected="selected" value="Depth">Depth</option>
+                                    <option th:unless="${focus}=='Depth'" value="Depth">Depth</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" name="page" value="1" class="page"/>
+                                <input type="submit" value="Search" class="btn btn-primary"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+        <div id="containerDiv">
+            <h4>Search Results</h4>
+            <input type="hidden" th:if="${totalpages}" th:value="${totalpages}"/>
+            <ul class="pagination" th:if="${totalpages}">
+                    <li th:if="${page &gt; 1}"><span th:id="${page-1}" class="pageNo">Prev</span></li>
+                    <li th:each="i:${#numbers.sequence(1,totalpages)}">
+                        <span th:text="${i}" th:id="${i}" class="pageNo" th:unless="${page==i}"></span>
+                        <span th:text="${i}" th:id="${i}" class="pageNo" th:if="${page==i}" style="background-color:#e7e7e7"></span>
+                    </li>
+                    <li th:if="${page &lt; totalpages}"><span th:id="${page+1}" class="pageNo">Next</span></li>
+            </ul>
+            <span th:if="${#lists.isEmpty(results)}">No results found for the selected criteria</span>
+            <table class="table" th:unless="${#lists.isEmpty(results)}">
+                <tr>
+                    <th width="5%">Sr. No.</th>
+                    <th width="40%">Question Text</th>
+                    <th width="20%">Category</th>
+                    <th width="20%">Level</th>
+                    <th width="15%">Focus</th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <table class="table" th:each="question, questionStat:${results}">
+                            <tr th:id="${question.id}" class="container-row">
+                                <td width="5%" th:text="${questionStat.index+1}"></td>
+                                <td width="40%" th:text="${question.questionText}"></td>
+                                <td width="20%" th:text="${question.categoryObj.title}"></td>
+                                <td width="20%" th:text="${question.level}"></td>
+                                <td width="15%" th:text="${question.focus}"></td>
+                            </tr>
+                            <tr th:class="${question.id}" style="display:none">
+                                <td colspan="5">
+                                    <div width="100%">
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="100px"><label>Focus</label></td>
+                                                <td th:text="${question.focus}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="100px"><label>Question</label></td>
+                                                <td th:text="${question.questionText}"></td>
+                                            </tr>
+                                            <tr th:each="option:${question.options}">
+                                                <!-- If option is answer -->
+                                                <td th:if="${option.correctOption}" width="100px" align="right">
+                                                    <input type="checkbox" disabled="disabled" checked="checked"/>
+                                                </td>
+                                                <td th:if="${option.correctOption}" th:text="${option.text}" style="font-style:italic; font-weight:bold; color:#00CC99"></td>
+                                                <!-- Else -->
+                                                <td th:unless="${option.correctOption}" align="right">
+                                                    <input type="checkbox" disabled="disabled"/>
+                                                </td>
+                                                <td th:unless="${option.correctOption}" th:text="${option.text}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <a th:href="@{|/question/${question.id}?update=true|}"><input type="button" class="btn btn-primary" value="Update"/></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

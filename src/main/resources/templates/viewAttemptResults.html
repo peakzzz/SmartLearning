@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>Results</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+        </style>
+        <script>
+            $(document).ready(function(){
+                $('.question').click(function(){
+                    id = $(this).attr('id');
+                    $('#option-'+id).toggle();
+                })
+            });
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container" th:each="testset:${results}">
+        <div class="test-set">
+            <table>
+                <tr>
+                    <td>Date</td>
+                    <td th:text="${testset.attemptDate}"></td>
+                </tr>
+                <tr>
+                    <td>Score</td>
+                    <td th:text="${testset.score}"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table class="table" th:each="setcategory,categoryStat:${testset.categoryWiseRecords}" valign="middle">
+                <tr>
+                    <th colspan="2">
+                       Category
+                    </th>
+                    <th colspan="2">
+                        Result
+                    </th>
+                    <th>
+                        Score
+                    </th>
+                </tr>
+                <tr align="center">
+                    <th colspan="2" align="center">
+                        <span th:text="${setcategory.category.title}"/>
+                    </th>
+                    <th colspan="2" align="center"><span th:text="${setcategory.score}"/></th>
+                    <th align="center">
+                        <span th:if="${setcategory.cutoffReached}==true"><img src="/images/result-pass.jpg" height="40" width="40" alt="Pass"/></span>
+                        <span th:if="${setcategory.cutoffReached}==false"><img src="/images/result-try-again.jpg" height="40" width="40" alt="Try Again"/></span>
+                    </th>
+                </tr>
+                <tr style="background-color:#e7e7e7; color:#fffff" valign="middle" class="container-row">
+                    <th width="10%">Sr. No.</th>
+                    <th width="55%">Question</th>
+                    <th width="15%">Level</th>
+                    <th width="10%">Focus</th>
+                    <th width="10%">Score</th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                    <table width="100%" th:each="question,quesStat:${setcategory.questionsRecord}" valign="middle" style="border-collapse:collapse">
+                        <tr th:id="${question.questionObj.id}" class="question" valign="middle" style="border-bottom: 1px solid #ddd">
+                            <td  width="10%" th:text="${quesStat.index+1}"></td>
+
+                            <td width="55%" th:text="${question.questionObj.questionText}"></td>
+
+                            <td width="15%" th:if="${question.questionObj.level}=='Beginner'"><img src="/images/beginner.jpeg" height="30" width="25"/></td>
+                            <td width="15%" th:if="${question.questionObj.level}=='Intermediate'"><img src="/images/intermediate.jpeg" height="30" width="30"/></td>
+                            <td width="15%" th:if="${question.questionObj.level}=='Expert'"><img src="/images/expert-img.jpeg" height="30" width="30"/></td>
+
+                            <td width="10%" th:text="${question.questionObj.focus}"></td>
+
+                            <td width="10%" th:if="${question.correctAnswer}==true"><img src="/images/correct-tm.png" height="30" width="25"/></td>
+                            <td width="10%" th:if="${question.correctAnswer}==false"><img src="/images/incorrect-cross.jpg" height="30" width="25"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" th:id="${'option-'+question.questionObj.id}" style="display:none">
+                            <div width="100%">
+                                <table valign="middle">
+                                    <tr th:each="option:${question.questionObj.options}">
+                                        <!-- If option is answer -->
+                                        <td th:if="${option.selectedByUser}" width="100px">
+                                            <input type="checkbox" disabled="disabled" checked="checked"/>
+                                        </td>
+                                        <td th:if="${option.correctOption and option.selectedByUser}" th:text="${option.text}"
+                                            style="font-style:italic; font-weight:bold; color:#00CC99"></td>
+                                        <td th:if="${not option.correctOption and option.selectedByUser}" th:text="${option.text}"
+                                            style="font-style:italic; color:#DC143C"></td>
+
+                                        <!-- Else -->
+                                        <td th:unless="${option.selectedByUser}">
+                                            <input type="checkbox" disabled="disabled"/>
+                                        </td>
+                                        <td th:if="${option.correctOption and not option.selectedByUser}" th:text="${option.text}"
+                                            style="font-style:italic; color:#DC143C"></td>
+                                        <td th:if="${not option.correctOption and not option.selectedByUser}" th:text="${option.text}"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td></tr>
+                    </table>
+                </td></tr>
+            </table>
+            <a th:href="@{/testattempt/list}"><input type="button" value="View All Attempts" class="btn btn-primary"/></a>
+            <a th:href="@{|/testset/view/${testset.testSetID}|}"><input type="button" value="Go To Testset" class="btn btn-primary"/></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
