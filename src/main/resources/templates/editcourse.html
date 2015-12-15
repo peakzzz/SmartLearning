@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+
+    <div th:fragment="header">
+
+    <title>Edit Course</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            /*<![CDATA[*/
+            var jobcodeId = /*[[${jobcodeId}]]*/ null;
+            console.log('CourseId1 = ' + jobcodeId);
+
+            /*]]>*/
+
+            var CategoryLine = function(cat, subcat) {
+                var self = this;
+                self.category = ko.observable(cat);
+                self.subCategories = ko.observableArray(subcat);
+
+                // Whenever the category changes, reset the subcategory selection
+                self.category.subscribe(function() {
+                    console.log('category changed...setting subcategories');
+                    self.subCategories(undefined);
+                });
+
+                self.addSubcategory = function(subcategoryName){
+                    console.log('adding subcategory' + subcategoryName);
+                };
+            };
+
+            var JobCodeViewModel = function(){
+                var self = this;
+
+                self.jobCode = ko.observable();
+                self.description = ko.observable("");
+                self.jobCodeTitle = ko.observable("");
+                self.allCategories = ko.observableArray();
+                self.newCategoryName = ko.observable("");
+                self.newSubCategoryName = ko.observable("");
+                self.categoryObservable = null;
+                self.parentCategory = null;
+
+                self.submitDataToServer = function() {
+                    console.log('submitDataToServer being called');
+                    console.log(self.jobCode());
+                    var jobCodeJson = ko.toJS(self.jobCode());
+                    var linesJson = ko.toJS(self.lines);
+                    console.log(jobCodeJson);
+                    //jobCodeJson.predefinedJobCode = ko.toJS(self.selectedJobCode());
+                    //jobCodeJson.id = null;
+                    jobCodeJson.description = self.description();
+                    jobCodeJson.positionName = self.jobCodeTitle();
+                    jobCodeJson.type = "userdefined";
+                    console.log('category lines being sent to server');
+
+
+                    jobCodeJson.firstLevelCategories = [];
+                    $.each(linesJson, function(index,entry)
+                    {
+                        console.log(entry.category);
+                        console.log(entry.subCategories);
+                        jobCodeJson.firstLevelCategories.push(entry.category);
+                        entry.category.subCategories = entry.subCategories;
+
+                    });
+
+                    var jobCodeJsonString = JSON.stringify(jobCodeJson);
+
+                    $.ajax({
+                        url:"/jobcode/editJobCode",
+                        type:"POST",
+                        data: jobCodeJsonString,
+                        contentType:"application/json; charset=utf-8",
+                        dataType:"json",
+                        success: function(data){
+                            console.log('success after ajax response' + data)
+                            window.location.href = '/jobcode/getList';
+                        },
+                        failure: function(data){
+                            console.log('failure in ajax response:' + data)
+                        }
+
+                    });
+
+
+
+                }
+
+                self.createNewCategory = function() {
+                    console.log('creating new category with name ' + self.newCategoryName());
+
+                    //make ajax call here, after recv succces response here, update categories object by adding the newly created category
+
+                    var newCategory = {
+                        "title" : self.newCategoryName(),
+                        "type" : "userdefined",
+                        "id" : null ,
+                        "parentCategoryId" : "",
+                        "subCategories" : []
+                    };
+
+
+                    $.ajax({
+                        url:"/jobcode/createAjaxCategory",
+                        type:"POST",
+                        data:JSON.stringify(newCategory),
+                        contentType:"application/json; charset=utf-8",
+                        dataType:"json",
+                        success: function(data){
+                            console.log('success after ajax response');
+                            console.log(data);
+                            self.allCategories.push(data);
+                            self.addLineWithNewCategory(data, []);
+
+                        },
+                        failure: function(data){
+                            console.log('failure in ajax response:' + data)
+                        }
+
+                    });
+
+
+
+
+                    console.log('done new category');
+                };
+
+
+                self.setParentCategory = function(category) {
+                    console.log('Setting parent category for subcat creation');
+                    console.log(category);
+                    self.parentCategory = category;
+                    console.log('finished setting parent cartline');
+                };
+
+                self.updateCategoryRowsUI = function(){
+                    $.each(self.lines(), function(index,entry)
+                    {
+                        console.log('force updating category observable');
+                        entry.category.valueHasMutated();
+
+                    });
+
+                }
+
+                self.createNewSubcategory = function() {
+                    console.log('creating new createNewSubcategory');
+                    console.log(self.parentCategory);
+                    var newSubCategory = {
+                        "title": self.newSubCategoryName(),
+                        "type": "userdefined",
+                        "id": null,
+                        "parentCategoryId": self.parentCategory.id,
+                        "subCategories": []
+                    };
+                    //make ajax call by passing, parentCartLine category object which is the parent...and also newSubCategoryName which is the sub category name.
+                    console.log('subcat payload to be sent');
+                    console.log(newSubCategory);
+                    $.ajax({
+                        url:"/jobcode/createAjaxCategory",
+                        type:"POST",
+                        data:JSON.stringify(newSubCategory),
+                        contentType:"application/json; charset=utf-8",
+                        dataType:"json",
+                        success: function(data){
+                            console.log('success after ajax response');
+                            console.log(data);
+                            //resetting the parentcategoryid since server does not have parentcategoryid set yet.
+                            data.parentCategoryId = self.parentCategory.id;
+                            if(self.parentCategory.subCategories == null)
+                                self.parentCategory.subCategories = [];
+                            self.parentCategory.subCategories.push(data);
+                            console.log('now updating category observable');
+
+                            self.updateCategoryRowsUI();
+
+                        },
+                        failure: function(data){
+                            console.log('failure in ajax response:' + data)
+                        }
+
+                    });
+
+
+
+                    //self.parentCartLine.addSubcategory(self.newSubCategoryName());
+                    console.log('done new createNewSubcategory');
+                };
+
+
+                self.lines = ko.observableArray(); // Put one line in by default
+
+                self.addLine = function() { self.lines.push(new CategoryLine()) };
+                self.addLineWithNewCategory = function(cat, subcat) {
+                    var newCatLine = new CategoryLine();
+                    newCatLine.category(cat);
+                    newCatLine.subCategories(subcat);
+                    self.lines.push(newCatLine)};
+                self.removeLine = function(line) { self.lines.remove(line) };
+
+
+                self.init = function(){
+                    $.getJSON("/course/getForEdit/"+jobcodeId, function(data)
+                    {
+                        console.log(data);
+                        self.jobCode(data);
+                        self.jobCodeTitle(data.positionName);
+                        self.description(data.description);
+                        console.log('Printing first level categories');
+                        console.log(self.jobCode().firstLevelCategories);
+                        if (self.jobCode().firstLevelCategories == null){
+                            return;
+                        }
+
+                        $.each(self.jobCode().firstLevelCategories, function(i, entry){
+                            console.log('adding first level categories to all categories...');
+                            self.allCategories.push(entry);
+                            var categoryLine = new CategoryLine(entry, entry.subCategories );
+                            self.lines.push(categoryLine);
+
+                        });
+
+                    });
+
+                    $( "#updateForm" ).submit(function( event ) {
+                        console.log('submitting the form to server');
+                        self.submitDataToServer();
+                        event.preventDefault();
+                    });
+
+                }
+            };
+
+            var jc = new JobCodeViewModel();
+            jc.init();
+            ko.applyBindings(jc);
+
+        });
+    </script>
+    </div>
+
+</head>
+<body>
+
+<div th:fragment="content">
+
+    <div class="container">
+        <form id="updateForm" th:action="@{/jobcode/update}" method="post" >
+
+            <div class="form-group">
+                <label for="jobdesc">Job Title</label>
+                <input type="text" id="jobtitle" name="jobtitle" class="form-control" rows="3" data-bind="value: jobCodeTitle"/>
+            </div>
+
+            <div class="form-group">
+                <label for="jobdesc">Description</label>
+                <textarea id="jobdesc" name="description" class="form-control" rows="3" data-bind="value: description" required="required"></textarea>
+            </div>
+
+
+
+            <div class='categorySection'>
+                <table class="table" width='100%'>
+                    <thead>
+                    <tr>
+                        <th width='25%'>Category</th>
+                        <th width='45%'>Subcategory</th>
+                        <th width='10%'> </th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind='foreach: lines'>
+                    <tr>
+                        <td>
+                            <p>Select category:</p>
+                            <select class="form-control" data-bind="options: $parent.allCategories, optionsText: 'title', optionsCaption: 'Select', value: category">
+                            </select>
+                        </td>
+
+                        <td>
+                            <div data-bind="with: category">
+                                <p>Select subcategories:</p>
+                                <select class="form-control" multiple="multiple" data-bind="options: subCategories, optionsText: 'title', selectedOptions: $parent.subCategories">
+                                </select>
+                                <a href='#' data-toggle="modal" data-target="#createSubCategoryModal" data-bind='click: $root.setParentCategory.bind($data)'>Add New Subcategory </a>
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <a href='#' data-bind='click: $parent.removeLine'>Remove</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+                <br/>
+                <br/>
+
+
+                <button type="button" class="btn btn-primary" data-bind='click: addLine' >Add category</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCategoryModal" >Create new category</button>
+                <button class="btn btn-primary" >Update Job Code</button>
+                <a th:href="@{|/testset/new?jobcodeId=${jobcodeId}|}"><input type="button" class="btn btn-primary" value="Add Test Set"/></a>
+                <a th:href="@{|/testset/jobcode/${jobcodeId}|}"><input type="button" class="btn btn-primary" value="View Test Sets"/></a>
+            </div>
+        </form>
+
+
+        <div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">New Category</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Category Name" data-bind="value:newCategoryName" id="recipient-name"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click:createNewCategory" >Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="createSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close"  data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" >New Subcategory</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Subcategory Name" data-bind="value:newSubCategoryName" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click:createNewSubcategory" >Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+</body>
+</html>

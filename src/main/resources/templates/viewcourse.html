@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>View Courses</title>
+    <!--<style>-->
+        <!--html {-->
+            <!--position: relative;-->
+            <!--min-height: 100%;-->
+        <!--}-->
+        <!--body {-->
+            <!--/* Margin bottom by footer height */-->
+            <!--margin-bottom: 60px;-->
+        <!--}-->
+        <!--.footer {-->
+            <!--position: absolute;-->
+            <!--bottom: 0;-->
+            <!--width: 100%;-->
+            <!--/* Set the fixed height of the footer here */-->
+            <!--height: 60px;-->
+            <!--background-color: #f5f5f5;-->
+        <!--}-->
+    <!--</style>-->
+</head>
+<body>
+<div th:fragment="content">
+
+
+
+    <div class="container ">
+        <div class="vertical-center">
+        <div>
+            <!--<dl class="dl-horizontal">-->
+                <!--<dt>Jobcode:</dt>-->
+                <!--<dd><div th:utext="${jc.id}"/></dd>-->
+            <!--</dl>-->
+            <dl class="dl-horizontal">
+                <dt>Course Name:</dt>
+                <dd><div th:utext="${jc.positionName}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Description:</dt>
+                <dd><div th:utext="${jc.description}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Department:</dt>
+                <dd>
+                    <ul th:each="l : ${jc.firstLevelCategories}">
+                        <li th:text="${l.title}"></li>
+                        <ul th:each="sc : ${l.subCategories}">
+                            <li th:text="${sc.title}">Text</li>
+                        </ul>
+                    </ul>
+                </dd>
+            </dl>
+        </div>
+            <a th:href="@{|/testset/new?jobcodeId=${jc.id}|}"><input type="button" class="btn btn-primary" value="Add Test Set"/></a>
+            <a th:href="@{|/testset/jobcode/${jc.id}|}"><input type="button" class="btn btn-primary" value="View Test Sets"/></a>
+        <a th:href="@{/jobcode/getList}" class="btn btn-info pull-right ">Back</a>
+    </div>
+
+</div>
+
+</div>
+</body>
+</html>

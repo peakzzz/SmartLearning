@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>Create Course</title>
+    <div th:fragment="header">
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['orgchart']}]}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+        <style type="text/css">
+            #chart_div {
+                overflow-x: scroll;
+                width: 100%;
+            }
+
+            #chart_div table {
+                border-collapse: separate;
+            }
+
+
+        </style>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                console.log('hello..in js code');
+
+                console.log('Starting to execute the draw chart code');
+                google.load("visualization", "1", {packages:["orgchart"]});
+                google.setOnLoadCallback(graphLibraryLoaded);
+
+
+
+
+                var CategoryLine = function() {
+                    var self = this;
+                    self.category = ko.observable();
+                    self.subCategories = ko.observableArray();
+                    // Whenever the category changes, reset the subcategory selection
+                    self.category.subscribe(function() {
+                        self.subCategories(undefined);
+                    });
+                    self.addSubcategory = function(subcategoryName){
+                        console.log('adding subcategory' + subcategoryName);
+                    };
+                };
+
+
+                var JobCodeViewModel = function(){
+                    var self = this;
+                    self.jobCodes = ko.observableArray();
+                    self.selectedJobCode = ko.observable();
+                    self.description = ko.observable("");
+                    self.jobCodeTitle = ko.observable("");
+                    self.allCategories = ko.observableArray();
+                    self.newCategoryName = ko.observable("");
+                    self.newSubCategoryName = ko.observable("");
+                    self.categoryObservable = null;
+                    self.parentCategory = null;
+
+                    self.selectedJobCode.subscribe(function(newValue) {
+                        console.log('selectedJobTitle changed, new value ');
+                        if(self.selectedJobCode() == null)
+                            return;
+                        console.log(newValue);
+                        self.allCategories.removeAll();
+                        self.jobCodeTitle(self.selectedJobCode().positionName);
+                        $.each(self.selectedJobCode().firstLevelCategories, function(i, entry){
+                            console.log('adding...');
+                            self.allCategories.push(entry);
+                            console.log(entry.title);
+                        });
+                        console.log('updated category list');
+                    });
+
+                    self.submitDataToServer = function() {
+                        console.log('submitDataToServer being called');
+                        console.log(self.selectedJobCode());
+                        var jobCodeJson = ko.toJS(self.selectedJobCode());
+                        var linesJson = ko.toJS(self.lines);
+                        console.log(jobCodeJson);
+                        jobCodeJson.predefinedJobCode = ko.toJS(self.selectedJobCode());
+                        jobCodeJson.id = null;
+                        jobCodeJson.description = self.description();
+                        jobCodeJson.positionName = self.jobCodeTitle();
+                        jobCodeJson.type = "userdefined";
+                        console.log('category lines being sent to server');
+                        jobCodeJson.firstLevelCategories = [];
+                        $.each(linesJson, function(index,entry)
+                        {
+                            if(entry.category){
+                                console.log(entry.category);
+                                jobCodeJson.firstLevelCategories.push(entry.category);
+                                if(entry.subCategories){
+                                    console.log(entry.subCategories);
+                                    entry.category.subCategories = entry.subCategories;
+                                }
+                            }
+                        });
+                        var jobCodeJsonString = JSON.stringify(jobCodeJson);
+                        $.ajax({
+                            url:"/course/createCourse",
+                            type:"POST",
+                            data: jobCodeJsonString,
+                            contentType:"application/json; charset=utf-8",
+                            dataType:"json",
+                            success: function(data){
+                                console.log('success after ajax response' + data)
+                                window.location.href = '/course/getList';
+                            },
+                            failure: function(data){
+                                console.log('failure in ajax response:' + data)
+                            }
+                        });
+                    }
+
+                    self.createNewCategory = function() {
+                        console.log('creating new category with name ' + self.newCategoryName());
+                        //make ajax call here, after recv succces response here, update categories object by adding the newly created category
+                        var newCategory = {
+                            "title" : self.newCategoryName(),
+                            "type" : "userdefined",
+                            "id" : null ,
+                            "parentCategoryId" : "",
+                            "subCategories" : []
+                        };
+                        $.ajax({
+                            url:"/course/createAjaxCategory",
+                            type:"POST",
+                            data:JSON.stringify(newCategory),
+                            contentType:"application/json; charset=utf-8",
+                            dataType:"json",
+                            success: function(data){
+                                console.log('success after ajax response');
+                                console.log(data);
+                                self.allCategories.push(data);
+                                self.addLineWithNewCategory(data, []);
+                            },
+                            failure: function(data){
+                                console.log('failure in ajax response:' + data)
+                            }
+                        });
+                        console.log('done new category');
+                    };
+
+
+                    self.setParentCategory = function(category) {
+                        console.log('Setting parent category for subcat creation');
+                        console.log(category);
+                        self.parentCategory = category;
+                        console.log('finished setting parent cartline');
+                    };
+
+                    self.updateCategoryRowsUI = function(){
+                        $.each(self.lines(), function(index,entry)
+                        {
+                            console.log('force updating category observable');
+                            entry.category.valueHasMutated();
+                        });
+                    }
+
+                    self.createNewSubcategory = function() {
+                        console.log('creating new createNewSubcategory');
+                        console.log(self.parentCategory);
+                        var newSubCategory = {
+                            "title": self.newSubCategoryName(),
+                            "type": "userdefined",
+                            "id": null,
+                            "parentCategoryId": self.parentCategory.id,
+                            "subCategories": []
+                        };
+                        //make ajax call by passing, parentCartLine category object which is the parent...and also newSubCategoryName which is the sub category name.
+                        console.log('subcat payload to be sent');
+                        console.log(newSubCategory);
+                        $.ajax({
+                            url:"/course/createAjaxCategory",
+                            type:"POST",
+                            data:JSON.stringify(newSubCategory),
+                            contentType:"application/json; charset=utf-8",
+                            dataType:"json",
+                            success: function(data){
+                                console.log('success after ajax response');
+                                console.log(data);
+                                //resetting the parentcategoryid since server does not have parentcategoryid set yet.
+                                data.parentCategoryId = self.parentCategory.id;
+                                if(self.parentCategory.subCategories == null)
+                                    self.parentCategory.subCategories = [];
+                                self.parentCategory.subCategories.push(data);
+                                console.log('now updating category observable');
+                                self.updateCategoryRowsUI();
+                            },
+                            failure: function(data){
+                                console.log('failure in ajax response:' + data)
+                            }
+                        });
+                        //self.parentCartLine.addSubcategory(self.newSubCategoryName());
+                        console.log('done new createNewSubcategory');
+                    };
+
+
+                   // self.lines = ko.observableArray([new CategoryLine()] ); // Put one line in by default
+                    self.lines = ko.observableArray([]); // Put one line in by default
+                    self.addLine = function() { self.lines.push(new CategoryLine()) };
+                    self.addLineWithNewCategory = function(cat, subcat) {
+                        var newCatLine = new CategoryLine();
+                        newCatLine.category(cat);
+                        newCatLine.subCategories(subcat);
+                        self.lines.push(newCatLine)};
+                    self.removeLine = function(line) { self.lines.remove(line) };
+
+                    self.init = function(){
+
+                        $.getJSON("/course/getAllPredefined", function(data)
+                        {
+                            console.log(data);
+                            $.each(data, function(index)
+                            {
+                                console.log(data[index])
+                                self.jobCodes.push(data[index]);
+                            });
+
+                            try {
+                                self.drawGraph(data);
+                            }catch(e) {
+                                console.log('Error while rendering graph');
+                                console.log(e);
+                            }
+
+
+                        });
+                        $( "#createForm" ).submit(function( event ) {
+                            console.log('submitting the form to server');
+                            self.submitDataToServer();
+                            event.preventDefault();
+                        });
+
+                    };
+
+                    self.drawGraph = function(data){
+                                console.log('Inside drawGraph function. Printing data');
+                                console.log(data);
+                                var vdata = new google.visualization.DataTable();
+                                vdata.addColumn('string', 'Category');
+                                vdata.addColumn('string', 'ParentCategory');
+                                vdata.addRow(['SJSU', '']);
+                                $.each(data, function(i, entry){
+                                    console.log(entry.positionName);
+                                    vdata.addRow([entry.positionName, 'SJSU']);
+                                    console.log('Printing first level categories');
+                                    console.log(entry.firstLevelCategories);
+                                    if (entry.firstLevelCategories === null) { return; }
+                                    $.each(entry.firstLevelCategories, function(j, catEntry){
+                                        console.log(catEntry);
+                                        vdata.addRow([catEntry.title, entry.positionName]);
+                                        if (catEntry.subCategories === null) { return; }
+                                        $.each(catEntry.subCategories, function(k, subCatEntry){
+                                            console.log(subCatEntry);
+                                            vdata.addRow([subCatEntry.title, catEntry.title]);
+                                        });
+
+                                    });
+                                });
+                                console.log('Printing vdata...');
+                                console.log(vdata);
+                                console.log(vdata);
+                                var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+                                chart.draw(vdata, {allowHtml:true, allowCollapse: true, size : 'small'});
+                                for (d in vdata) {
+//                                    chart.collapse(i, true);
+                                    chart.collapse(d, true);
+                                }
+                    };
+
+                };
+
+
+                var jc = new JobCodeViewModel();
+
+                function graphLibraryLoaded() {
+                    jc.init();
+                    ko.applyBindings(jc);
+                }
+            });
+        </script>
+    </div>
+
+
+
+</head>
+<body>
+<div th:fragment="content">
+
+
+
+    <div class="container">
+         <div class="row">
+             <div class="col-lg-12">
+                 <div id="chart_div"></div>
+             </div>
+          </div>
+        <h4 align="center">Course Tree Hierarchy</h4>
+
+        <form id="createForm" th:action="@{/course/create}" method="post">
+
+            <div class="form-group">
+                <label for="jobocde">Department</label>
+                <select id="jobocde" class="form-control"
+                        data-bind="options: jobCodes,
+                        optionsText: 'positionName',
+                        value: selectedJobCode,
+                        optionsCaption: 'Choose...'">
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="jobdesc">Course Name</label>
+                <input type="text" id="jobtitle" name="jobtitle" class="form-control" rows="3" data-bind="value: jobCodeTitle"/>
+            </div>
+
+            <div class="form-group">
+                <label for="jobdesc">Description</label>
+                <textarea id="jobdesc" name="description" class="form-control" rows="3" data-bind="value: description" required="required"></textarea>
+            </div>
+
+
+
+            <div class='categorySection'>
+                <table class="table" width='100%'>
+                    <thead>
+                    <tr>
+                        <th width='25%'>Department</th>
+                        <th width='45%'>Specialization</th>
+                        <th width='10%'> </th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind='foreach: lines'>
+                    <tr>
+                        <td>
+                            <p>Select Department:</p>
+                            <select class="form-control" data-bind="options: $parent.allCategories, optionsText: 'title', optionsCaption: 'Select', value: category">
+                            </select>
+                        </td>
+
+                        <td>
+                            <div data-bind="with: category">
+                                <p>Select sepecialization:</p>
+                                <select class="form-control" multiple="multiple" data-bind="options: subCategories, optionsText: 'title', selectedOptions: $parent.subCategories">
+                                </select>
+                                <a href='#' data-toggle="modal" data-target="#createSubCategoryModal" data-bind='click: $root.setParentCategory.bind($data)'>Add New Subcategory </a>
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <a href='#' data-bind='click: $parent.removeLine'>Remove</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+                <br/>
+                <br/>
+
+
+                <button type="button" class="btn btn-primary" data-bind='click: addLine' >Add department</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCategoryModal" >Create new department</button>
+                <button class="btn btn-primary" >Create Course</button>
+            </div>
+        </form>
+
+
+        <div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">New Category</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Category Name" data-bind="value:newCategoryName" id="recipient-name"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click:createNewCategory" >Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="createSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close"  data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" >New Specialization</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Subcategory Name" data-bind="value:newSubCategoryName" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click:createNewSubcategory" >Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
