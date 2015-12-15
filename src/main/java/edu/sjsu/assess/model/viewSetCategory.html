@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>View Set Category</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 400 px;
+                height: 50 px;
+            }
+            table {
+                color: #777;
+            }
+            div {
+                color: #777;
+            }
+        </style>
+        <script type="text/javascript">
+
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div id="message" th:if="${message}" th:text="${message}" style="background-color:#CCEBF5; font-weight:bold; padding: 5px 5px 5px 5px">
+        </div>
+        <div id="error" th:if="${error}" th:text="${error}" style="background-color:#FFCCCC; font-weight:bold; padding: 5px 5px 5px 5px">
+        </div>
+        <div class="test-set-categories">
+            <table>
+                <tr>
+                    <td><label>Title</label></td>
+                    <td th:text="${setCategory.title}"></td>
+                </tr>
+            <tr>
+                <td><label>Category</label></td>
+                <td th:text="${setCategory.category.title}"></td>
+            </tr>
+                <tr>
+                    <td><label>Cut Off</label></td>
+                    <td th:text="${setCategory.cutoff}"></td>
+                </tr>
+                <tr>
+                    <td><label>Weightage</label></td>
+                    <td th:text="${setCategory.weightage}"></td>
+                </tr>
+            </table>
+            <form th:action="@{|/testset/${testsetId}/${setCategory.id}|}" method="post">
+                <div id="containerDiv" th:each="question:${setCategory.questionList}" style="border:1px solid #777; border-radius:8px">
+                    <table class="display-table">
+                        <tr>
+                            <td id="update-chkbox">
+                                <input type="checkbox" name="questionIds" th:value="${question.id}"/>
+                            </td>
+                            <td th:text="${question.questionText}"></td>
+                        </tr>
+                        <tr th:each="option:${question.options}">
+                            <td th:if="${option.correctOption}">
+                                <input type="checkbox" disabled="disabled" checked="checked"/>
+                            </td>
+                            <td th:if="${option.correctOption}" th:text="${option.text}" style="font-style:italic; font-weight:bold; color:#00CC99"></td>
+                            <td th:unless="${option.correctOption}">
+                                <input type="checkbox" disabled="disabled"/>
+                            </td>
+                            <td th:unless="${option.correctOption}" th:text="${option.text}"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div id="update-elements">
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="submit" value="Delete Questions" class="btn btn-primary"/>
+                            </td>
+                            <td>
+                                <a th:href="@{/question/category/{category}(category=${setCategory.categoryID}, testsetId=${testsetId}, testsetCategoryId=${setCategory.id})}">
+                                    <input type="button" value="Add Existing Questions" class="btn btn-primary"/>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{|/question/new-question/${testsetId}/${setCategory.id}|}">
+                                    <input type="button" value="Add New Question" class="btn btn-primary"/>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{|/testset/${testsetId}|}">
+                                    <input type="button" value="Go to Testset" class="btn btn-primary"/>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

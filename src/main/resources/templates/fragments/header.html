@@ -60,6 +60,13 @@
                         <li><a th:href="@{/question/search}">View Questions</a></li>
                     </ul>
                 </li>
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Discussion Forum<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a th:href="@{/forum/create}">Create Post</a></li>
+                        <li><a th:href="@{/forum/viewPost}">View Post</a></li>
+                    </ul>
+                </li>
 
             </ul>
             <!--<ul class="nav navbar-nav navbar-right">-->
@@ -121,7 +128,14 @@
                     <ul class="dropdown-menu" role="menu">
                         
                         <li><a th:href="@{/trainingModule/getTraining}">View Training Packages</a></li>
-                        
+                    </ul>
+                </li>
+                	
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Discussion Forum<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a th:href="@{/forum/create}">Create Post</a></li>
+                        <li><a th:href="@{/forum/viewPost}">View Post</a></li>
                     </ul>
                 </li>
             </ul>
