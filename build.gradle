@@ -23,6 +23,7 @@ jar {
     version =  '0.1.0'
 }
 
+test.onlyIf { ! Boolean.getBoolean('skip.tests') }
 
 repositories {
     mavenLocal()
@@ -55,6 +56,7 @@ dependencies {
     compile("org.apache.commons:commons-lang3:3.3.2")
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("postgresql:postgresql:9.0-801.jdbc4")
+    testCompile("junit:junit")
     testCompile("commons-io:commons-io:2.4")
     testCompile("org.apache.commons:commons-lang3:3.3.2")
 
