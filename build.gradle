@@ -65,6 +65,10 @@ dependencies {
 
 task wrapper(type: Wrapper) { gradleVersion = '1.11' }
 
+task stage {
+  dependsOn build
+}
+
 task copyToLib(type: Copy) {
     into "$buildDir/lib"
     from(configurations.compile)
