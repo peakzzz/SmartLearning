@@ -23,7 +23,7 @@ jar {
     version =  '0.1.0'
 }
 
-test.onlyIf { ! Boolean.getBoolean('skip.tests') }
+test.onlyIf { true }
 
 repositories {
     mavenLocal()
@@ -65,10 +65,6 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '1.11' }
-
-task stage {
-  dependsOn build
-}
 
 task copyToLib(type: Copy) {
     into "$buildDir/lib"
