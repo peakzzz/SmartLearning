@@ -149,7 +149,7 @@ public class CourseServiceImpl implements CourseService {
 			this.getAllCategoriesOfCourse(jc, null);
 
 		} catch (DAOException e) {
-			throw new JobCodeException("Failed to get job code.", e);
+			throw new JobCodeException("Failed to course details serviceimpl.", e);
 		}
 
 		return jc;

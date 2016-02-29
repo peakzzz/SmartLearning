@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.sjsu.assess.dao.CategoryDAOImpl;
+import edu.sjsu.assess.dao.DepartmentDAOImpl;
 import edu.sjsu.assess.dao.TestSetDAOImpl;
 import edu.sjsu.assess.dao.UserDAOImpl;
 import edu.sjsu.assess.exception.DAOException;
@@ -30,8 +31,10 @@ public class TestSetServiceImpl implements TestSetService {
 	@Autowired
 	private CategoryDAOImpl categoryDAO;
 
+	@Autowired
+	private DepartmentDAOImpl departmentDAO;
 	@Override
-	public TestSet saveTestSet(TestSet ts) throws TestSetException {
+	public TestSet saveTestSet(TestSet ts,Boolean jobCode) throws TestSetException {
 		TestSet newTS = null;
 		try {
 
@@ -42,11 +45,11 @@ public class TestSetServiceImpl implements TestSetService {
 				ts.setUserID(user.getId());
 			}
 
-			newTS = testSetDAO.createTestSet(ts);
+			newTS = testSetDAO.createTestSet(ts, jobCode);
 
 			List<TestSetCategory> testSetCategories = testSetDAO
 					.createTestSetCategories(ts.getTestSetCategories(),
-							newTS.getId());
+							newTS.getId(),jobCode);
 			newTS.setTestSetCategories(testSetCategories);
 
 			if (testSetCategories != null) {
@@ -70,7 +73,7 @@ public class TestSetServiceImpl implements TestSetService {
 		try {
 			List<TestSetCategory> testSetCategories = testSetDAO
                     .createTestSetCategories(setCategories,
-							testId);
+							testId, true);
 			return true;
 		}
 		catch (DAOException e) {
@@ -101,11 +104,16 @@ public class TestSetServiceImpl implements TestSetService {
 
 			for (Integer testSetID : testSetIDList) {
 				TestSet ts = testSetDAO.getTestSetByID(testSetID);
-				
+				//Checking for job or course ( 'cause need to retrieve category(department) from category or department table depending on jobcode boolean value
+				Boolean jobCode = ts.getJobcode();
 				List<TestSetCategory> tscList = ts.getTestSetCategories();
 				if(tscList != null && tscList.size() > 0){
 					for(TestSetCategory tsc : tscList){
-						Category categoryObj = categoryDAO.getCategoryByID(tsc.getCategoryID());
+						Category categoryObj = null;
+						if(jobCode)
+							categoryObj = categoryDAO.getCategoryByID(tsc.getCategoryID());
+						else
+							categoryObj = departmentDAO.getDepartmentByID(tsc.getCategoryID());
 						tsc.setCategory(categoryObj);
 					}
 				}

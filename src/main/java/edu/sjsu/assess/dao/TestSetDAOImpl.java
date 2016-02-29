@@ -38,11 +38,11 @@ public class TestSetDAOImpl implements TestSetDAO {
 	public QuestionDAOImpl questionDAOImpl;
 
 	@Override
-	public TestSet createTestSet(final TestSet ts) throws DAOException {
+	public TestSet createTestSet(final TestSet ts, Boolean jobcode) throws DAOException {
 		final StringBuilder query = new StringBuilder();
 
-		query.append("INSERT INTO testSet(jobCodeID, userID, cutoff, level, title)");
-		query.append("VALUES(?,?,?,?,?)");
+		query.append("INSERT INTO testSet(jobCodeID, userID, cutoff, level, title,jobcode)");
+		query.append("VALUES(?,?,?,?,?,?)");
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -64,7 +64,7 @@ public class TestSetDAOImpl implements TestSetDAO {
 					ps.setFloat(index++, ts.getCutoff());
 					ps.setString(index++, ts.getLevel());
 					ps.setString(index++, ts.getTitle());
-
+					ps.setBoolean(index++, jobcode);
 					return ps;
 				}
 			}, keyHolder);
@@ -86,7 +86,7 @@ public class TestSetDAOImpl implements TestSetDAO {
 
 	@Override
 	public List<TestSetCategory> createTestSetCategories(
-			List<TestSetCategory> tsCategories, Integer testSetID)
+			List<TestSetCategory> tsCategories, Integer testSetID, Boolean jobCode)
 			throws DAOException {
 
 		List<TestSetCategory> savedTSC = new ArrayList<>();
@@ -406,6 +406,7 @@ public class TestSetDAOImpl implements TestSetDAO {
 			if(tscList != null){
 				for(TestSetCategory tsc : tscList){
 					List<Question> qsList = this.getTestSetQuestions(tsc.getId());
+					System.out.println("Delete this testsetdaoimpls ln no 409 :"+tsc.getJobCode());
 					tsc.setQuestionList(qsList);
 				}
 			}
@@ -614,6 +615,7 @@ public void updateSetCategories(List<TestSetCategory> setCategories)
 			ts.setCutoff(rs.getFloat("cutoff"));
 			ts.setLevel(rs.getString("level"));
 			ts.setTitle(rs.getString("title"));
+			ts.setJobcode(rs.getBoolean("jobcode"));
 			return ts;
 
 		}
@@ -637,6 +639,7 @@ public void updateSetCategories(List<TestSetCategory> setCategories)
 			tsc.setCutoff(rs.getFloat("cutoff"));
 			tsc.setWeightage(rs.getFloat("weightage"));
 			tsc.setTitle(rs.getString("title"));
+			tsc.setJobCode(rs.getBoolean("jobcode"));
 
 			return tsc;
 		}

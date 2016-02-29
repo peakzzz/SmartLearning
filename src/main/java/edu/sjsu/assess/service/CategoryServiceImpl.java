@@ -25,7 +25,10 @@ public class CategoryServiceImpl
 
     @Autowired
     private JobCodeServiceImpl jobcodeService;
-
+    
+    @Autowired
+    private CourseServiceImpl courseService;
+     
     public List<Category> getAllPredefinedCategories() {
 
         List<Category> categoryList = null;
@@ -65,6 +68,35 @@ public class CategoryServiceImpl
         }
         return new ArrayList<>(categoryList);
     }
+    
+    public List<Category> getCategoriesForCourse(int courseId, Integer parentCategoryId)
+            throws JobCodeException
+    {
+        Set<Category> categoryList = new HashSet<>();
+        JobCodeSearchParams searchParams = new JobCodeSearchParams();
+        searchParams.setId(courseId);
+        JobCode code = courseService.getCourse(searchParams);
+        Category parentCategory = null;
+
+        if(parentCategoryId != null) {
+            parentCategory = new Category();
+            parentCategory.setParentCategoryID(parentCategoryId);
+        }
+
+        courseService.getAllCategoriesOfCourse(code, parentCategory);
+
+        if(code.getFirstLevelCategories()!=null) {
+            for(Category category: code.getFirstLevelCategories()) {
+                categoryList.add(category);
+                System.out.println("ln 91 categoryserviceimpl"+category.getTitle());
+                if(category.getSubCategories()!=null) {
+                    categoryList.addAll(category.getSubCategories());
+                }
+            }
+        }
+        return new ArrayList<>(categoryList);
+    }
+    
 
     public Category getCategoryById(int categoryId)
             throws DAOException

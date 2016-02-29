@@ -80,7 +80,7 @@ public class TestSetServiceTest {
 		TestSet savedTS = null;
 		
 		try{
-			savedTS = testSetServiceImpl.saveTestSet(ts);
+			savedTS = testSetServiceImpl.saveTestSet(ts,true);
 		}
 		catch(Exception e){
 			e.printStackTrace();

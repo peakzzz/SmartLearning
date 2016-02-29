@@ -16,7 +16,7 @@ public interface TestsetController
 {
 
 
-    public String createTestset(List<String> categories, String jobcodeId, String level, String title,
+    public String createTestset(List<String> categories, String jobcodeId, String courseId, String level, String title,
             Float[] cutoff, Float[] weightage, List<String> categorySetTitle,
             Model model, RedirectAttributes redirectAttributes);
 
@@ -27,7 +27,7 @@ public interface TestsetController
     public String deleteSetFromJobcode(int jobcode, int testsetId,
             Model model, RedirectAttributes redirectAttributes);
 
-    public String loadTestSetToCreate(String jobcodeId, String origin, Model model);
+    public String loadTestSetToCreate(String jobcodeId, String courseId,String origin, Model model);
 
     public String addQuestionsToSet(Integer[] questionIds, Integer testsetId, Integer testsetcategoryId,
             Model model, RedirectAttributes redirectAttributes);

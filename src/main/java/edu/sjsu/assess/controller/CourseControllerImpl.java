@@ -95,7 +95,7 @@ public class CourseControllerImpl implements CourseController {
 			model.addAttribute("error", e.getMessage());
 		}
 
-		return "viewjobcode";
+		return "viewcourse";
 	}
 
     @Override
@@ -271,7 +271,7 @@ public class CourseControllerImpl implements CourseController {
 
     // Method called when user clicks on save in edit screen for jobcode
     // through javascript/ajax.
-    @RequestMapping(value = "/editJobCode", method = RequestMethod.POST, headers = { "Content-type=application/json" })
+    @RequestMapping(value = "/editCourse", method = RequestMethod.POST, headers = { "Content-type=application/json" })
     public @ResponseBody JobCode ajaxEditJobCode(@RequestBody JobCode jc) {
 
         JobCode updatedJC = null;
@@ -323,7 +323,7 @@ public class CourseControllerImpl implements CourseController {
     public String showEditJobCode(@PathVariable("id") Integer id,Model model) {
 
         model.addAttribute("jobcodeId", id);
-        return "editjobcode";
+        return "editcourse";
     }
 
 

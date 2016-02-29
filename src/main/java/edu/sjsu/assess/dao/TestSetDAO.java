@@ -10,7 +10,7 @@ import edu.sjsu.assess.model.TestSetSearchParams;
 
 public interface TestSetDAO {
 
-	public TestSet createTestSet(TestSet ts) throws DAOException;
+	public TestSet createTestSet(TestSet ts, Boolean jobcode) throws DAOException;
 	
 	public List<Integer> getTestSetList(TestSetSearchParams searchParams) throws DAOException;
 	
@@ -23,7 +23,7 @@ public interface TestSetDAO {
 	public void deleteTestSetCategories(Integer tsID) throws DAOException;
 	
 	public List<TestSetCategory> createTestSetCategories(
-			List<TestSetCategory> tsCategories, Integer testSetID)
+			List<TestSetCategory> tsCategories, Integer testSetID, Boolean jobCode)
 			throws DAOException;
 
 	public void createTestSetQuestions(List<Question> questions,

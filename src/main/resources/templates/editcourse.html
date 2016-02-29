@@ -74,14 +74,14 @@
                     var jobCodeJsonString = JSON.stringify(jobCodeJson);
 
                     $.ajax({
-                        url:"/jobcode/editJobCode",
+                        url:"/course/editCourse",
                         type:"POST",
                         data: jobCodeJsonString,
                         contentType:"application/json; charset=utf-8",
                         dataType:"json",
                         success: function(data){
                             console.log('success after ajax response' + data)
-                            window.location.href = '/jobcode/getList';
+                            window.location.href = '/course/getList';
                         },
                         failure: function(data){
                             console.log('failure in ajax response:' + data)

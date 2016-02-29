@@ -14,7 +14,7 @@ import edu.sjsu.assess.model.TestSetSearchParams;
  */
 public interface TestSetService {
 
-	public TestSet saveTestSet(TestSet ts) throws TestSetException;
+	public TestSet saveTestSet(TestSet ts, Boolean jobcode) throws TestSetException;
 
 	public List<TestSet> getTestSetList(
 			TestSetSearchParams searchParams)

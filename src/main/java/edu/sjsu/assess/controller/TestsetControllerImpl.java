@@ -1,15 +1,5 @@
 package edu.sjsu.assess.controller;
 
-import edu.sjsu.assess.exception.JobCodeException;
-import edu.sjsu.assess.exception.TestSetAttemptException;
-import edu.sjsu.assess.model.*;
-import edu.sjsu.assess.service.*;
-import edu.sjsu.assess.util.Utility;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-
-import org.springframework.web.servlet.mvc.support.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -17,17 +7,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.sjsu.assess.exception.QuestionException;
-import edu.sjsu.assess.exception.TestSetException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import static edu.sjsu.assess.model.TestSetAttempt.*;
+import edu.sjsu.assess.exception.JobCodeException;
+import edu.sjsu.assess.exception.QuestionException;
+import edu.sjsu.assess.exception.TestSetAttemptException;
+import edu.sjsu.assess.exception.TestSetException;
+import edu.sjsu.assess.model.Category;
+import edu.sjsu.assess.model.JobCode;
+import edu.sjsu.assess.model.JobCodeSearchParams;
+import edu.sjsu.assess.model.Question;
+import edu.sjsu.assess.model.TestSet;
+import edu.sjsu.assess.model.TestSetAttempt;
+import edu.sjsu.assess.model.TestSetAttemptSearchParams;
+import edu.sjsu.assess.model.TestSetCategory;
+import edu.sjsu.assess.model.TestSetSearchParams;
+import edu.sjsu.assess.service.CategoryServiceImpl;
+import edu.sjsu.assess.service.JobCodeServiceImpl;
+import edu.sjsu.assess.service.Pagination;
+import edu.sjsu.assess.service.QuestionServiceImpl;
+import edu.sjsu.assess.service.TestSetAttemptServiceImpl;
+import edu.sjsu.assess.service.TestSetServiceImpl;
+import edu.sjsu.assess.util.Utility;
 
 /**
  * Created by bjoshi on 3/28/15.
@@ -55,7 +64,8 @@ public class TestsetControllerImpl implements TestsetController
 
     @Override
     @RequestMapping(method = RequestMethod.POST)
-    public String createTestset(@RequestParam("category") List<String> categories, @RequestParam("jobcodeId") String jobcodeId,
+    public String createTestset(@RequestParam("category") List<String> categories, @RequestParam(value = "jobcodeId", required = false) String jobcodeId,
+    		@RequestParam(value = "courseId", required = false) String courseId,
             @RequestParam("level") String level, @RequestParam("title") String title,
             @RequestParam("cutoff") Float[] cutoffArray,
             @RequestParam("weightage") Float[] weightageArray,
@@ -65,6 +75,8 @@ public class TestsetControllerImpl implements TestsetController
         System.out.println("Code id:" +jobcodeId);
         System.out.println("Level:" + level);
 
+        System.out.println("Course id : " +courseId);
+        
         for (String category : categories) {
             System.out.println(category);
         }
@@ -83,11 +95,17 @@ public class TestsetControllerImpl implements TestsetController
         newTestSet.setLevel(level);
         newTestSet.setTestSetCategories(
                 getTestSetCategories(categories, cutoffList, weightageList, null, categorySetTitle));
-        newTestSet.setJobCodeID(Integer.parseInt(jobcodeId));
+        if(!jobcodeId.equals(""))
+        	newTestSet.setJobCodeID(Integer.parseInt(jobcodeId));
+        else if(courseId != null)
+        	newTestSet.setJobCodeID(Integer.parseInt(courseId));
         newTestSet.setTitle(title);
 
         try {
-            newTestSet = testSetService.saveTestSet(newTestSet);
+        	if(!jobcodeId.equals(""))
+        		newTestSet = testSetService.saveTestSet(newTestSet,true);
+        	else
+        		newTestSet = testSetService.saveTestSet(newTestSet, false);
         }
         catch (TestSetException e) {
             e.printStackTrace();
@@ -305,17 +323,21 @@ public class TestsetControllerImpl implements TestsetController
 
 
     @RequestMapping(value="/new", method = RequestMethod.GET)
-    public String loadTestSetToCreate(@RequestParam(value="jobcodeId") String jobcodeId,
+    public String loadTestSetToCreate(@RequestParam(value="jobcodeId", required = false) String jobcodeId,@RequestParam(value="courseId", required = false) String courseId,
             @RequestHeader(value="referer", required = false) String origin, Model model) {
 
         if(jobcodeId != null ) {
             // fetch the categories for this job code
             model.addAttribute("jobcodeId", jobcodeId);
-        } else {
+        } else if(courseId != null) {
             //fetch all predefined categories
+        	model.addAttribute("courseId", courseId);
         }
         try {
-            model.addAttribute("categories", getCategoriesForJobCode(Integer.parseInt(jobcodeId), null));
+        	if(jobcodeId != null)
+        		model.addAttribute("categories", getCategoriesForJobCode(Integer.parseInt(jobcodeId), null));
+        	else if(courseId != null)
+        		model.addAttribute("categories", getCategoriesForCourse(Integer.parseInt(courseId), null));
         }
         catch (JobCodeException e) {
             e.printStackTrace();
@@ -511,6 +533,10 @@ public class TestsetControllerImpl implements TestsetController
         return categoryService.getCategoriesForJobCode(jobcodeId, parentCategoryId);
     }
 
+    private List<Category> getCategoriesForCourse(int courseId, Integer parentCourseId) throws JobCodeException
+    {
+    	return categoryService.getCategoriesForCourse(courseId, parentCourseId);
+    }
     private void printTestSetCategory(TestSetCategory category) {
         System.out.println(category.getCategoryID());
         System.out.println(category.getCutoff());

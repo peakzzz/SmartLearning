@@ -16,6 +16,19 @@ public class TestSet {
 	private String level;
 
 	private String title;
+	
+	//specifies if the row is jobcode or course
+	private Boolean jobcode;
+
+	public Boolean getJobcode() {
+		return jobcode;
+	}
+
+	public void setJobcode(Boolean jobcode) {
+		this.jobcode = jobcode;
+	}
+
+
 
 	private List<TestSetCategory> testSetCategories;
 

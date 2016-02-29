@@ -20,6 +20,16 @@ public class TestSetCategory {
 	
 	private Float weightage;
 	
+	private Boolean jobCode;
+	
+	public Boolean getJobCode() {
+		return jobCode;
+	}
+
+	public void setJobCode(Boolean jobCode) {
+		this.jobCode = jobCode;
+	}
+
 	private List<Question> questionList;
 
 	public Integer getId() {

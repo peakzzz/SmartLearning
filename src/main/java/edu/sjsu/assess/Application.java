@@ -31,7 +31,7 @@ public class Application {
 
 	private static final String dbHost = "localhost";
 	private static final String dbUserName = "postgres";
-	private static final String dbPassword = "locked";
+	private static final String dbPassword = "root";
 	private static final String dbName = "careerpath";
 	private static final int dbPort = 5432;
 
