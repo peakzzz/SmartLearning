@@ -8,6 +8,7 @@ buildscript {
         mavenLocal()
     }
     dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE") }
+
 }
 
 apply plugin: 'java'
@@ -17,6 +18,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'spring-boot'
+apply plugin: 'war'
 
 jar {
     baseName = 'AssessTool'
