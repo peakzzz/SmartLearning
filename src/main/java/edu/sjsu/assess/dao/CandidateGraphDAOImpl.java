@@ -20,6 +20,7 @@ import edu.sjsu.assess.model.CandidateGraphData;
 import edu.sjsu.assess.model.CandidateGraphData.AverageHolder;
 import edu.sjsu.assess.model.CandidateGraphData.DomainWisePerformance;
 import edu.sjsu.assess.model.CandidateGraphData.EffortsDevoted;
+import edu.sjsu.assess.model.CandidateGraphData.FocusWisePerformance;
 import edu.sjsu.assess.model.CandidateGraphData.PerformanceData;
 import edu.sjsu.assess.model.TrainingModule;
 import edu.sjsu.assess.model.TrainingModuleGraphData.JobCodeModule;
@@ -205,7 +206,7 @@ public class CandidateGraphDAOImpl implements CandidateGraphDAO {
 		query2014.append("WHERE ta.userID = ? AND ");
 		query2014.append("cws.categoryID = c.id AND ");
 		query2014.append("cws.testSetAttemptID = ta.id AND ");
-		query2014.append("TO_CHAR(TO_TIMESTAMP(ta.date / 1000), 'YY') = '14' ");
+		query2014.append("TO_CHAR(TO_TIMESTAMP(ta.date / 1000), 'YY') = '15' ");
 		query2014.append("GROUP BY c.title");
 
 		StringBuilder query2015 = new StringBuilder();
@@ -215,7 +216,7 @@ public class CandidateGraphDAOImpl implements CandidateGraphDAO {
 		query2015.append("WHERE ta.userID = ? AND ");
 		query2015.append("cws.categoryID = c.id AND ");
 		query2015.append("cws.testSetAttemptID = ta.id AND ");
-		query2015.append("TO_CHAR(TO_TIMESTAMP(ta.date / 1000), 'YY') = '15' ");
+		query2015.append("TO_CHAR(TO_TIMESTAMP(ta.date / 1000), 'YY') = '16' ");
 		query2015.append("GROUP BY c.title");
 
 		DomainWisePerformance result = new DomainWisePerformance();
@@ -270,9 +271,9 @@ public class CandidateGraphDAOImpl implements CandidateGraphDAO {
 				}
 			}
 
-			PerformanceData performanceData1 = new PerformanceData("2014");
+			PerformanceData performanceData1 = new PerformanceData("2015");
 			performanceData1.getData().addAll(data_1);
-			PerformanceData performanceData2 = new PerformanceData("2015");
+			PerformanceData performanceData2 = new PerformanceData("2016");
 			performanceData2.getData().addAll(data_2);
 
 			performanceDataList.add(performanceData1);
@@ -288,6 +289,77 @@ public class CandidateGraphDAOImpl implements CandidateGraphDAO {
 			throw daoe;
 		}
 
+		return result;
+	}
+
+	@Override
+	public FocusWisePerformance getFocusWiseData(Integer userID, Integer testAttempId)
+			throws DAOException{
+
+		FocusWisePerformance result = new FocusWisePerformance();
+		StringBuilder queryCorrect = new StringBuilder();
+		queryCorrect.append("SELECT q.focus f,count(qr.id) positivecount FROM question q,questionwiserecord qr "
+				+ "WHERE q.id = qr.questionid AND qr.testsetattemptid = ?");
+		queryCorrect.append("and qr.iscorrectanswer = 't' GROUP BY q.focus");
+
+		StringBuilder queryWrong = new StringBuilder();
+		queryWrong.append("SELECT q.focus f,count(qr.id) negativecount FROM question q,questionwiserecord qr "
+				+ "WHERE q.id = qr.questionid AND qr.testsetattemptid = ?");
+		queryWrong.append("and qr.iscorrectanswer = 'f' GROUP BY q.focus");
+
+		try {
+			List focusList = new ArrayList<String>();
+			Map<String, Double>scores = new HashMap<String, Double>();
+			List scoreList = new ArrayList<Double>();
+
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+			final List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+					queryCorrect.toString(), new Object[] { testAttempId });
+
+
+			for (Map<String, Object> row : rows) {
+				String focus = String.valueOf(row.get("f"));
+				Double attemptCount = (double) Integer.parseInt(String.valueOf(row
+						.get("positivecount")));
+				if(scores.get(focus) == null)
+				{
+					scores.put(focus,attemptCount);
+				}					
+			}
+			final List<Map<String, Object>> rows2 = jdbcTemplate.queryForList(
+					queryWrong.toString(), new Object[] { testAttempId });
+
+
+			for (Map<String, Object> row : rows2) {
+				Integer attemptCount = Integer.parseInt(String.valueOf(row
+						.get("negativecount")));
+				String focus = String.valueOf(row.get("f"));
+				if(scores.get(focus) == null)
+				{
+					scores.put(focus, (double) 0);
+				}
+				else{
+					double pos = scores.get(focus);
+					double total = pos+attemptCount;
+					Double percentage = Double.valueOf((pos/total)*100);
+					scores.put(focus, percentage);
+				}
+				focusList.add(focus);	
+				scoreList.add(scores.get(focus));
+
+			}
+			result.getFocuses().addAll(focusList);
+			result.getScore().addAll(scoreList);
+
+		}
+		catch(Exception e)
+		{
+			DAOException daoe = new DAOException(
+					"Failed to get focus-wise score for candidate.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
 		return result;
 	}
 

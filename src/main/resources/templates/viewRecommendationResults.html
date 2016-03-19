@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" th:include="layout :: page">
+<head>
+<title>Recommendation Result</title>
+<div th:fragment="header">
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-more.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+	<script src="http://code.highcharts.com/modules/funnel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+	<script th:inline="javascript">
+	$(document).ready(function(){
+														// Function to draw job
+														// code to attempt graph
+														var testAttemptId = /*[[${testAttemptId}]]*/ null;
+         												console.log('jobcodeId1 = ' + testAttemptId);
+														//var testAttemptId = null;
+														console.log(testAttemptId);
+														function drawFocusScoreGraph(
+																focuses,
+																scores) {
+															$('#container2')
+																	.highcharts(
+																			{
+																				chart : {
+																					type : 'column'
+																				},
+																				title : {
+																					text : 'Focus and Scores'
+																				},
+																				xAxis : {
+																					categories : focuses
+																				},
+																				yAxis : {
+																					title : {
+																						text : 'Focus'
+																					}
+																				},
+																				series : [ {
+																					name : 'Percentage score',
+																					data : scores
+																				} ]
+																			});
+														}
+
+														$
+																.ajax({
+																	url : "/graph/candidateRecommendation/"+testAttemptId,
+																	type : "GET",
+																	contentType : "application/json; charset=utf-8",
+																	dataType : "json",
+																	success : function(
+																			data) {
+																		var jobCodeJsonString = JSON
+																				.stringify(data);
+																		console
+																				.log('success after ajax response'
+																						+ jobCodeJsonString)
+																		var t = $
+																				.parseJSON(jobCodeJsonString);
+																		var focustWisePerformance = t['focusWisePerformance'];
+																		var focuses = focustWisePerformance['focuses'];
+																		var scores = focustWisePerformance['score'];
+
+																		drawFocusScoreGraph(
+																				focuses,
+																				scores);
+
+																	},
+																	failure : function(
+																			data) {
+																		console
+																				.log('failure in ajax response:'
+																						+ data);
+																		drawFocusScoreGraph(
+																				new Array(),
+																				new Array());
+																	}
+																	
+																});
+	});
+													</script>
+</div>
+
+</head>
+<body>
+	<div th:fragment="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="page-header text-center"
+						style="background-color: #F5F5F5;">Recommendation Results</h1>
+				</div>
+			</div>
+			<!-- /.row -->
+			<div class="row">
+
+				<div class="col-lg-6">
+					<div id="container2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

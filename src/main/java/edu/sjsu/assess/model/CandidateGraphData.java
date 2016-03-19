@@ -58,7 +58,21 @@ public class CandidateGraphData implements Serializable {
 			return performanceDataList;
 		}
 	}
+	
+	public static class FocusWisePerformance implements Serializable {
 
+		private static final long serialVersionUID = 2049971659305525651L;
+		private final List<String> focuses = new ArrayList<String>();
+		private final List<Double> score = new ArrayList<Double>();
+		
+		public List<String> getFocuses() {
+			return focuses;
+		}
+		public List<Double> getScore() {
+			return score;
+		}		
+	}
+	
 	public static class PerformanceData implements Serializable {
 
 		private static final long serialVersionUID = -8809170917323089953L;
@@ -87,6 +101,15 @@ public class CandidateGraphData implements Serializable {
 	private AverageHolder frequencyAttempt;
 	private EffortsDevoted effortsDevoted;
 	private DomainWisePerformance domainWisePerformance;
+	private FocusWisePerformance focusWisePerformance;
+	
+	public FocusWisePerformance getFocusWisePerformance() {
+		return focusWisePerformance;
+	}
+
+	public void setFocusWisePerformance(FocusWisePerformance focusWisePerformance) {
+		this.focusWisePerformance = focusWisePerformance;
+	}
 
 	public EffortsDevoted getEffortsDevoted() {
 		return effortsDevoted;

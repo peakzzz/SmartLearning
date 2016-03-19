@@ -11,10 +11,12 @@
 </head>
 <body>
     <div th:fragment="content">
+     <div th:include="validation" th:remove="tag"></div>
+    
         <div class="container ">
 
             <div>
-                <form action="#" th:action="@{/testset/submittestset}" th:object="${testset}" method="post">
+                <form id = "target" action="#" th:action="@{/testset/submittestset}" th:object="${testset}" method="post">
                     <!--TestForm Id-->
                     <input type="hidden" th:field="*{id}" th:value="${id}"/>
                     <div th:each="section, rowStat1: *{sections} ">
@@ -28,7 +30,7 @@
                                     <input type="hidden" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].question.id}" th:value="${l.question.id}"/>
                                     <ul>
                                         <li th:each="option, rowStat3 : *{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].question.options}">
-                                            <input type="checkbox" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].selectedOptions}" th:value="${option.id}"/>
+                                            <input name = "checkboxName" type="checkbox" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].selectedOptions}" th:value="${option.id}"/>
                                             <label th:text="${option.text}">Option</label>
                                         </li>
                                     </ul>

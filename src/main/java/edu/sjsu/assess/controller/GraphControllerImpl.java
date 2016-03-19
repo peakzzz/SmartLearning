@@ -3,6 +3,7 @@ package edu.sjsu.assess.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -358,6 +359,14 @@ public class GraphControllerImpl implements GraphController {
 		return result;
 	}
 
+	@Override
+	@RequestMapping(value = "/candidateRecommendation/{id}", method = RequestMethod.GET)
+	public @ResponseBody
+	CandidateGraphData getCandidateRecommendationGraphData(Model model,@PathVariable("id") Integer id){
+		CandidateGraphData result = new CandidateGraphData();
+		result = candidateGraphService.getFocusGraphData(id);
+		return result;
+	}
 	
 	@Override
 	@RequestMapping(value = "/candidateTaining", method = RequestMethod.GET)

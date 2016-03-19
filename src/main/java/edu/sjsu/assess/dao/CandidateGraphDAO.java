@@ -4,6 +4,7 @@ import edu.sjsu.assess.exception.DAOException;
 import edu.sjsu.assess.model.CandidateGraphData.AverageHolder;
 import edu.sjsu.assess.model.CandidateGraphData.DomainWisePerformance;
 import edu.sjsu.assess.model.CandidateGraphData.EffortsDevoted;
+import edu.sjsu.assess.model.CandidateGraphData.FocusWisePerformance;
 import edu.sjsu.assess.model.TrainingModuleGraphData.JobCodeModule;
 
 public interface CandidateGraphDAO {
@@ -16,6 +17,7 @@ public interface CandidateGraphDAO {
 	
 	public DomainWisePerformance getDomainWisePerformance(Integer userID) throws DAOException;
 	
+	public FocusWisePerformance getFocusWiseData(Integer userID, Integer testAttemptID) throws DAOException;
 	
 	public JobCodeModule getJobcodeTrainingData(Integer userID) throws DAOException;
 

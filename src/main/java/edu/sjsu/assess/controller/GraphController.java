@@ -9,6 +9,7 @@ import edu.sjsu.assess.model.TrainingModuleGraphData;
 public interface GraphController {
 	AdminGraphData getAdminGrapthData(Model model);
 	CandidateGraphData getCandidateGrapthData(Model model);
+	CandidateGraphData getCandidateRecommendationGraphData(Model model, Integer attempId);
 	
 	TrainingModuleGraphData getTrainingData(Model model);
 	

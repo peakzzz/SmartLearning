@@ -23,52 +23,98 @@ import java.util.List;
 @RequestMapping("/testattempt")
 public class TestAttemptControllerImpl implements TestAttemptController{
 
-    @Autowired
-    private TestSetAttemptServiceImpl testSetAttemptService;
+	@Autowired
+	private TestSetAttemptServiceImpl testSetAttemptService;
 
-    @Autowired
-    private TestSetServiceImpl testSetService;
+	@Autowired
+	private TestSetServiceImpl testSetService;
 
 
-    @Override
-    @RequestMapping(value="/list", method = RequestMethod.GET)
-    public String listTestAttempts(Model model) {
-        TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
-        List<TestSetAttempt>  tsaList = null;
+	@Override
+	@RequestMapping(value="/list", method = RequestMethod.GET)
+	public String listTestAttempts(Model model) {
+		TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
+		List<TestSetAttempt>  tsaList = null;
 
-        try {
-             tsaList = testSetAttemptService.getTestSetAttemptList(searchParams);
-        } catch (TestSetAttemptException e) {
-            e.printStackTrace();
-        }
+		try {
+			tsaList = testSetAttemptService.getTestSetAttemptList(searchParams);
+		} catch (TestSetAttemptException e) {
+			e.printStackTrace();
+		}
 
-        if(tsaList != null && tsaList.size() > 0) {
-            model.addAttribute("testAttemptList", tsaList);
-        } else {
-            model.addAttribute("error", "No search results");
-    }
+		if(tsaList != null && tsaList.size() > 0) {
+			model.addAttribute("testAttemptList", tsaList);
+		} else {
+			model.addAttribute("error", "No search results");
+		}
 
-        return "listtestattmepts";
-    }
+		return "listtestattmepts";
+	}
 
-    @RequestMapping(value="/attempt/results/{id}", method = RequestMethod.GET)
-    public String loadResultsOfAttempt(@PathVariable("id") String attemptId, Model model) {
+	@Override
+	@RequestMapping(value = "/recommendation", method = RequestMethod.GET)
+	public String viewrecommendationlist(Model model)
+	{
 
-        try {
-             TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
-            searchParams.setId(Integer.parseInt(attemptId));
+		TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
+		List<TestSetAttempt>  tsaList = null;
 
-            List<TestSetAttempt> testSetAttempts = testSetAttemptService.getTestSetAttemptList(searchParams);
-            if(testSetAttempts!=null && testSetAttempts.size()>0) {
-                model.addAttribute("results", testSetAttempts.get(0));
-            } else {
-                model.addAttribute("error", "No search results");
-            }
+		try {
+			tsaList = testSetAttemptService.getTestSetAttemptList(searchParams);
+		} catch (TestSetAttemptException e) {
+			e.printStackTrace();
+		}
 
-        } catch (TestSetAttemptException e) {
-                e.printStackTrace();
-                model.addAttribute("error", "Error fetching results, try again later!");
-            }
-        return "viewAttemptResults";
-    }
+		if(tsaList != null && tsaList.size() > 0) {
+			model.addAttribute("testAttemptList", tsaList);
+		} else {
+			model.addAttribute("error", "No search results");
+		}
+		return "viewrecommendationlist";
+	}
+	
+	//Here calculating, checking which section was badly performed and then passing recommending section	
+	@RequestMapping(value="/attempt/recommendation/{id}", method = RequestMethod.GET)
+	public String loadRecommendationOfAttempt(@PathVariable("id") String attemptId, Model model) {
+
+		try {
+			TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
+			searchParams.setId(Integer.parseInt(attemptId));
+
+			List<TestSetAttempt> testSetAttempts = testSetAttemptService.getTestSetAttemptList(searchParams);
+			System.out.println("attemp id nived "+attemptId);
+			model.addAttribute("testAttemptId", attemptId);
+			if(testSetAttempts!=null && testSetAttempts.size()>0) {
+				model.addAttribute("results", testSetAttempts.get(0));
+			} else {
+				model.addAttribute("error", "No search results");
+			}
+
+		} catch (TestSetAttemptException e) {
+			e.printStackTrace();
+			model.addAttribute("error", "Error fetching results, try again later!");
+		}
+		return "viewRecommendationResults";
+	}
+	
+	@RequestMapping(value="/attempt/results/{id}", method = RequestMethod.GET)
+	public String loadResultsOfAttempt(@PathVariable("id") String attemptId, Model model) {
+
+		try {
+			TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
+			searchParams.setId(Integer.parseInt(attemptId));
+
+			List<TestSetAttempt> testSetAttempts = testSetAttemptService.getTestSetAttemptList(searchParams);
+			if(testSetAttempts!=null && testSetAttempts.size()>0) {
+				model.addAttribute("results", testSetAttempts.get(0));
+			} else {
+				model.addAttribute("error", "No search results");
+			}
+
+		} catch (TestSetAttemptException e) {
+			e.printStackTrace();
+			model.addAttribute("error", "Error fetching results, try again later!");
+		}
+		return "viewAttemptResults";
+	}
 }

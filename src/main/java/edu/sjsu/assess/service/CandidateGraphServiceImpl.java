@@ -10,6 +10,7 @@ import edu.sjsu.assess.model.CandidateGraphData;
 import edu.sjsu.assess.model.CandidateGraphData.AverageHolder;
 import edu.sjsu.assess.model.CandidateGraphData.DomainWisePerformance;
 import edu.sjsu.assess.model.CandidateGraphData.EffortsDevoted;
+import edu.sjsu.assess.model.CandidateGraphData.FocusWisePerformance;
 import edu.sjsu.assess.model.TrainingModuleGraphData;
 import edu.sjsu.assess.model.TrainingModuleGraphData.JobCodeModule;
 import edu.sjsu.assess.model.User;
@@ -61,6 +62,29 @@ public class CandidateGraphServiceImpl implements CandidateGraphService{
 			result.setDomainWisePerformance(new DomainWisePerformance());
 		}
 		
+		return result;
+	}
+	
+	
+	@Override
+	public CandidateGraphData getFocusGraphData(Integer testAttemptId){
+		CandidateGraphData result = new CandidateGraphData();
+		Integer userID = null;
+		try{
+			String login = Utility.getLoggedInUserName();
+			User user = userDAOImpl.getUserByLogin(login);
+			userID = user.getId();
+		} catch(DAOException de){
+			
+		}
+		try{
+			FocusWisePerformance focusData = candidateGraphDAO.getFocusWiseData(userID, testAttemptId);
+			result.setFocusWisePerformance(focusData);
+		}
+		catch(DAOException e2)
+		{
+			result.setFocusWisePerformance(new FocusWisePerformance());
+		}
 		return result;
 	}
 	

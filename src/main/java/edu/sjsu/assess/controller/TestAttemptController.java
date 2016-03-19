@@ -10,4 +10,6 @@ public interface TestAttemptController {
 
     public String listTestAttempts(Model model);
     //public String showATestAttempt();
+    
+    public String viewrecommendationlist(Model model);
 }
