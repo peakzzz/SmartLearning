@@ -2,17 +2,26 @@ package edu.sjsu.assess.controller;
 
 
 import edu.sjsu.assess.exception.TestSetAttemptException;
+import edu.sjsu.assess.exception.TrainingModuleException;
 import edu.sjsu.assess.model.TestSetAttempt;
 import edu.sjsu.assess.model.TestSetAttemptSearchParams;
+import edu.sjsu.assess.model.TestSetAttempt.CategoryWiseRecord;
+import edu.sjsu.assess.model.TrainingModule;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
 import edu.sjsu.assess.service.*;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Sindhu on 4/14/15.
@@ -29,6 +38,8 @@ public class TestAttemptControllerImpl implements TestAttemptController{
 	@Autowired
 	private TestSetServiceImpl testSetService;
 
+	@Autowired
+	private TrainingModuleServiceImpl trainingModuleService;
 
 	@Override
 	@RequestMapping(value="/list", method = RequestMethod.GET)
@@ -81,15 +92,48 @@ public class TestAttemptControllerImpl implements TestAttemptController{
 			TestSetAttemptSearchParams searchParams = new TestSetAttemptSearchParams();
 			searchParams.setId(Integer.parseInt(attemptId));
 
+			//Full testSetAttempt details for the clicked id
 			List<TestSetAttempt> testSetAttempts = testSetAttemptService.getTestSetAttemptList(searchParams);
-			System.out.println("attemp id nived "+attemptId);
+
+			TestSetAttempt testsetAttempt = testSetAttempts.get(0);
+
+
+			List<CategoryWiseRecord> recordsList = testsetAttempt.getCategoryWiseRecords();
+			List<Integer> weakCategoryIds = new ArrayList<Integer>();
+//			List<String> recommendedTrainings = new ArrayList<String>();
+//			List<String> categoryNames = new ArrayList<String>();
+			Map<String,List<String>> linksandCategory = new HashMap<String,List<String>>();
+			try {
+				
+				for(CategoryWiseRecord cwr: recordsList)
+				{
+					if(!cwr.isCutoffReached())
+					{
+						linksandCategory.put(cwr.getCategory().getTitle(),trainingModuleService.getRecommendedModuleLinks(cwr.getCategoryID()));
+					}
+				}
+
+				trainingModuleService.getRecommendedTrainingModulesForUser();
+
+				
+			} catch (TrainingModuleException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
 			model.addAttribute("testAttemptId", attemptId);
 			if(testSetAttempts!=null && testSetAttempts.size()>0) {
 				model.addAttribute("results", testSetAttempts.get(0));
 			} else {
 				model.addAttribute("error", "No search results");
 			}
-
+			
+			if(null != linksandCategory && linksandCategory.size()>0)
+				model.addAttribute("modules", linksandCategory);
+//
+//			if(null != categoryNames && categoryNames.size() >0)
+//				model.addAttribute("categories", categoryNames);
 		} catch (TestSetAttemptException e) {
 			e.printStackTrace();
 			model.addAttribute("error", "Error fetching results, try again later!");

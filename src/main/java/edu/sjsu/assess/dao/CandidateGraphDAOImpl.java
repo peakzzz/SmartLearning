@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -342,12 +343,22 @@ public class CandidateGraphDAOImpl implements CandidateGraphDAO {
 				else{
 					double pos = scores.get(focus);
 					double total = pos+attemptCount;
+					
 					Double percentage = Double.valueOf((pos/total)*100);
 					scores.put(focus, percentage);
 				}
 				focusList.add(focus);	
 				scoreList.add(scores.get(focus));
 
+			}
+			//If all the answers were right
+			if(rows2.size() == 0)
+			{
+				for(Entry<String, Double> value:scores.entrySet())
+				{					
+					focusList.add(value.getKey());
+					scoreList.add(Double.valueOf(100));
+				}
 			}
 			result.getFocuses().addAll(focusList);
 			result.getScore().addAll(scoreList);

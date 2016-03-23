@@ -163,6 +163,25 @@ public class TrainingModuleServiceImpl implements TrainingModuleService {
 
 		return recommendedTrainingModules;
 	}
+	
+	@Override
+	public List<String> getRecommendedModuleLinks(Integer categoryId)
+			throws TrainingModuleException
+	{
+		List<String> tmlist = null;
+		try {
+			tmlist = trainingModuleDAO.getTrainingModuleByCategoryID(categoryId);
+			System.out.println("Trainingmoduleserviceimpl delte this ln 174 \n");
+			for(String tm : tmlist)
+			{
+				System.out.println("delete this trainingmodule file name  :"+tm);
+			}
+		} catch (DAOException e) {
+			throw new TrainingModuleException(
+					"Failed to get recommended training modules.", e);
+		}
+		return tmlist;
+	}
 
 	@Override
 	public void completeTrainingModule(Integer traningModuleID)

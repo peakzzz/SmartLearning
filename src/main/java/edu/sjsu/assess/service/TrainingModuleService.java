@@ -34,5 +34,7 @@ public interface TrainingModuleService {
 			throws TrainingModuleException;
 
 	public void completeTrainingModule(Integer traningModuleID) throws TrainingModuleException;
+	
+	public List<String> getRecommendedModuleLinks(Integer categoryID) throws TrainingModuleException;
 
 }

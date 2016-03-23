@@ -406,7 +406,6 @@ public class TestSetDAOImpl implements TestSetDAO {
 			if(tscList != null){
 				for(TestSetCategory tsc : tscList){
 					List<Question> qsList = this.getTestSetQuestions(tsc.getId());
-					System.out.println("Delete this testsetdaoimpls ln no 409 :"+tsc.getJobCode());
 					tsc.setQuestionList(qsList);
 				}
 			}

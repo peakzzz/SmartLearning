@@ -9,7 +9,7 @@ import edu.sjsu.assess.model.Category;
 import edu.sjsu.assess.model.JobCode;
 
 /**
- * Controller Interface for Job Code
+ * Controller Interface for Course Code
  * 
  * @author Niveditha
  *

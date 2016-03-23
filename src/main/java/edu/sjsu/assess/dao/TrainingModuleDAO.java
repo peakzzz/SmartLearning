@@ -10,6 +10,8 @@ public interface TrainingModuleDAO {
 	
 	public TrainingModule getTrainingModuleByID(Integer tmID) throws DAOException;
 	
+	public List<String> getTrainingModuleByCategoryID(Integer categoryID) throws DAOException;
+	
 	public List<Integer> getTrainingModuleList(TrainingModuleSearchParams searchParams) throws DAOException;
 	
 	public void deleteTrainingModuleByID(Integer tmID) throws DAOException;

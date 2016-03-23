@@ -182,6 +182,40 @@ public class TrainingModuleDAOImpl implements TrainingModuleDAO {
         return trainingModule;
     }
     
+    @Override
+    public List<String> getTrainingModuleByCategoryID(Integer categoryID)
+            throws DAOException {
+    	List<String> result = new ArrayList<String>();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM trainingModuleCategories ");
+        query.append("WHERE categoryid = ?");
+
+        TrainingModule trainingModule = null;
+        try {
+        	
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            
+            System.out.println("Befor querying "+query);
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString(),new Object[] { categoryID });
+            System.out.println("after querying");
+            //Adding all the training module retrieved for a category id
+            for(Map<String, Object>row: rows)
+            {
+            	String content = (String)(row.get("content"));
+            	result.add(content);
+            }
+            //trainingModule.setCategoriesContent(this.getCategoriesContent(trainingModule.getId()));
+            
+        } catch (Exception e) {
+            DAOException daoe = new DAOException(
+                    "Failed to get training module from DB.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+        }
+
+        return result;
+    }
+    
     private Map<Integer, String> getCategoriesContent(Integer tmID) throws DAOException{
     	
     	Map<Integer, String> categoriesContent = new HashMap<Integer, String>();

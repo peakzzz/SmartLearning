@@ -10,79 +10,73 @@
 	<script src="http://code.highcharts.com/highcharts-more.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script src="http://code.highcharts.com/modules/funnel.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
 	<script th:inline="javascript">
-	$(document).ready(function(){
-														// Function to draw job
-														// code to attempt graph
-														var testAttemptId = /*[[${testAttemptId}]]*/ null;
-         												console.log('jobcodeId1 = ' + testAttemptId);
-														//var testAttemptId = null;
-														console.log(testAttemptId);
-														function drawFocusScoreGraph(
-																focuses,
-																scores) {
-															$('#container2')
-																	.highcharts(
-																			{
-																				chart : {
-																					type : 'column'
-																				},
-																				title : {
-																					text : 'Focus and Scores'
-																				},
-																				xAxis : {
-																					categories : focuses
-																				},
-																				yAxis : {
-																					title : {
-																						text : 'Focus'
-																					}
-																				},
-																				series : [ {
-																					name : 'Percentage score',
-																					data : scores
-																				} ]
-																			});
-														}
+		$(document)
+				.ready(
+						function() {
+							// Function to draw job
+							// code to attempt graph
+							var testAttemptId = /*[[${testAttemptId}]]*/null;
+							//var testAttemptId = null;
+							console.log(testAttemptId);
+							function drawFocusScoreGraph(focuses, scores) {
+								$('#container2').highcharts({
+									chart : {
+										type : 'column'
+									},
+									title : {
+										text : 'Focus and Scores'
+									},
+									xAxis : {
+										categories : focuses
+									},
+									yAxis : {
+										title : {
+											text : 'Focus'
+										}
+									},
+									series : [ {
+										name : 'Percentage score',
+										data : scores
+									} ]
+								});
+							}
 
-														$
-																.ajax({
-																	url : "/graph/candidateRecommendation/"+testAttemptId,
-																	type : "GET",
-																	contentType : "application/json; charset=utf-8",
-																	dataType : "json",
-																	success : function(
-																			data) {
-																		var jobCodeJsonString = JSON
-																				.stringify(data);
-																		console
-																				.log('success after ajax response'
-																						+ jobCodeJsonString)
-																		var t = $
-																				.parseJSON(jobCodeJsonString);
-																		var focustWisePerformance = t['focusWisePerformance'];
-																		var focuses = focustWisePerformance['focuses'];
-																		var scores = focustWisePerformance['score'];
+							$
+									.ajax({
+										url : "/graph/candidateRecommendation/"
+												+ testAttemptId,
+										type : "GET",
+										contentType : "application/json; charset=utf-8",
+										dataType : "json",
+										success : function(data) {
+											var jobCodeJsonString = JSON
+													.stringify(data);
+											console
+													.log('success after ajax response'
+															+ jobCodeJsonString)
+											var t = $
+													.parseJSON(jobCodeJsonString);
+											var focustWisePerformance = t['focusWisePerformance'];
+											var focuses = focustWisePerformance['focuses'];
+											var scores = focustWisePerformance['score'];
 
-																		drawFocusScoreGraph(
-																				focuses,
-																				scores);
+											drawFocusScoreGraph(focuses, scores);
 
-																	},
-																	failure : function(
-																			data) {
-																		console
-																				.log('failure in ajax response:'
-																						+ data);
-																		drawFocusScoreGraph(
-																				new Array(),
-																				new Array());
-																	}
-																	
-																});
-	});
-													</script>
+										},
+										failure : function(data) {
+											console
+													.log('failure in ajax response:'
+															+ data);
+											drawFocusScoreGraph(new Array(),
+													new Array());
+										}
+
+									});
+						});
+	</script>
 </div>
 
 </head>
@@ -102,7 +96,40 @@
 					<div id="container2"></div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="container">
+
+					<table class="table table-hover" style="border-collapse: collapse;">
+						<thead>
+							<tr>
+								<th width="30%">Category Title</th>
+								<th width="50%">Training material</th>
+							</tr>
+						</thead>
+
+						<tbody data-link="row" class="rowlink">
+							<tr th:each="l : ${modules.keySet()}">
+								<td>
+									<a th:text = "${l}"/>
+								</td>
+								<td>
+									<ul>
+										<li th:each="link : ${modules.get(l)}"><a th:text="${link}"
+											th:href="@{/recommendation/view/{fileName}(fileName=${link})}"
+											method="get" />
+										</li>
+									</ul>
+								</td>
+							</tr>
+						</tbody>
+
+					</table>
+
+				</div>
+			</div>
+
 		</div>
+
 	</div>
 </body>
 </html>
