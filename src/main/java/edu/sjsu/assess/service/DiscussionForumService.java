@@ -14,6 +14,7 @@ public interface DiscussionForumService {
 	public ForumPost saveForumPost(ForumPost forumPost) throws DiscussionForumException;
 	public List<ForumPost> getForumPostList(DiscussionForumSearchParams searchParams) throws DiscussionForumException;
 	public List<ForumPost> getPosts() throws DiscussionForumException;
+	public List<ForumReply> getReplys(Integer forumPostid) throws DiscussionForumException;
 	public ForumPost getPostByID(Integer id) throws DiscussionForumException;
 	public ForumReply saveForumReply(ForumReply forumReply)throws DiscussionForumException;
 }

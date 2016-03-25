@@ -65,6 +65,16 @@ public class DiscussionForumServiceImpl implements DiscussionForumService{
 		}
 		return forumPosts;
 	}
+	public List<ForumReply> getReplys(Integer forumPostid) throws DiscussionForumException{
+		System.out.println("Inside getReplys method in the discussionforumserviceImpl layer");
+		List<ForumReply> forumreplys = new ArrayList<>();
+		try {
+			forumreplys = discussionForumDAO.getReplys(forumPostid);
+		} catch (DAOException e) {
+			throw new DiscussionForumException("Failed to retrieve Replies for the post.", e);
+		}
+		return forumreplys;
+	}
 	public ForumPost getPostByID(Integer id) throws DiscussionForumException{
 		System.out.println("In getPostByID method in service: ");
 		ForumPost forumPost = new ForumPost();

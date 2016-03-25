@@ -60,8 +60,18 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         return "viewPost";
     }
 	
-
-	/*method to create a post by the user*/
+	/*method to return a page to create a post*/
+   @Override
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String loadCreatePost(Model model) {
+	   ForumPost forumPost = new ForumPost();
+        model.addAttribute("forumPost", forumPost);
+        System.out.println("Hi in loadCreatePost method");
+        return "createPost";
+    }
+	   
+	/*method to create a post by the user
+	 * invoked when user clicks on create post button*/
 	@Override
 	@RequestMapping(value="/createPost", method = RequestMethod.POST)
 	public String createPost(ForumPost forumPost, Model model, RedirectAttributes redirectAttributes) {
@@ -97,30 +107,13 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 	@Override
 	@RequestMapping(value="/viewPost", method = RequestMethod.GET)
 	public String viewPost(Model model) {
-		// TODO Auto-generated method stub
+		
 		System.out.println("Hi in viewPost method");
 		model.addAttribute("error", "");
         model.addAttribute("message", "");
         try{
             List<ForumPost> forumPosts = discussionForumService.getPosts();
-            System.out.println("viewing posts:" + forumPosts.get(0).getUserID());
-            
-            /*
-            JsonArray jsonForumPosts = new JsonArray();
-            for(ForumPost obj:forumPosts)
-            {
-            	// create a data set
-    	        JsonObject dataset = new JsonObject();
-            	// add the properties key and value to the data set
-            	dataset.addProperty("title",obj.getTitle());
-            	dataset.addProperty("description",obj.getDescription());
-            	dataset.addProperty("username",obj.getfName());
-            	//System.out.println("dataset obj"+dataset);
-            	jsonForumPosts.add(dataset);
-            	System.out.println("jsonForumPosts:"+jsonForumPosts);
-            }
-            */
-            
+           // System.out.println("viewing posts:" + forumPosts.get(0).getUserID());           
             model.addAttribute("forumPosts",forumPosts);
             
             //model.addAttribute("jsonForumPosts"+jsonForumPosts);
@@ -142,21 +135,17 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 		try {
 			ForumPost forumPost = discussionForumService.getPostByID(id);
 			model.addAttribute("forumPost", forumPost);
+			List<ForumReply> forumreplys = discussionForumService.getReplys(id);
+	           // System.out.println("viewing posts:" + forumPosts.get(0).getUserID());           
+	        model.addAttribute("forumReplys",forumreplys);
+	         
 		} catch (DiscussionForumException e) {
 			model.addAttribute("error", e.getMessage());
 		}
 
 		return "viewPost";
 	}
-	/*method to return a page to create a post*/
-   @Override
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String loadCreatePost(Model model) {
-	   ForumPost forumPost = new ForumPost();
-        model.addAttribute("forumPost", forumPost);
-        System.out.println("Hi in loadCreatePost method");
-        return "createPost";
-    }
+	
    
    @RequestMapping(value="/reply/{id}", method = RequestMethod.GET)
    public String replyPost(@PathVariable("id") Integer id, Model model) {
@@ -169,9 +158,9 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 	   }
        return "replyPost";
    }
-
+   /*create reply button invokes this method*/
     @Override
-    @RequestMapping(value="/createReply/", method = RequestMethod.POST)
+    @RequestMapping(value="/createReply", method = RequestMethod.POST)
 	public String createReply(ForumReply forumReply, Model model,
 			RedirectAttributes redirectAttributes) {
 	   ForumReply savedforumReply = null;
@@ -183,8 +172,8 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
        }
        else { 
           try {
-	       	    System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
-	       	    		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
+	       	    //System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
+	       	    //		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
 	       	    //System.out.println("forumpostid----------->"+id);
 	      
 	       	    savedforumReply = discussionForumService.saveForumReply(forumReply);
@@ -200,9 +189,9 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
        }
        List<ForumReply> ForumReplys = new ArrayList<ForumReply>();
        ForumReplys.add(forumReply);
-       System.out.println("Id of createReply :"+forumReply.getId());
-       model.addAttribute("forumPosts", ForumReplys);
-       return "redirect:get/"+forumReply.getId();
+       System.out.println("Id of ForumReply :"+forumReply.getId());
+       model.addAttribute("ForumReplys", ForumReplys);
+       return "redirect:forum/get/"+forumReply.getForumPostId();
 	}
 
     /*reply button invokes this method*/

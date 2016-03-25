@@ -28,7 +28,31 @@
             <a th:href="@{|/forum/close?postId=${forumPost.id}|}"><input type="button" class="btn btn-primary" value="Close"/></a>
         <a th:href="@{/forum/viewPost}" class="btn btn-info pull-right ">Back</a>
     </div>
+	
+	  <table class="table table-hover" style="border-collapse:collapse;">
+            <thead>
+            <tr><h4>Replies for the post</h4></tr>
+            <tr>
+                <th width="60%">
+                    Description
+                </th>
+                <th width="5%">
+                    User Name
+                </th>
+            </tr>
+            </thead>
 
+
+            <tbody data-link="row" class="rowlink">
+                <tr th:each="l : ${forumReplys}">
+                    <!--<td><a th:text="${l.id}" th:href="@{/jobcode/get/{id}(id=${l.id})}" method="get"></td>
+                    <td th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"></td> -->
+                    <td><a th:text="${l.description}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
+                    <td th:text="${l.fname}"></td>
+                </tr>
+            </tbody>
+        </table>
+	
 </div>
 
 </div>

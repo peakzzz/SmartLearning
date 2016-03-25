@@ -11,6 +11,7 @@ public interface DiscussionForumDAO {
 	
 	public ForumPost createForumPost(final ForumPost forumPost) throws DAOException;
 	public List<ForumPost> getPosts() throws DAOException;
+	public List<ForumReply> getReplys(Integer forumPostId) throws DAOException;
 	public ForumPost getPostByID(Integer id) throws DAOException;
 	public ForumReply createForumReply(final ForumReply forumReply)  throws DAOException;
 }

@@ -101,32 +101,67 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString());
 			
 			for (Map<String, Object> row : rows){
-				System.out.println("inside for");
+				//System.out.println("inside for");
 				ForumPost fpost = new ForumPost();
-				System.out.println("inside for2");
+				//System.out.println("inside for2");
 				fpost.setId((int)row.get("pid"));
 				fpost.setTitle((String)row.get("title"));
-				System.out.println("inside for3:"+fpost.getTitle());
+				//System.out.println("inside for3:"+fpost.getTitle());
 				fpost.setDescription((String)row.get("description"));
-				System.out.println("inside for4:"+fpost.getDescription());
+				//System.out.println("inside for4:"+fpost.getDescription());
 				fpost.setUserID((int)row.get("userid"));
 				fpost.setfName((String)row.get("fname"));
-				System.out.println("inside for5:"+fpost.getfName());
+				//System.out.println("inside for5:"+fpost.getfName());
 	        	fpost.setAlive((Boolean)row.get("isAlive"));
-	        	System.out.println("fpost.getDescription"+fpost.getDescription());
+	        	//System.out.println("fpost.getDescription"+fpost.getDescription());
 	        	forumPosts.add(fpost);
 			}
-			System.out.println("inside try");
+			//System.out.println("inside try");
 		} catch (Exception e) {
             DAOException daoe = new DAOException(
                     "Failed to get posts.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
-		System.out.println("before return: "+ forumPosts.get(0).getDescription());
+		//System.out.println("before return: "+ forumPosts.get(0).getDescription());
 		return forumPosts;
 	}
 	
+	/*method to get the replies for a particular post*/
+	public List<ForumReply> getReplys(Integer forumPostId) throws DAOException{
+		System.out.println("Hi in DAO getReplys method");
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT id,fname,description FROM forumreply ");
+		query.append("WHERE ");
+		query.append("forumpostid ="+forumPostId);
+		System.out.println("query building done:"+query);
+		List<ForumReply> ForumReplys = new ArrayList<ForumReply>();
+		try{
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			
+			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString());
+			
+			for (Map<String, Object> row : rows){
+				//System.out.println("inside for");
+				ForumReply freply = new ForumReply();
+				freply.setId((int)row.get("id"));
+				System.out.println("inside for4:"+freply.getId());
+				freply.setFname((String)row.get("fname"));
+				freply.setDescription((String)row.get("description"));
+				System.out.println("inside for4:"+freply.getDescription());
+	        	ForumReplys.add(freply);
+			}
+			//System.out.println("inside try");
+		} catch (Exception e) {
+            DAOException daoe = new DAOException(
+                    "Failed to get replies.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+        }
+		//System.out.println("before return: "+ forumPosts.get(0).getDescription());
+		return ForumReplys;
+	}
 	public class ForumPostRowMapper implements RowMapper<ForumPost>{	
 			@Override
 	        public ForumPost mapRow(ResultSet rs, int rowNum)
@@ -171,7 +206,7 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 
 	public ForumReply createForumReply(final ForumReply forumReply) throws DAOException {
 
-		System.out.println("Hi in DAO createForumReply method"+forumReply.getDescription());
+		
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
 		
@@ -184,7 +219,7 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 		query.append(valuesStr);
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-        
+        System.out.println("query="+query);
         try {
         	
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
