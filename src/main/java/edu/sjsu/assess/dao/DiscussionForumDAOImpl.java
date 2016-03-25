@@ -20,7 +20,9 @@ import org.springframework.stereotype.Repository;
 
 import edu.sjsu.assess.dao.JobCodeDAOImpl.JobCodeRowMapper;
 import edu.sjsu.assess.exception.DAOException;
+import edu.sjsu.assess.exception.DiscussionForumException;
 import edu.sjsu.assess.model.ForumPost;
+import edu.sjsu.assess.model.ForumReply;
 import edu.sjsu.assess.model.JobCode;
 import edu.sjsu.assess.model.Option;
 import edu.sjsu.assess.model.Question;
@@ -30,10 +32,10 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 
 	@Autowired
 	public DataSource dataSource;
-
+	/*method saves the post in postgres*/
 	@Override
 	public ForumPost createForumPost(final ForumPost forumPost) throws DAOException {
-		// TODO Auto-generated method stub
+		
 		System.out.println("Hi in DAO createForumPost method"+forumPost.getDescription());
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
@@ -165,6 +167,59 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
         }
 		
 		return result;
+	}
+
+	public ForumReply createForumReply(final ForumReply forumReply) throws DAOException {
+
+		System.out.println("Hi in DAO createForumReply method"+forumReply.getDescription());
+		final StringBuilder query = new StringBuilder();
+		StringBuilder valuesStr = new StringBuilder();
+		
+		query.append("INSERT INTO forumreply(userid, forumpostid, fname, description");
+		valuesStr.append(" VALUES(?,?,?,?");
+		
+		query.append(")");
+		valuesStr.append(");");
+		
+		query.append(valuesStr);
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+        
+        try {
+        	
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            
+            jdbcTemplate.update(
+            		new PreparedStatementCreator() {
+						
+						@Override
+						public PreparedStatement createPreparedStatement(Connection con)
+								throws SQLException {
+							
+							PreparedStatement ps = con.prepareStatement(query.toString(), new String[] {"id"});
+							
+							int index = 1;
+							
+							ps.setInt(index++, forumReply.getUserID());
+							ps.setInt(index++, forumReply.getForumPostId());
+							ps.setString(index++, forumReply.getFname());
+							ps.setString(index++, forumReply.getDescription());
+							return ps;
+						}
+					}, keyHolder);
+            
+            forumReply.setId(keyHolder.getKey().intValue());
+            
+
+        } catch (Exception e) {
+			e.printStackTrace();
+            DAOException daoe = new DAOException(
+                    "Failed to Insert Question in DB.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+        }
+
+        return forumReply;
 	}
 	
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>View Post</title>
+</head>
+<body>
+<div th:fragment="content">
+
+	<form th:object="${forumReply}"  th:action="@{/forum/createReply/}" method="post" class="form">
+    <div class="container ">
+        <div class="vertical-center">
+        <div>
+        	<dl class="dl-horizontal">
+                <dt>Post id:</dt>
+                <dd><div id="id" th:utext="${forumPost.id}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Title:</dt>
+                <dd><div id="title" th:utext="${forumPost.title}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Descriptions:</dt>
+                <dd><div id ="description"  th:utext="${forumPost.description}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Created by</dt>
+                <dd><div id="fname" th:utext="${forumPost.fName}"/></dd>
+            </dl>
+            
+        </div>
+        </div>
+        <input type="hidden" name="forumPostId" th:value="${forumPost.id}"/>	
+        <h4>Post Reply</h4>
+            
+                <div id="containerDiv" class="form-group">
+                <div class="forumreply" id="forumReplyDiv">  
+                    <table>
+                        <tr>
+                            <td>Description</td>
+                            <td><textarea rows="3" cols="50" id="forumReplyDescription" th:field="*{description}"  class="form-control"></textarea></td>
+                        </tr>
+					</table>
+                   
+             		<input type="submit" value="Create Reply" class="btn btn-primary" id="submit-form"/>
+             	</div>
+            </div>
+        
+
+	</div>
+</form>
+</div>
+</body>
+</html>

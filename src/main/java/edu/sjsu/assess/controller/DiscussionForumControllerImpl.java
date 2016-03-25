@@ -7,15 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.sjsu.assess.exception.DiscussionForumException;
+import edu.sjsu.assess.exception.JobCodeException;
+import edu.sjsu.assess.exception.QuestionException;
 import edu.sjsu.assess.model.DiscussionForumSearchParams;
 import edu.sjsu.assess.model.ForumPost;
+import edu.sjsu.assess.model.ForumReply;
+import edu.sjsu.assess.model.JobCode;
+import edu.sjsu.assess.model.JobCodeSearchParams;
+import edu.sjsu.assess.model.Question;
+import edu.sjsu.assess.model.QuestionSearchParams;
 import edu.sjsu.assess.service.DiscussionForumServiceImpl;
+import edu.sjsu.assess.service.Pagination;
 
 
 @Controller
@@ -37,8 +46,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         	DiscussionForumSearchParams searchParams = new DiscussionForumSearchParams();
         	searchParams.setId(id);
             forumPostList = discussionForumService.getForumPostList(searchParams);
-        }
-        catch(DiscussionForumException e){
+        }catch(DiscussionForumException e){
             model.addAttribute("error", e.getMessage());
         }
         if(forumPostList != null && forumPostList.size() > 0){
@@ -52,44 +60,11 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         return "viewPost";
     }
 	
-	/*
-    @Override
-    @RequestMapping(value="/search", method = RequestMethod.GET)
-    public String getQuestionsList(QuestionSearchParams searchParams,
-            @RequestParam(value="page", required = false) Integer pageNo, Model model){
-        System.out.println("Searching questions");
-        model.addAttribute("error", "");
-        model.addAttribute("message", "");
-        double totalpages = 1;
-        if(pageNo==null) {
-            pageNo = 1;
-        }
-        try{
-            List<Question> qsList = questionService.searchQuestions(searchParams);
-            if(qsList!=null && qsList.size() > 25) {
-                Pagination paginationSvc = new Pagination();
-                qsList = (List<Question>) paginationSvc.getResultsForPage(qsList, pageNo);
-                totalpages = paginationSvc.getTotalPages();
-            }
-            model.addAttribute("results", qsList);
-            model.addAttribute("page", pageNo);
-            model.addAttribute("totalpages", totalpages);
-        }
-        catch(QuestionException e){
-            model.addAttribute("error", e.getMessage());
-        }
 
-        model.addAttribute("categories", getAllCategories());
-        model.addAttribute("searchParam", searchParams);
-        return "searchQuestions";
-    }
-    */
-
-	
+	/*method to create a post by the user*/
 	@Override
 	@RequestMapping(value="/createPost", method = RequestMethod.POST)
 	public String createPost(ForumPost forumPost, Model model, RedirectAttributes redirectAttributes) {
-		// TODO Auto-generated method stub
 		ForumPost savedforumPost = null;
 		model.addAttribute("error", "");
         model.addAttribute("message", "");
@@ -118,7 +93,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         return "redirect:get/"+forumPost.getId();
         
 	}
-
+	/*method to view all the posts*/
 	@Override
 	@RequestMapping(value="/viewPost", method = RequestMethod.GET)
 	public String viewPost(Model model) {
@@ -156,7 +131,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         }
 		return "viewPosts";
 	}
-	
+	/*method to view particular post*/
 	@Override
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
 	public String getPost(@PathVariable("id") Integer id, Model model) {
@@ -173,7 +148,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 
 		return "viewPost";
 	}
-	
+	/*method to return a page to create a post*/
    @Override
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String loadCreatePost(Model model) {
@@ -183,6 +158,71 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         return "createPost";
     }
    
-   
+   @RequestMapping(value="/reply/{id}", method = RequestMethod.GET)
+   public String replyPost(@PathVariable("id") Integer id, Model model) {
+	   System.out.println("Hi in replyPost method");
+	   try {	
+			ForumPost forumPost = discussionForumService.getPostByID(id);
+			model.addAttribute("forumPost", forumPost);
+	   } catch (DiscussionForumException e) {
+			model.addAttribute("error", e.getMessage());
+	   }
+       return "replyPost";
+   }
+
+    @Override
+    @RequestMapping(value="/createReply/", method = RequestMethod.POST)
+	public String createReply(ForumReply forumReply, Model model,
+			RedirectAttributes redirectAttributes) {
+	   ForumReply savedforumReply = null;
+		model.addAttribute("error", "");
+       model.addAttribute("message", "");
+       
+       if (forumReply == null) {
+           model.addAttribute("error", "Null forumReply Object!");
+       }
+       else { 
+          try {
+	       	    System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
+	       	    		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
+	       	    //System.out.println("forumpostid----------->"+id);
+	      
+	       	    savedforumReply = discussionForumService.saveForumReply(forumReply);
+	            model.addAttribute("savedforumReply", savedforumReply);
+	            model.addAttribute("message",
+	                       "Post saved successfully.");
+	            redirectAttributes.addAttribute("message",
+                       "Post saved successfully.");
+            }catch (DiscussionForumException e) {
+                model.addAttribute("error", e.getMessage());
+                redirectAttributes.addAttribute("error", e.getMessage());
+            }
+       }
+       List<ForumReply> ForumReplys = new ArrayList<ForumReply>();
+       ForumReplys.add(forumReply);
+       System.out.println("Id of createReply :"+forumReply.getId());
+       model.addAttribute("forumPosts", ForumReplys);
+       return "redirect:get/"+forumReply.getId();
+	}
+
+    /*reply button invokes this method*/
+	@Override
+	 @RequestMapping(value="/reply", method = RequestMethod.GET)
+	public String loadCreateReply(@RequestParam(value = "postId") Integer postId,Model model) {
+		ForumReply forumReply = new ForumReply();
+		model.addAttribute("error", "");
+		model.addAttribute("message", "");
+
+		try {
+			ForumPost forumPost = discussionForumService.getPostByID(postId);
+			model.addAttribute("forumPost", forumPost);
+		} catch (DiscussionForumException e) {
+			model.addAttribute("error", e.getMessage());
+		}
+		forumReply.setForumPostId(postId);
+        model.addAttribute("forumReply", forumReply);
+        System.out.println("Hi in loadCreateReply method:"+postId);
+        return "replyPost";
+	} 
 
 }
