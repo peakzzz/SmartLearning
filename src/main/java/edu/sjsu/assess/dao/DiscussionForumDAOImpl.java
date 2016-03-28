@@ -257,4 +257,27 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
         return forumReply;
 	}
 	
+	public int closePost(Integer postId,ForumPost forumPost) throws DAOException{
+		String updateStatement = "UPDATE forumpost SET isalive="+Boolean.FALSE +" WHERE "
+				+ "userid="+forumPost.getUserID()+ " AND pid="+postId;
+		int numOfRecords = 0;
+		System.out.println("inside dao-> closePost method");
+        try{
+        	
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            
+            numOfRecords = jdbcTemplate.update(updateStatement);
+			System.out.println("inside dao numOfRecords"+numOfRecords);
+         }
+         catch (Exception e) {
+			e.printStackTrace();
+            DAOException daoe = new DAOException(
+                    "Failed to update question.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+         }
+        return numOfRecords;
+		
+	}
+	
 }

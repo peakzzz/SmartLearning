@@ -17,4 +17,5 @@ public interface DiscussionForumController {
 	public String getPost(@PathVariable("id") Integer id, @RequestParam(value="update", required=false) boolean isUpdate, Model model);
 	String getPost(Integer id, Model model);
 	public String replyPost(Integer id, Model model);
+	public String closePost(@RequestParam(value = "postId") Integer postId,Model model);
 }

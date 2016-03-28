@@ -109,4 +109,27 @@ public class DiscussionForumServiceImpl implements DiscussionForumService{
 
 		return newforumReply;
 	}
+	
+	public int closePost(Integer postId) throws DiscussionForumException{
+		ForumPost forumPost = new ForumPost();
+		int updateValue = 0;
+		try {
+			String userName = Utility.getLoggedInUserName();
+			
+			if(userName != null){
+				User user = userDAO.getUserByLogin(userName);
+				forumPost.setUserID(user.getId());
+				forumPost.setfName(userName);
+			}
+			
+			//qs.setUserID(1);
+			
+			
+			updateValue = discussionForumDAO.closePost(postId,forumPost);
+
+		} catch (DAOException e) {
+			throw new DiscussionForumException("Failed to Create Post.", e);
+		}
+		return updateValue;
+	}
 }

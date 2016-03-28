@@ -213,5 +213,23 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
         System.out.println("Hi in loadCreateReply method:"+postId);
         return "replyPost";
 	} 
+	/*close button invokes this method
+	 * only the author of the post can close the post*/
+	@RequestMapping(value="/close", method = RequestMethod.POST)
+	public String closePost(@RequestParam(value = "postId") Integer postId,Model model){
+		model.addAttribute("error","");
+		model.addAttribute("message","");
+		
+		int numOfRecords = 0;
+		try {
+			numOfRecords = discussionForumService.closePost(postId);
+		} catch (DiscussionForumException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		model.addAttribute("numOfRecords",numOfRecords);
+		
+		return "redirect:viewPost/";
+	}
 
 }
