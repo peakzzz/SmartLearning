@@ -298,6 +298,15 @@ public class JobCodeServiceImpl implements JobCodeService {
 
 		return jcList;
 	}
+	
+	public List<JobCode> getAllPrederinedJobCodesForTestAttempt(Integer testAttemptId) throws JobCodeException {
+		List<JobCode> jcList = null;
+//		try {
+//			jcList = jobCodeDAO.getAllPredefinedJobCodes();
+//			
+//		}
+		return null;
+	}
 
 	@Override
 	public List<JobCode> getJobCodeForUserPreference() throws JobCodeException{

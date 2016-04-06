@@ -10,8 +10,20 @@
 	<script src="http://code.highcharts.com/highcharts-more.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script src="http://code.highcharts.com/modules/funnel.js"></script>
+	<script type="text/javascript"
+		src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['orgchart']}]}"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+	<style type="text/css">
+#chart_div {
+	overflow-x: scroll;
+	width: 100%;
+}
+
+#chart_div table {
+	border-collapse: separate;
+}
+</style>
 	<script th:inline="javascript">
 		$(document)
 				.ready(
@@ -20,7 +32,168 @@
 							// code to attempt graph
 							var testAttemptId = /*[[${testAttemptId}]]*/null;
 							//var testAttemptId = null;
-							console.log(testAttemptId);
+							var categories = /*[[${modules}]]*/null;
+							var jobCodeId = /*[[${jobCodeId}]]*/null;
+							console.log(jobCodeId);
+
+							var JobCodeViewModel = function() {
+								var self = this;
+
+								self.jobCodes = ko.observableArray();
+								console
+										.log('Starting to execute the draw chart code');
+								google.load("visualization", "1", {
+									packages : [ "orgchart" ]
+								});
+								google.setOnLoadCallback(graphLibraryLoaded);
+
+								var self = this;
+								// self.lines = ko.observableArray([new CategoryLine()] ); // Put one line in by default
+								self.lines = ko.observableArray([]); // Put one line in by default
+								self.addLine = function() {
+									self.lines.push(new CategoryLine())
+								};
+								self.addLineWithNewCategory = function(cat,
+										subcat) {
+									var newCatLine = new CategoryLine();
+									newCatLine.category(cat);
+									newCatLine.subCategories(subcat);
+									self.lines.push(newCatLine)
+								};
+								self.removeLine = function(line) {
+									self.lines.remove(line)
+								};
+
+								self.init = function() {
+
+									$
+											.getJSON(
+													"/jobcode/getAllPredefined",
+													function(data) {
+														console.log(data);
+														$
+																.each(
+																		data,
+																		function(
+																				index) {
+																			console
+																					.log(data[index])
+																			self.jobCodes
+																					.push(data[index]);
+																		});
+
+														try {
+															self
+																	.drawGraph(data);
+														} catch (e) {
+															console
+																	.log('Error while rendering graph');
+															console.log(e);
+														}
+
+													});
+
+								};
+
+								self.drawGraph = function(data) {
+									var toDraw = false;
+									console
+											.log('Inside drawGraph function. Printing data');
+									//console.log(data);
+									var vdata = new google.visualization.DataTable();
+									vdata.addColumn('string', 'Category');
+									vdata.addColumn('string', 'ParentCategory');
+									vdata.addRow([ 'CourseName', '' ]);
+									$
+											.each(
+													data,
+													function(i, entry) {
+														console
+																.log("This is inside first each entry id  "
+																		+ entry.id);
+														console
+																.log("checked against job code id "
+																		+ jobCodeId);
+														toDraw = false;
+														if (jobCodeId == entry.id) {
+															toDraw = true;
+															vdata
+																	.addRow([
+																			entry.positionName,
+																			'CourseName' ]);
+															console
+																	.log('Printing first level categories');
+															console
+																	.log(entry.firstLevelCategories);
+														}
+														if (entry.firstLevelCategories === null) {
+															return;
+														}
+														$
+																.each(
+																		entry.firstLevelCategories,
+																		function(
+																				j,
+																				catEntry) {
+
+																			console
+																					.log("These are categories to be checked"
+																							+ categories);
+																			console
+																					.log(catEntry);
+																			if (toDraw) {
+																				vdata
+																						.addRow([
+																								catEntry.title,
+																								entry.positionName ]);
+																			}
+																			if (catEntry.subCategories === null) {
+																				return;
+																			}
+																			$
+																					.each(
+																							catEntry.subCategories,
+																							function(
+																									k,
+																									subCatEntry) {
+																								console
+																										.log(subCatEntry);
+																								if (toDraw) {
+																									vdata
+																											.addRow([
+																													subCatEntry.title,
+																													catEntry.title ]);
+																								}
+																							});
+
+																		});
+													});
+									console.log('Printing vdata...');
+									console.log(vdata);
+									console.log(vdata);
+									var chart = new google.visualization.OrgChart(
+											document
+													.getElementById('chart_div'));
+									chart.draw(vdata, {
+										allowHtml : true,
+										allowCollapse : true,
+										size : 'small'
+									});
+									for (d in vdata) {
+										//			                                    chart.collapse(i, true);
+										chart.collapse(d, true);
+									}
+								};
+
+							}
+
+							var jc = new JobCodeViewModel();
+
+							function graphLibraryLoaded() {
+								jc.init();
+								ko.applyBindings(jc);
+							}
+
 							function drawFocusScoreGraph(focuses, scores) {
 								$('#container2').highcharts({
 									chart : {
@@ -85,6 +258,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12">
+					<div id="chart_div"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
 					<h1 class="page-header text-center"
 						style="background-color: #F5F5F5;">Recommendation Results</h1>
 				</div>
@@ -94,6 +272,65 @@
 
 				<div class="col-lg-6">
 					<div id="container2"></div>
+				</div>
+				<div class="col-lg-6">
+					<div id="container4">
+						<div class="container" th:each="testset:${results}">
+							<div>
+								<table class="table"
+									th:each="setcategory,categoryStat:${testset.categoryWiseRecords}"
+									valign="middle">
+									<tr>
+										<th colspan="2">Category</th>
+										<th colspan="2">Result</th>
+										<th>Score</th>
+									</tr>
+									<tr align="center">
+										<th colspan="2" align="center"><span
+											th:text="${setcategory.category.title}" /></th>
+										<th colspan="2" align="center"><span
+											th:text="${setcategory.score}" /></th>
+										<th align="center"><span
+											th:if="${setcategory.cutoffReached}==true"><img
+												src="/images/result-pass.jpg" height="40" width="40"
+												alt="Pass" /></span> <span
+											th:if="${setcategory.cutoffReached}==false"><img
+												src="/images/result-try-again.jpg" height="40" width="40"
+												alt="Try Again" /></span></th>
+									</tr>
+									<tr style="background-color: #e7e7e7; color: #fffff"
+										valign="middle" class="container-row">
+										<th width="10%">Sr. No.</th>
+										<th width="15%">Level</th>
+										<th width="10%">Focus</th>
+										<th width="10%">Score</th>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<table width="100%"
+												th:each="question,quesStat:${setcategory.questionsRecord}"
+												valign="middle" style="border-collapse: collapse">
+												<tr th:id="${question.questionObj.id}" class="question"
+													valign="middle" style="border-bottom: 1px solid #ddd">
+													<td width="10%" th:text="${quesStat.index+1}"></td>
+
+													<td width="15%"
+														th:text="${question.questionObj.level}" ></td>
+
+													<td width="10%" th:text="${question.questionObj.focus}"></td>
+
+													<td width="10%" th:if="${question.correctAnswer}==true"><img
+														src="/images/correct-tm.png" height="30" width="25" /></td>
+													<td width="10%" th:if="${question.correctAnswer}==false"><img
+														src="/images/incorrect-cross.jpg" height="30" width="25" /></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="row">
@@ -108,19 +345,19 @@
 						</thead>
 
 						<tbody data-link="row" class="rowlink">
-							<tr th:each="l : ${modules.keySet()}">
-								<td>
-									<a th:text = "${l}"/>
-								</td>
-								<td>
-									<ul>
-										<li th:each="link : ${modules.get(l)}"><a th:text="${link}"
-											th:href="@{/recommendation/view/{fileName}(fileName=${link})}"
-											method="get" />
-										</li>
-									</ul>
-								</td>
-							</tr>
+							<span th:if="${modules != null}">
+								<tr th:each="l : ${modules.keySet()}">
+									<td><a th:text="${l}" /></td>
+									<td>
+										<ul>
+											<li th:each="link : ${modules.get(l)}"><a
+												th:text="${link}"
+												th:href="@{/recommendation/view/{fileName}(fileName=${link})}"
+												method="get" /></li>
+										</ul>
+									</td>
+								</tr>
+							</span>
 						</tbody>
 
 					</table>

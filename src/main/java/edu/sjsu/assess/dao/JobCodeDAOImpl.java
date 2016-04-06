@@ -225,15 +225,13 @@ public class JobCodeDAOImpl implements JobCodeDAO{
 	public List<JobCode> getAllPredefinedJobCodes() throws DAOException {
 		StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM jobcode ");
-        query.append("WHERE type = ?");
 
         List<JobCode> jobCodeList = null;
         
         try {
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             
-            jobCodeList = jdbcTemplate.query(query.toString(),
-                    new Object[] { JobCode.EntityType.PREDEFINED.getValue() }, new JobCodeRowMapper());
+            jobCodeList = jdbcTemplate.query(query.toString(), new JobCodeRowMapper());
             
         } catch (Exception e) {
             DAOException daoe = new DAOException(

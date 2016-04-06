@@ -3,6 +3,7 @@ package edu.sjsu.assess.controller;
 
 import edu.sjsu.assess.exception.TestSetAttemptException;
 import edu.sjsu.assess.exception.TrainingModuleException;
+import edu.sjsu.assess.model.TestSet;
 import edu.sjsu.assess.model.TestSetAttempt;
 import edu.sjsu.assess.model.TestSetAttemptSearchParams;
 import edu.sjsu.assess.model.TestSetAttempt.CategoryWiseRecord;
@@ -97,7 +98,9 @@ public class TestAttemptControllerImpl implements TestAttemptController{
 
 			TestSetAttempt testsetAttempt = testSetAttempts.get(0);
 
-
+			TestSet testSet = testsetAttempt.getTestSetObj();
+			Integer jobCodeId = testSet.getJobCodeID();
+			
 			List<CategoryWiseRecord> recordsList = testsetAttempt.getCategoryWiseRecords();
 			List<Integer> weakCategoryIds = new ArrayList<Integer>();
 //			List<String> recommendedTrainings = new ArrayList<String>();
@@ -131,6 +134,8 @@ public class TestAttemptControllerImpl implements TestAttemptController{
 			
 			if(null != linksandCategory && linksandCategory.size()>0)
 				model.addAttribute("modules", linksandCategory);
+			
+			model.addAttribute("jobCodeId",jobCodeId);
 //
 //			if(null != categoryNames && categoryNames.size() >0)
 //				model.addAttribute("categories", categoryNames);

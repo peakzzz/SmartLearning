@@ -42,4 +42,6 @@ public interface JobCodeController {
 	public String showCreateJobCode(Model model);
 
 	public String createCategory(@ModelAttribute("search") Category category, Model model);
+	
+	public List<JobCode> getAllPredefinedCategories(Integer testAttemptId);
 }

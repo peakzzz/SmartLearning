@@ -252,6 +252,19 @@ public class JobCodeControllerImpl implements JobCodeController {
 		return jcList;
 	}
 
+	@Override
+	@RequestMapping(value = "/getAllPredefinedCategories/{testAttempId}", method = RequestMethod.GET)
+	public @ResponseBody List<JobCode> getAllPredefinedCategories(@PathVariable("testAttempId") Integer testAttemptId) {
+//		List<JobCode> jcList = null;
+//		try {
+//			jcList = jobCodeService.getAllPrederinedJobCodesForTestAttempt();
+//		} catch(JobCodeException e) {
+//			System.out.println(e);
+//		}
+//		
+//		return jcList;
+		return null;
+	}
 
     // Method called when user clicks on Create New Category Button.
     // through javascript/ajax.

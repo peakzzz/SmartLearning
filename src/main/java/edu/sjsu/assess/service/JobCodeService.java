@@ -29,6 +29,8 @@ public interface JobCodeService {
 
 	public List<JobCode> getAllPredefinedJobCodes() throws JobCodeException;
 	
+	public List<JobCode> getAllPrederinedJobCodesForTestAttempt(Integer testAttemptId) throws JobCodeException;
+	
 	public List<JobCode> getJobCodeForUserPreference() throws JobCodeException;
 
 	public Category createCategoryForJobCode(Category category) throws JobCodeException;
