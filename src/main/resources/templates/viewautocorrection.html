@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>Auto Correction</title>
+    <div th:fragment="header">
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['orgchart']}]}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                google.load("visualization", "1", {packages:["orgchart"]});
+                google.setOnLoadCallback(initLoaded);
+
+                var CategoryLine = function() {
+                    var self = this;
+                    self.category = ko.observable();
+                    self.category.subscribe(function() {
+                        self.subCategories(undefined);
+                    });
+                };
+
+                var AutoCorrectionViewModel = function(){
+                    var self = this;
+                    self.parentCategory = null;
+
+                    self.setParentCategory = function(category) {
+                        console.log('Setting parent category for subcat creation');
+                        console.log(category);
+                        self.parentCategory = category;
+                        console.log('finished setting parent cartline');
+                    };
+
+                    self.lines = ko.observableArray([]); // Put one line in by default
+                    self.addLine = function() { self.lines.push(new CategoryLine()) };
+                    self.removeLine = function(line) { self.lines.remove(line) };
+
+                    self.init = function(){
+                        $( "#createForm" ).submit(function( event ) {
+                            console.log('submitting the form to server');
+                            event.preventDefault();
+                        });
+                    };
+                   
+                };
+
+                var jc = new AutoCorrectionViewModel();
+                function initLoaded() {
+                    jc.init();
+                    ko.applyBindings(jc);
+                }
+            });
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+
+
+
+    <div class="container">
+         
+        <h4 align="center">Testing Problems</h4>
+        <div class="row">
+               <div class="col-lg-12">
+                   <div class="panel panel-default">
+                       <div class="panel-heading">
+                           <h3>Java program to check if a string is a palindrome or not.</h3>
+                       </div>
+                       <div class="panel-body">
+                           <h4>Check if the below program is a palindrome considering all possible test cases</h4>
+                       
+<div class="geshifilter">
+<pre class="java geshifilter-java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">java.util.*</span><span style="color: #339933;">;</span>
+ 
+<span style="color: #000000; font-weight: bold;">class</span> Palindrome
+<span style="color: #009900;">{</span>
+  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000066; font-weight: bold;">void</span> main<span style="color: #009900;">(</span><span style="color: #003399;">String</span> args<span style="color: #009900;">[</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span>
+  <span style="color: #009900;">{</span>
+    <span style="color: #003399;">String</span> inputString<span style="color: #339933;">;</span>
+    Scanner in <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> Scanner<span style="color: #009900;">(</span><span style="color: #003399;">System</span>.<span style="color: #006633;">in</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+ 
+    <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Input a string"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+    inputString <span style="color: #339933;">=</span> in.<span style="color: #006633;">nextLine</span><span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+ 
+    <span style="color: #000066; font-weight: bold;">int</span> length  <span style="color: #339933;">=</span> inputString.<span style="color: #006633;">length</span><span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+    <span style="color: #000066; font-weight: bold;">int</span> i, begin, end, middle<span style="color: #339933;">;</span>
+ 
+    begin  <span style="color: #339933;">=</span> <span style="color: #cc66cc;">0</span><span style="color: #339933;">;</span>
+    end    <span style="color: #339933;">=</span> length <span style="color: #339933;">-</span> <span style="color: #cc66cc;">1</span><span style="color: #339933;">;</span>
+    middle <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>begin <span style="color: #339933;">+</span> end<span style="color: #009900;">)</span><span style="color: #339933;">/</span><span style="color: #cc66cc;">2</span><span style="color: #339933;">;</span>
+ 
+    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">=</span> begin<span style="color: #339933;">;</span> i <span style="color: #339933;">&lt;=</span> middle<span style="color: #339933;">;</span> i<span style="color: #339933;">++</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">(</span>inputString.<span style="color: #006633;">charAt</span><span style="color: #009900;">(</span>begin<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> inputString.<span style="color: #006633;">charAt</span><span style="color: #009900;">(</span>end<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+        begin<span style="color: #339933;">++;</span>
+        end<span style="color: #339933;">--;</span>
+      <span style="color: #009900;">}</span>
+      <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">{</span>
+        <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
+      <span style="color: #009900;">}</span>
+    <span style="color: #009900;">}</span>
+    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">==</span> middle <span style="color: #339933;">+</span> <span style="color: #cc66cc;">1</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
+      <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Palindrome"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">}</span>
+    <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">{</span>
+      <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Not a palindrome"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">}</span> 	
+  <span style="color: #009900;">}</span>
+<span style="color: #009900;">}</span></pre></div>                                                        
+                              
+                       </div>
+                       <!-- /.panel-body -->
+                   </div>
+                   <!-- /.panel -->
+                   </div>
+         </div>
+
+        <form id="createForm" th:action="@{/autocorrection/create}" method="post">
+
+            <div class='categorySection'>
+                <table class="table" width='100%'>
+                    <thead>
+                    <tr>
+                        <th width='25%'>Include your Test Cases</th>
+                        <th width='10%'> </th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind='foreach: lines'>
+                    <tr>
+                        <td>
+                            <p>Test Case:</p>
+                            <input type="text" class="form-control" rows="3" data-bind="value: category"/>    
+                        </td>                      
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+                <br/>
+                <br/>
+
+                <button type="button" class="btn btn-primary" data-bind='click: addLine' >Add Test Cases</button>
+                <button class="btn btn-primary" >Save Test Cases</button>
+            </div>
+        </form>
+       
+    </div>
+
+</div>
+</body>
+</html>
