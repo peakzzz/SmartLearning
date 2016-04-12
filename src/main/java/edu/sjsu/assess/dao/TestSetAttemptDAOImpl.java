@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,24 +50,23 @@ public class TestSetAttemptDAOImpl implements TestSetAttemptDAO {
 		query.append("VALUES(?,?,?,?) ");
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-
+		Map<String, Object> rs;
 		try {
 
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
+			
 			jdbcTemplate.update(new PreparedStatementCreator() {
 
 				@Override
 				public PreparedStatement createPreparedStatement(Connection con)
 						throws SQLException {
 					PreparedStatement ps = con.prepareStatement(
-							query.toString(), new String[] { "id" });
+							query.toString(), Statement.RETURN_GENERATED_KEYS);
 
 					int index = 1;
 
 					ps.setInt(index++, ta.getUserID());
 					ps.setInt(index++, ta.getTestSetID());
-					
 					if(ta.getAttemptDate() == null){
 						ps.setLong(index++, System.currentTimeMillis());
 					} else{
@@ -78,15 +78,17 @@ public class TestSetAttemptDAOImpl implements TestSetAttemptDAO {
 					return ps;
 				}
 			}, keyHolder);
-
+			
+			rs = keyHolder.getKeys();
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			DAOException daoe = new DAOException(
 					"Failed to insert test set attempt in DB.");
 			daoe.setStackTrace(e.getStackTrace());
 			throw daoe;
 		}
 
-		ta.setId(keyHolder.getKey().intValue());
+		ta.setId((Integer)rs.get("id"));
 
 		this.createCategoryWiseScore(ta.getId(), ta.getCategoryWiseRecords());
 		
