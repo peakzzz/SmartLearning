@@ -231,6 +231,7 @@ public class QuestionsControllerImpl implements QuestionsController
     @Override
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String loadQuestionForNewQuestion (String setCategoryId, Model model) {
+    	System.out.println("questionscontrollerimpl  :"+setCategoryId);
         Question question = new Question();
         model.addAttribute("question", question);
         model.addAttribute("categories", getAllCategories());

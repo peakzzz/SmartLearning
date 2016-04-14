@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.sjsu.assess.exception.QuestionException;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import edu.sjsu.assess.exception.JobCodeException;
 import edu.sjsu.assess.service.Pagination;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -52,6 +54,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	 	@RequestMapping(value = "/createProgram", method = RequestMethod.GET)
 	 	public String showViewAutoCorrection(String setCategoryId, Model model){
 	 		Assignment assignment = new Assignment();
+	 		System.out.println("Autocorrectioncontrollerimpl   :"+setCategoryId);
  	        model.addAttribute("assignment", assignment);
  	        model.addAttribute("categories", getAllCategories());
 	 		return "viewautocorrection";
@@ -125,7 +128,8 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
  	    }
 
 
-		@Override
+ 	   @Override
+ 	    @RequestMapping(method = RequestMethod.POST)
 		public String createAssignment(Assignment assignment, Model model, RedirectAttributes redirectAttributes)
  	    {
  	    	Assignment savedQS = null;
@@ -152,7 +156,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
  	       assignments.add(assignment);
 
  	        model.addAttribute("assignments", assignments);
- 	       return "redirect:assignment/"+assignment.getId();
+ 	       return "redirect:autocorrection/"+assignment.getId();
  	    }
 
  	    @Override
@@ -250,7 +254,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
  	        return "assignmentList";
  	    }
 
- 	    @RequestMapping(value = "/new-assignment/{testsetId}/{setCategoryId}", method = RequestMethod.GET)
+ 	    @RequestMapping(value = "/newassignment/{testsetId}/{setCategoryId}", method = RequestMethod.GET)
  	    public String loadAssignmentForNewAssignment(@PathVariable(value="testsetId") String testsetId,
  	            @PathVariable(value="setCategoryId") String setCategoryId, Model model) {
  	        Assignment assignment = new Assignment();
