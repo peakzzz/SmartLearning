@@ -127,7 +127,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
         } catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to Insert Assignment in DB.");
+                    "Failed to Insert Assigment in DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -207,7 +207,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id, o.text, o.iscorrectoption, " +
 				"q.categoryid, c.title " +
-				" from assignment q inner join option o on o.questionid=q.id " +
+				" from question q inner join option o on o.questionid=q.id " +
 				"inner join category c on q.categoryid=c.id ");
 
 		if(searchParams.getCategoryID()!=null) {
