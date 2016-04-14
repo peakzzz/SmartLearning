@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+	<head>
+		<title>Build A Test Assignment</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+		<div th:fragment="header">
+			<style>
+				h4 {
+					color:#777;
+					font-weight: normal;
+				}
+				body {
+					color: #777;
+				}
+			</style>
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$('.questiontext').click(function(){
+						$('.'+this.id).toggle();
+					})
+					$('.delete-btn').click(function(){
+						$('.listForm').attr('method', 'delete');
+					})
+				});
+			</script>
+		</div>
+	</head>
+
+	<body>
+		<div th:fragment="content">
+    		<div class="container">
+      			<h4>Add Assignments To Set</h4>
+      			<form th:action="@{|/testset/${testId}/${testsetCategoryId}/questions|}" method="post" class="listForm" th:if="${assignmentList}">
+					<div class="panel-group" id="accordion">
+				        <div class="panel panel-default" th:each="question:${assignmentList}" style="background-color:#e7e7e7">
+				          <div class="panel-heading">
+				            <h3 class="panel-title">
+				            	<input type="checkbox" name="questionIds" th:value="${question.id}"/>
+				              	<a data-toggle="collapse" data-parent="#accordion" class="questiontext" th:id="${question.id}" th:text="${question.questionText}"></a>
+				            </h3>
+				          </div>
+				          <div th:class="${question.id}" style="display:none">
+				            <div class="panel-body">
+								<ul th:each="option: ${question.options}">
+									<li th:text="${option.text}" th:if="${option.correctOption}==true" style="font-style:italic; font-weight:bold; color:green"></li>
+									<li th:text="${option.text}" th:unless="${option.correctOption}==true"></li>
+								</ul>
+				            </div>
+				          </div>
+        				</div>
+       				</div>
+       				<input type="submit" value="Add" class="btn btn-primary"/>
+  				</form>
+				<div th:unless="${assignmentList}">
+					No Assignments exists for this category. Please add new questions.
+				</div>
+				<a th:href="@{|/testset/${testId}/${testsetCategoryId}|}"><input type="button" value="Back to Set" class="btn btn-primary"/></a>
+      		</div>
+    	</div>
+  	</body>
+ </html>

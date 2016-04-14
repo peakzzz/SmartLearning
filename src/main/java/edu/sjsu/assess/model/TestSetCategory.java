@@ -31,6 +31,7 @@ public class TestSetCategory {
 	}
 
 	private List<Question> questionList;
+	private List<Assignment> assignmentList;
 
 	public Integer getId() {
 		return id;
@@ -75,9 +76,17 @@ public class TestSetCategory {
 	public List<Question> getQuestionList() {
 		return questionList;
 	}
+	
+	public List<Assignment> getAssignmentList() {
+		return assignmentList;
+	}
 
 	public void setQuestionList(List<Question> questionList) {
 		this.questionList = questionList;
+	}
+	
+	public void setAssignmentList(List<Assignment> assignmentList) {
+		this.assignmentList = assignmentList;
 	}
 
 	public String getTitle()
@@ -101,5 +110,15 @@ public class TestSetCategory {
 		
 		this.questionList.add(qs);
 	}
+	
+	public void addAssignment(Assignment qs){
+		if(this.assignmentList == null){
+			this.assignmentList = new ArrayList<Assignment>();
+		}
+		
+		this.assignmentList.add(qs);
+	}
+
+	
 
 }

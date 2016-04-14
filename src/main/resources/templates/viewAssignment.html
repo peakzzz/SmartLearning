@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>View Assignment</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 400 px;
+                height: 50 px;
+            }
+            table {
+                color: #777;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <h4>Assignment</h4>
+        <div id="containerDiv" th:each="assignment:${assignments}">
+            <table class="display-table">
+                <tr>
+                    <td>
+                        <label>Level</label>
+                        <span th:text="${assignment.level}"></span>
+                    </td>
+                    <td>
+                        <label>Focus</label>
+                        <span th:text="${assignment.focus}"></span>
+                    </td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <td><label>Question:</label></td>
+                    <td th:text="${assignment.questionText}"></td>
+                </tr>
+                <tr th:each="option:${assignment.options}">
+                    <td th:if="${option.correctOption}">
+                        <input type="checkbox" disabled="disabled" checked="checked"/>
+                    </td>
+                    <td th:if="${option.correctOption}" th:text="${option.text}" style="font-style:italic; font-weight:bold; color:#00CC99"></td>
+                    <td th:unless="${option.correctOption}">
+                        <input type="checkbox" disabled="disabled"/>
+                    </td>
+                    <td th:unless="${option.correctOption}" th:text="${option.text}"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <a th:href="@{/assignment/{id}(id=${assignment.id}, update=true)}"><input type="button" value="Update" class="btn btn-primary"/></a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

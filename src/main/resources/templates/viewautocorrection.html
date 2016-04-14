@@ -1,153 +1,219 @@
 <!DOCTYPE html>
+
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       th:include="layout :: page">
-<head>
-    <title>Auto Correction</title>
-    <div th:fragment="header">
-        <script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['orgchart']}]}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
 
+<head>
+    <title>Create Assignment</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 400 px;
+                height: 45 px;
+            }
+        </style>
+        <!--
+                /* Script:
+                *   By Default: Keep true or false as disabled and hidden
+                *   For questionType:
+                *       Boolean variables as hidden tags to accommodate radio button & fill values accordingly
+                *       Change of questiontype, update the hidden variables & toggle tables
+                *   For options:
+                *       Checkbox/radio button value should be equal to hidden correctAnswer field
+                *       set values of hidden boolean variables before form submission for selected values
+                */
+        -->
         <script type="text/javascript">
             $(document).ready(function(){
-                google.load("visualization", "1", {packages:["orgchart"]});
-                google.setOnLoadCallback(initLoaded);
+            	
+            	$("#trueOrFalse-table").find("input").attr('disabled', 'disabled');
+                var questionType = $('.questionType').val();
+                $('#'+questionType).val(true);
+                $('.true-field').val(true);
+                $('.false-field').val(false);
 
-                var CategoryLine = function() {
-                    var self = this;
-                    self.category = ko.observable();
-                    self.category.subscribe(function() {
-                        self.subCategories(undefined);
-                    });
-                };
+               $('.questionType').change(
+                    function(){
+                        var id = $(this).val();
+                        var tableId = id + "-table";
 
-                var AutoCorrectionViewModel = function(){
-                    var self = this;
-                    self.parentCategory = null;
+                        $('.questionTypeHidden').each(function(){
+                            var qtHiddenId = $(this).attr('id');
+                            if(id==qtHiddenId) {
+                                $(this).val(true);
+                                var tableId = qtHiddenId+"-table";
+                                $('#'+tableId).find('input').removeAttr('disabled');
+                                $('#'+tableId).show();
+                            }
+                            else {
+                                $(this).val(false);
+                                var tableId = qtHiddenId+"-table";
+                                $('#'+tableId).find('input').attr('disabled', 'disabled');
+                                $('#'+tableId).hide();
+                            }
+                        })
+                    })
 
-                    self.setParentCategory = function(category) {
-                        console.log('Setting parent category for subcat creation');
-                        console.log(category);
-                        self.parentCategory = category;
-                        console.log('finished setting parent cartline');
-                    };
-
-                    self.lines = ko.observableArray([]); // Put one line in by default
-                    self.addLine = function() { self.lines.push(new CategoryLine()) };
-                    self.removeLine = function(line) { self.lines.remove(line) };
-
-                    self.init = function(){
-                        $( "#createForm" ).submit(function( event ) {
-                            console.log('submitting the form to server');
-                            event.preventDefault();
-                        });
-                    };
-                   
-                };
-
-                var jc = new AutoCorrectionViewModel();
-                function initLoaded() {
-                    jc.init();
-                    ko.applyBindings(jc);
-                }
+                $('#submit-form').click(function(){
+                    $('.correctAnswer:enabled').each(function(){
+                        if($(this).prop('checked')) {
+                            var id = $(this).val();
+                            $('#'+id).val(true);
+                        } else {
+                            var id = $(this).val();
+                            $('#'+id).val(false);
+                        }
+                    })
+                    $('.form').attr('action', $('.action').val());
+                    $('.form').submit();
+                })
             });
         </script>
     </div>
 </head>
+
 <body>
-<div th:fragment="content">
-
-
-
-    <div class="container">
-         
-        <h4 align="center">Testing Problems</h4>
-        <div class="row">
-               <div class="col-lg-12">
-                   <div class="panel panel-default">
-                       <div class="panel-heading">
-                           <h3>Java program to check if a string is a palindrome or not.</h3>
-                       </div>
-                       <div class="panel-body">
-                           <h4>Check if the below program is a palindrome considering all possible test cases</h4>
+    <div th:fragment="content">
+      <div class="container">
+          <h4>Testing Problems</h4>
+            
+            
+    	<div class="row">
+     	<div class="col-lg-12">
+   		<div class="panel panel-default">
+			
+	        <div class="panel-body">
+				<h4>Check if the below program is a palindrome considering all possible test cases</h4>
+	                                                                                  
+	      	</div>
+      		<!-- /.panel-body -->
+	  	</div>
+	  	<!-- /.panel -->
+		</div>
+   		</div>
+                                
+            
+            <form th:object="${question}" th:action="@{/question}" method="post" class="form">
+                <input type="hidden" value="/question" class="action" th:unless="${setCategoryId}"/>
+                <input type="hidden" th:value="|/testset/new-question/${testsetId}/${setCategoryId}|" class="action" th:if="${setCategoryId}"/>
+                <div id="containerDiv" class="form-group">
+                <div class="question1" id="quesDiv">
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="radio" name="questionType" value="mcq" class="questionType" checked="checked"/>
+                            </td>
+                            <td>
+                                Multiple Choice
+                                <input type="hidden" th:field="*{multipleChoice}" value="true" id="mcq" class="questionTypeHidden"/>
+                            </td>
+                            <td>
+                                <input type="radio" name="questionType" value="trueOrFalse" class="questionType"/>
+                            </td>
+                            <td>
+                                True or False
+                                <input type="hidden" th:field="*{trueOrFalse}" value="false" id="trueOrFalse" class="questionTypeHidden"/>
+                                <input type="hidden" th:field="*{type}" value="user-defined" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Category
+                            </td>
+                            <td>
+                                <select th:field="*{categoryID}" class="form-control">
+                                    <option value="">--Select--</option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}"></option>
+                                    <option th:value="${category.id}" th:text="${category.title}" th:each="category:${categories}" selected="selected" th:if="${category.id==categoryID}"></option>
+                                </select>
+                                <input type="hidden" th:field="*{type}" value="user-defined"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Level</td>
+                            <td colspan="3">
+                                <select th:field="*{level}" class="form-control">
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Expert">Expert</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Focus</td>
+                            <td colspan="3">
+                                <select th:field="*{focus}" class="form-control">
+                                    <option value="Concept">Concept</option>
+                                    <option value="Depth">Depth</option>
+                                    <option value="Skills">Skills</option>
+                                </select>
+                            </td>
+                        </tr>
                        
-<div class="geshifilter">
-<pre class="java geshifilter-java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">import</span> <span style="color: #006699;">java.util.*</span><span style="color: #339933;">;</span>
- 
-<span style="color: #000000; font-weight: bold;">class</span> Palindrome
-<span style="color: #009900;">{</span>
-  <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000066; font-weight: bold;">void</span> main<span style="color: #009900;">(</span><span style="color: #003399;">String</span> args<span style="color: #009900;">[</span><span style="color: #009900;">]</span><span style="color: #009900;">)</span>
-  <span style="color: #009900;">{</span>
-    <span style="color: #003399;">String</span> inputString<span style="color: #339933;">;</span>
-    Scanner in <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> Scanner<span style="color: #009900;">(</span><span style="color: #003399;">System</span>.<span style="color: #006633;">in</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
- 
-    <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Input a string"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
-    inputString <span style="color: #339933;">=</span> in.<span style="color: #006633;">nextLine</span><span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
- 
-    <span style="color: #000066; font-weight: bold;">int</span> length  <span style="color: #339933;">=</span> inputString.<span style="color: #006633;">length</span><span style="color: #009900;">(</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
-    <span style="color: #000066; font-weight: bold;">int</span> i, begin, end, middle<span style="color: #339933;">;</span>
- 
-    begin  <span style="color: #339933;">=</span> <span style="color: #cc66cc;">0</span><span style="color: #339933;">;</span>
-    end    <span style="color: #339933;">=</span> length <span style="color: #339933;">-</span> <span style="color: #cc66cc;">1</span><span style="color: #339933;">;</span>
-    middle <span style="color: #339933;">=</span> <span style="color: #009900;">(</span>begin <span style="color: #339933;">+</span> end<span style="color: #009900;">)</span><span style="color: #339933;">/</span><span style="color: #cc66cc;">2</span><span style="color: #339933;">;</span>
- 
-    <span style="color: #000000; font-weight: bold;">for</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">=</span> begin<span style="color: #339933;">;</span> i <span style="color: #339933;">&lt;=</span> middle<span style="color: #339933;">;</span> i<span style="color: #339933;">++</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
-      <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">(</span>inputString.<span style="color: #006633;">charAt</span><span style="color: #009900;">(</span>begin<span style="color: #009900;">)</span> <span style="color: #339933;">==</span> inputString.<span style="color: #006633;">charAt</span><span style="color: #009900;">(</span>end<span style="color: #009900;">)</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
-        begin<span style="color: #339933;">++;</span>
-        end<span style="color: #339933;">--;</span>
-      <span style="color: #009900;">}</span>
-      <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">{</span>
-        <span style="color: #000000; font-weight: bold;">break</span><span style="color: #339933;">;</span>
-      <span style="color: #009900;">}</span>
-    <span style="color: #009900;">}</span>
-    <span style="color: #000000; font-weight: bold;">if</span> <span style="color: #009900;">(</span>i <span style="color: #339933;">==</span> middle <span style="color: #339933;">+</span> <span style="color: #cc66cc;">1</span><span style="color: #009900;">)</span> <span style="color: #009900;">{</span>
-      <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Palindrome"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">}</span>
-    <span style="color: #000000; font-weight: bold;">else</span> <span style="color: #009900;">{</span>
-      <span style="color: #003399;">System</span>.<span style="color: #006633;">out</span>.<span style="color: #006633;">println</span><span style="color: #009900;">(</span><span style="color: #0000ff;">"Not a palindrome"</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span>
-    <span style="color: #009900;">}</span> 	
-  <span style="color: #009900;">}</span>
-<span style="color: #009900;">}</span></pre></div>                                                        
-                              
-                       </div>
-                       <!-- /.panel-body -->
-                   </div>
-                   <!-- /.panel -->
-                   </div>
-         </div>
+                    </table>
+                    <table>
+                        
+                        <tr>
+                            <td>Question</td>
+                            <td><textarea rows="15" cols="80" id="quesText" th:field="*{questionText}" class="form-control" placeholder="Write the program question for the assignment"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><label>Options</label></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table id="mcq-table" class="optionTable">
+                                    <tr>
+                                        <td><input type="checkbox" id="answer-0" class="correctAnswer" value="correct-0" checked='checked'/></td>
+                                        <td><input type="text" th:field="*{options[0].text}" id="answer-0-text" class="form-control"/></td>
+                                        <input type="hidden" name="options[0].correctOption" id="correct-0"/>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" value="correct-1" class="correctAnswer" id="answer-1"/></td>
+                                        <td><input type="text" th:field="*{options[1].text}" id="answer-1-text" class="form-control"/></td>
+                                        <input type="hidden" name="options[1].correctOption" id="correct-1"/>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" value="correct-2" class="correctAnswer" id="answer-2"/></td>
+                                        <td><input type="text" th:field="*{options[2].text}" id="answer-2-text" class="form-control"/></td>
+                                        <input type="hidden" name="options[2].correctOption" id="correct-2"/>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" value="correct-3" class="correctAnswer" id="answer-3"/></td>
+                                        <td><input type="text" th:field="*{options[3].text}" id="answer-3-text" class="form-control"/></td>
+                                        <input type="hidden" name="options[3].correctOption" id="correct-3"/>
+                                    </tr>
+                                    
+                                </table>
 
-        <form id="createForm" th:action="@{/autocorrection/create}" method="post">
-
-            <div class='categorySection'>
-                <table class="table" width='100%'>
-                    <thead>
-                    <tr>
-                        <th width='25%'>Include your Test Cases</th>
-                        <th width='10%'> </th>
-                    </tr>
-                    </thead>
-                    <tbody data-bind='foreach: lines'>
-                    <tr>
-                        <td>
-                            <p>Test Case:</p>
-                            <input type="text" class="form-control" rows="3" data-bind="value: category"/>    
-                        </td>                      
-                    </tr>
-                    </tbody>
-                </table>
-
-                <br/>
-                <br/>
-                <br/>
-
-                <button type="button" class="btn btn-primary" data-bind='click: addLine' >Add Test Cases</button>
-                <button class="btn btn-primary" >Save Test Cases</button>
+                                <table id="trueOrFalse-table" class="optionTable" style="display:none">
+                                    <tr>
+                                        <td><input type="radio" name="tf-radio" id="true" class="correctAnswer" value="correct-true" checked='checked'/></td>
+                                        <td><input type="hidden" th:field="*{options[0].text}" value="True" class="true-field"/>True</td>
+                                        <input type="hidden" name="options[0].correctOption" id="correct-true"/>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="radio" name="tf-radio" value="correct-false" class="correctAnswer" id="false"/></td>
+                                        <td><input type="hidden" th:field="*{options[1].text}" value="False" class="false-field"/>False</td>
+                                        <input type="hidden" name="options[1].correctOption" id="correct-false"/>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+					</table>
+                    <!--<a th:href="@{/question/search}"><input type="button" value="Cancel" class="btn btn-primary"/></a>-->
+             		<input type="button" value="Create Assignment" class="btn btn-primary" id="submit-form"/>
+             	</div>
             </div>
         </form>
-       
+        </div>
     </div>
-
-</div>
 </body>
 </html>
+
