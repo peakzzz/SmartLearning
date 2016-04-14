@@ -154,7 +154,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public Option createOption(final Option op) throws DAOException{
 		
 		final StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO option(questionID, text, isCorrectOption) ");
+		query.append("INSERT INTO assignment_option(assignmentid, text, isCorrectOption) ");
 		query.append("VALUES(?,?,?)");
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -185,7 +185,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to Insert Option in DB.");
+                    "Failed to Insert assignment_option in DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -203,11 +203,11 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		List<Object> params = new ArrayList<>();
 
 		StringBuilder query = new StringBuilder();
-		query.append("select o.questionid, q.level, q.focus, q.questiontext, q.userid, " +
+		query.append("select o.assignmentid, q.level, q.focus, q.questiontext, q.userid, " +
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id, o.text, o.iscorrectoption, " +
 				"q.categoryid, c.title " +
-				" from assignment q inner join option o on o.questionid=q.id " +
+				" from assignment q inner join assignment_option o on o.assignmentid=q.id " +
 				"inner join category c on q.categoryid=c.id ");
 
 		if(searchParams.getCategoryID()!=null) {
@@ -245,11 +245,11 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString(), params.toArray());
 
 			for (Map<String, Object> row : rows){
-				int questionId = (Integer) row.get("questionid");
+				int assignmentid = (Integer) row.get("assignmentid");
 
-				if(!assignmentMap.containsKey(questionId)) {
+				if(!assignmentMap.containsKey(assignmentid)) {
 					Assignment assignment = new Assignment();
-					assignment.setId((Integer) row.get("questionid"));
+					assignment.setId((Integer) row.get("assignmentid"));
 					assignment.setCategoryID((Integer) row.get("categoryid"));
 					assignment.setLevel((String) row.get("level"));
 					assignment.setFocus((String) row.get("focus"));
@@ -265,15 +265,15 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 					assignment.setCategoryObj(category);
 					assignment.setOptions(new ArrayList<Option>());
 					assignments.add(assignment);
-					assignmentMap.put(questionId, assignment);
+					assignmentMap.put(assignmentid, assignment);
 				}
 
-				Assignment assignment = assignmentMap.get(questionId);
+				Assignment assignment = assignmentMap.get(assignmentid);
 				Option option = new Option();
 				option.setId((Integer) row.get("id"));
 				option.setCorrectOption((Boolean) row.get("iscorrectoption"));
 				option.setText((String) row.get("text"));
-				option.setQuestionID((Integer) row.get("questionid"));
+				option.setQuestionID((Integer) row.get("assignmentid"));
 				assignment.getOptions().add(option);
 			}
 
@@ -312,7 +312,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		}
 
 		if(searchParams.getJobcodeID()!=null) {
-			joins.put("testsetquestions tsq", "tsq.questionid = q.id");
+			joins.put("testsetquestions tsq", "tsq.assignmentid = q.id");
 			joins.put("testsetcategories tsc", "tsc.id = tsq.testsetcategoryid");
 			joins.put("testset ts", "ts.id = tsc.testsetid");
 
@@ -438,8 +438,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	private List<Option> getOptions(Integer qsID) throws DAOException {
 		
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM option ");
-		query.append("WHERE questionID = ?");
+		query.append("SELECT * FROM assignment_option ");
+		query.append("WHERE assignmentid = ?");
 		
 		List<Option> optionsList = null;
 		
@@ -498,7 +498,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	
 	public void updateOptions(List<Option> optionList) throws DAOException
 	{
-		String updateStatement = " UPDATE option "
+		String updateStatement = " UPDATE assignment_option "
 				+ "SET text = ?, "
 				+ "iscorrectoption = ? "
 				+ "WHERE id = ?";
@@ -526,8 +526,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public void deleteAllOptions(Integer qsID) throws DAOException{
 		
 		StringBuilder query = new StringBuilder();
-		query.append("DELETE FROM option ");
-		query.append("WHERE questionID = ?");
+		query.append("DELETE FROM assignment_option ");
+		query.append("WHERE assignmentid = ?");
 		
 		try{
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -537,7 +537,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to delete options from DB.");
+                    "Failed to delete assignment_options from DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -596,7 +596,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			Option op = new Option();
 			
         	op.setId(rs.getInt("id"));
-        	op.setQuestionID(rs.getInt("questionID"));
+        	op.setQuestionID(rs.getInt("assignmentid"));
         	op.setText(rs.getString("text"));
         	op.setCorrectOption(rs.getBoolean("isCorrectOption"));
         	
