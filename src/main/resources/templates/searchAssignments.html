@@ -52,7 +52,7 @@
     <div class="container">
         <div id="search-form">
             <h4>Search Assignments</h4>
-            <form th:object="${searchParam}" th:action="@{/question/search}" method="get" class="form">
+            <form th:object="${searchParam}" th:action="@{/assignment/search}" method="get" class="form">
                 <div id="searchDiv" class="form-group">
                     <table>
                         <tr>
@@ -137,27 +137,27 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <table class="table" th:each="question, questionStat:${results}">
-                            <tr th:id="${question.id}" class="container-row">
+                        <table class="table" th:each="assignment, questionStat:${results}">
+                            <tr th:id="${assignment.id}" class="container-row">
                                 <td width="5%" th:text="${questionStat.index+1}"></td>
-                                <td width="40%" th:text="${question.questionText}"></td>
-                                <td width="20%" th:text="${question.categoryObj.title}"></td>
-                                <td width="20%" th:text="${question.level}"></td>
-                                <td width="15%" th:text="${question.focus}"></td>
+                                <td width="40%" th:text="${assignment.questionText}"></td>
+                                <td width="20%" th:text="${assignment.categoryObj.title}"></td>
+                                <td width="20%" th:text="${assignment.level}"></td>
+                                <td width="15%" th:text="${assignment.focus}"></td>
                             </tr>
-                            <tr th:class="${question.id}" style="display:none">
+                            <tr th:class="${assignment.id}" style="display:none">
                                 <td colspan="5">
                                     <div width="100%">
                                         <table width="100%">
                                             <tr>
                                                 <td width="100px"><label>Focus</label></td>
-                                                <td th:text="${question.focus}"></td>
+                                                <td th:text="${assignment.focus}"></td>
                                             </tr>
                                             <tr>
                                                 <td width="100px"><label>Question</label></td>
-                                                <td th:text="${question.questionText}"></td>
+                                                <td th:text="${assignment.questionText}"></td>
                                             </tr>
-                                            <tr th:each="option:${question.options}">
+                                            <tr th:each="option:${assignment.options}">
                                                 <!-- If option is answer -->
                                                 <td th:if="${option.correctOption}" width="100px" align="right">
                                                     <input type="checkbox" disabled="disabled" checked="checked"/>
@@ -171,7 +171,7 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="2">
-                                                    <a th:href="@{|/question/${question.id}?update=true|}"><input type="button" class="btn btn-primary" value="Update"/></a>
+                                                    <a th:href="@{|/assignment/${assignment.id}?update=true|}"><input type="button" class="btn btn-primary" value="Update"/></a>
                                                 </td>
                                             </tr>
                                         </table>

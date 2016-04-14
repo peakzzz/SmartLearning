@@ -207,7 +207,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id, o.text, o.iscorrectoption, " +
 				"q.categoryid, c.title " +
-				" from question q inner join option o on o.questionid=q.id " +
+				" from assignment q inner join option o on o.questionid=q.id " +
 				"inner join category c on q.categoryid=c.id ");
 
 		if(searchParams.getCategoryID()!=null) {
