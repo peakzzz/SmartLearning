@@ -112,7 +112,7 @@ public class AssignmentServiceImpl implements AssignmentService{
 				}
 			}
 		} catch (DAOException e) {
-			throw new QuestionException("Failed to get questions.", e);
+			throw new QuestionException("Failed to get assignments.", e);
 		}
 		return qsList;
 	}

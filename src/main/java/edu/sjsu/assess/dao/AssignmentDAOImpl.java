@@ -207,7 +207,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id, o.text, o.iscorrectoption, " +
 				"q.categoryid, c.title " +
-				" from question q inner join option o on o.questionid=q.id " +
+				" from assignment q inner join option o on o.questionid=q.id " +
 				"inner join category c on q.categoryid=c.id ");
 
 		if(searchParams.getCategoryID()!=null) {
@@ -366,7 +366,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
         } catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to get questions list from DB.");
+                    "Failed to get assignments list from DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -378,7 +378,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public Assignment getAssignmentByID(Integer qsID) throws DAOException {
 		
 		StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM question ");
+        query.append("SELECT * FROM assignment ");
         query.append("WHERE id = ?");
 
         Assignment assignment = null;
@@ -395,7 +395,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
             
         } catch (Exception e) { e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to get question from DB.");
+                    "Failed to get assignment from DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -406,7 +406,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public List<Assignment> getAssignmentByID(List<Integer> quesIds) throws DAOException {
 
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM question ");
+		query.append("SELECT * FROM assignment ");
 		query.append("WHERE id in (:ids)");
 
 		List<Assignment> assignmentList = null;
@@ -426,7 +426,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 
 		} catch (Exception e) { e.printStackTrace();
 			DAOException daoe = new DAOException(
-					"Failed to get question from DB.");
+					"Failed to get assignment from DB.");
 			daoe.setStackTrace(e.getStackTrace());
 			throw daoe;
 		}
@@ -451,7 +451,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to get question from DB.");
+                    "Failed to get assignment from DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -462,7 +462,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	@Override
 	public void updateAssignmentByID(Assignment qs) throws DAOException{
 		
-		String updateStatement = " UPDATE question "
+		String updateStatement = " UPDATE assignment "
                 + "SET "
                 + "categoryID = ?, " 
                 + "questionText = ?, "
@@ -490,7 +490,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
         catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to update question.");
+                    "Failed to update assignment.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }
@@ -513,7 +513,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			} catch (Exception e) { e.printStackTrace();
 				e.printStackTrace();
 				DAOException daoe = new DAOException(
-						"Failed to update question.");
+						"Failed to update assignment.");
 				daoe.setStackTrace(e.getStackTrace());
 				throw daoe;
 			}
@@ -546,7 +546,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	@Override
 	public void deleteAssignmentByID(Integer qsID) throws DAOException{
 		
-		String query = "DELETE FROM question WHERE id = ?";
+		String query = "DELETE FROM assignment WHERE id = ?";
         
         try {
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -556,7 +556,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
         } catch (Exception e) {
 			e.printStackTrace();
             DAOException daoe = new DAOException(
-                    "Failed to delete question from DB.");
+                    "Failed to delete assignment from DB.");
             daoe.setStackTrace(e.getStackTrace());
             throw daoe;
         }

@@ -99,7 +99,7 @@
    		</div>
                                 
             
-            <form th:object="${question}" th:action="@{/question}" method="post" class="form">
+            <form th:object="${assignment}" th:action="@{/question}" method="post" class="form">
                 <input type="hidden" value="/question" class="action" th:unless="${setCategoryId}"/>
                 <input type="hidden" th:value="|/testset/new-question/${testsetId}/${setCategoryId}|" class="action" th:if="${setCategoryId}"/>
                 <div id="containerDiv" class="form-group">

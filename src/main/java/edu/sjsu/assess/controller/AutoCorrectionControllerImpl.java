@@ -48,23 +48,23 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	    // called when menu item 'Attempt Test' is selected. This renders
 	 	// viewautocorrection page.
 	    
-//	 	@Override
-//	 	@RequestMapping(value = "/createProgram", method = RequestMethod.GET)
-//	 	public String showViewAutoCorrection(String setCategoryId, Model model){
-//	 		Assignment assignment = new Assignment();
-// 	        model.addAttribute("assignment", assignment);
-// 	        model.addAttribute("categories", getAllCategories());
-//	 		return "viewautocorrection";
-//	 	}
-	    
-	    @Override
+	 	@Override
 	 	@RequestMapping(value = "/createProgram", method = RequestMethod.GET)
 	 	public String showViewAutoCorrection(String setCategoryId, Model model){
-	 		Question question = new Question();
- 	        model.addAttribute("question", question);
+	 		Assignment assignment = new Assignment();
+ 	        model.addAttribute("assignment", assignment);
  	        model.addAttribute("categories", getAllCategories());
 	 		return "viewautocorrection";
 	 	}
+	    
+//	    @Override
+//	 	@RequestMapping(value = "/createProgram", method = RequestMethod.GET)
+//	 	public String showViewAutoCorrection(String setCategoryId, Model model){
+//	 		Question question = new Question();
+// 	        model.addAttribute("question", question);
+// 	        model.addAttribute("categories", getAllCategories());
+//	 		return "viewautocorrection";
+//	 	}
 
 
  	    @Override
