@@ -85,7 +85,7 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 
         return forumPost;
 	}
-
+	/*method retrieves the post in postgres*/
 	public List<ForumPost> getPosts() throws DAOException{
 		System.out.println("Hi in DAO getPosts method");
 		StringBuilder query = new StringBuilder();

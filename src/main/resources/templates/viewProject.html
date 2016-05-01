@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>View Project</title>
+</head>
+<body>
+<div th:fragment="content">
+
+    <div class="container ">
+        <div class="vertical-center">
+        <div>
+            <dl class="dl-horizontal">
+                <dt>Title:</dt>
+                <dd><div th:utext="${studentProject.title}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Description:</dt>
+                <dd><div th:utext="${studentProject.description}"/></dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>Created by</dt>
+                <dd><div th:utext="${studentProject.fName}"/></dd>
+            </dl>
+        </div>
+           
+            <form method="post" th:action="@{|/project/close?projectId=${studentProject.id}|}"><input type="submit" class="btn btn-primary" value="Close"/></form>
+        <a th:href="@{/project/viewProject}" class="btn btn-info pull-right ">Back</a>
+    </div>
+	
+	  <table class="table table-hover" style="border-collapse:collapse;">
+            <thead>
+            <tr><h4>Submissions for the project</h4></tr>
+            <tr>
+                <th width="60%">
+                    Description
+                </th>
+                <th width="5%">
+                    User Name
+                </th>
+            </tr>
+            </thead>
+
+
+            <tbody data-link="row" class="rowlink">
+                <tr th:each="l : ${projectSubmissions}">
+                    <!--<td><a th:text="${l.id}" th:href="@{/jobcode/get/{id}(id=${l.id})}" method="get"></td>
+                    <td th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"></td> -->
+                    <td><a th:text="${l.description}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
+                    <td th:text="${l.fname}"></td>
+                </tr>
+            </tbody>
+        </table>
+	
+</div>
+
+</div>
+</body>
+</html>

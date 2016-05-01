@@ -30,6 +30,9 @@
                 <!--<th width="10%">-->
                     <!--Job Code-->
                 <!--</th>-->
+                 <th width="10%">
+                    Project id
+                </th>
                 <th width="20%">
                     Title
                 </th>
@@ -44,11 +47,11 @@
 
 
             <tbody data-link="row" class="rowlink">
-                <tr th:each="l : ${forumPosts}">
+                <tr th:each="l : ${studentProjects}">
                     <!--<td><a th:text="${l.id}" th:href="@{/jobcode/get/{id}(id=${l.id})}" method="get"></td>
                     <td th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"></td> -->
                     <td> <a th:text="${l.id}" th:href="@{/project/get/{id}(id=${l.id})}" method="get"/></td>
-                    <td><a th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
+                    <td><a th:text="${l.title}" th:href="@{/project/get/{id}(id=${l.id})}" method="get"/></td>
                     <td th:text="${l.description}"></td>
                     <td th:text="${l.fName}"></td>
                 </tr>

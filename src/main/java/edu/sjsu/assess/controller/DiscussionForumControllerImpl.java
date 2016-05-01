@@ -64,7 +64,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
    @Override
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String loadCreatePost(Model model) {
-	   ForumPost forumPost = new ForumPost();
+	    ForumPost forumPost = new ForumPost();
         model.addAttribute("forumPost", forumPost);
         System.out.println("Hi in loadCreatePost method");
         return "createPost";

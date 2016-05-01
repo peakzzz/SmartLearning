@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       th:include="layout :: page">
 <head>
-    <title>Create Post</title>
+    <title>Create Project</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
     <div th:fragment="header">
@@ -16,18 +16,7 @@
                 height: 45 px;
             }
         </style>
-        <!--
-                /* Script:
-                *   By Default: Keep true or false as disabled and hidden
-                *   For questionType:
-                *       Boolean variables as hidden tags to accommodate radio button & fill values accordingly
-                *       Change of questiontype, update the hidden variables & toggle tables
-                *   For options:
-                *       Checkbox/radio button value should be equal to hidden correctAnswer field
-                *       set values of hidden boolean variables before form submission for selected values
-                */
-        -->
-        <script type="text/javascript">
+       <script type="text/javascript">
             $(document).ready(function(){
 
 
@@ -80,23 +69,23 @@
 <body>
     <div th:fragment="content">
         <div class="container">
-            <h4>Create Post</h4>
-            <form th:object="${forumPost}" th:action="@{/forum/createPost}" method="post" class="form">
+            <h4>Create Project</h4>
+            <form th:object="${studentProject}" th:action="@{/project/createProject}" method="post" class="form">
                 <div id="containerDiv" class="form-group">
-                <div class="forumpost" id="forumPostDiv">  
+                <div class="studentProject" id="studentProjectDiv">  
                     <table>
                         <tr>
                             <td>Title</td>
-                            <td><input type="text" th:field="*{title}" id="forumPostTitle" class="form-control" th:required ="required" /></td>
+                            <td><input type="text" th:field="*{title}" id="studentProjectTitle" class="form-control" th:required ="required" /></td>
                         </tr>
                         <tr>
                             <td>Description</td>
 <!--                             <td><textarea rows="3" cols="50" id="forumPostDescription" th:field="*{description}"  class="form-control" required ="true"></textarea></td> -->
-                      <td>  <textarea id="postdesc" name="description" class="form-control" rows="3" data-bind="value: description" required="required"></textarea></td>
+                      <td>  <textarea id="studentProjectDescription" name="description" class="form-control" rows="3" data-bind="value: description" required="required"></textarea></td>
                         </tr>
 					</table>
                     <!--<a th:href="@{/question/search}"><input type="button" value="Cancel" class="btn btn-primary"/></a>-->
-             		<input type="button" value="Create Post" class="btn btn-primary" id="submit-form"/>
+             		<input type="button" value="Create Project" class="btn btn-primary" id="submit-form"/>
              	</div>
             </div>
         </form>
