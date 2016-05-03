@@ -4,7 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +22,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import edu.sjsu.assess.dao.DiscussionForumDAOImpl.ForumPostRowMapper;
 import edu.sjsu.assess.exception.DAOException;
-import edu.sjsu.assess.model.ForumPost;
+import edu.sjsu.assess.model.ProjectSubmission;
 import edu.sjsu.assess.model.StudentProject;
+
 @Repository
 public class ProjectDAOImpl implements ProjectDAO{
 	@Autowired
@@ -33,30 +37,30 @@ public class ProjectDAOImpl implements ProjectDAO{
 		System.out.println("Hi in DAO createProject method"+studentProject.getDescription());
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
-		
+
 		query.append("INSERT INTO studentproject(title, description, isAlive,userid");
 		valuesStr.append(" VALUES(?,?,?,?");
-		
+
 		query.append(")");
 		valuesStr.append(");");
-		
+
 		query.append(valuesStr);
-		
+
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-        
-        try {
-        	
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-            
-            jdbcTemplate.update(
-            		new PreparedStatementCreator() {
-						
+
+		try {
+
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+			jdbcTemplate.update(
+					new PreparedStatementCreator() {
+
 						@Override
 						public PreparedStatement createPreparedStatement(Connection con)
 								throws SQLException {
-							
+
 							PreparedStatement ps = con.prepareStatement(query.toString(), new String[] {"pid"});
-							
+
 							int index = 1;
 							ps.setString(index++, studentProject.getTitle());
 							ps.setString(index++, studentProject.getDescription());
@@ -65,19 +69,19 @@ public class ProjectDAOImpl implements ProjectDAO{
 							return ps;
 						}
 					}, keyHolder);
-            
-            studentProject.setId(keyHolder.getKey().intValue());
-            
 
-        } catch (Exception e) {
+			studentProject.setId(keyHolder.getKey().intValue());
+
+
+		} catch (Exception e) {
 			e.printStackTrace();
-            DAOException daoe = new DAOException(
-                    "Failed to Insert Question in DB.");
-            daoe.setStackTrace(e.getStackTrace());
-            throw daoe;
-        }
+			DAOException daoe = new DAOException(
+					"Failed to Insert Question in DB.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
 
-        return studentProject;
+		return studentProject;
 	}
 	/*method retrieves the projects in postgres*/
 	@Override
@@ -90,34 +94,27 @@ public class ProjectDAOImpl implements ProjectDAO{
 		System.out.println("query building done:"+query);
 		List<StudentProject> studentProjects = new ArrayList<StudentProject>();
 		try{
-			
+
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-			
+
 			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString());
-			
+
 			for (Map<String, Object> row : rows){
-				//System.out.println("inside for");
 				StudentProject studentProject = new StudentProject();
-				//System.out.println("inside for2");
 				studentProject.setId((int)row.get("pid"));
 				studentProject.setTitle((String)row.get("title"));
-				//System.out.println("inside for3:"+fpost.getTitle());
 				studentProject.setDescription((String)row.get("description"));
-				//System.out.println("inside for4:"+fpost.getDescription());
 				studentProject.setUserID((int)row.get("userid"));
 				studentProject.setfName((String)row.get("fname"));
-				//System.out.println("inside for5:"+fpost.getfName());
 				studentProject.setAlive((Boolean)row.get("isAlive"));
-	        	//System.out.println("fpost.getDescription"+fpost.getDescription());
 				studentProjects.add(studentProject);
 			}
-			//System.out.println("inside try");
 		} catch (Exception e) {
-            DAOException daoe = new DAOException(
-                    "Failed to get projects.");
-            daoe.setStackTrace(e.getStackTrace());
-            throw daoe;
-        }
+			DAOException daoe = new DAOException(
+					"Failed to get projects.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
 		//System.out.println("before return: "+ forumPosts.get(0).getDescription());
 		return studentProjects;
 	}
@@ -135,32 +132,92 @@ public class ProjectDAOImpl implements ProjectDAO{
 			result = jdbcTemplate.queryForObject(query.toString(), new ForumProjectRowMapper());
 			System.out.println("result: "+result.getDescription());
 		} catch (Exception e) {
-            DAOException daoe = new DAOException(
-                    "Failed to get post.");
-            daoe.setStackTrace(e.getStackTrace());
-            throw daoe;
-        }
-		
+			DAOException daoe = new DAOException(
+					"Failed to get post.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
+
 		return result;
 	}
-	
+
 	public class ForumProjectRowMapper implements RowMapper<StudentProject>{	
 		@Override
-        public StudentProject mapRow(ResultSet rs, int rowNum)
-                throws SQLException {
+		public StudentProject mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
 			System.out.println("inside mapRow");
 			StudentProject studentProject = new StudentProject();
 			studentProject.setId(rs.getInt("pid"));
-        	
+
 			studentProject.setTitle(rs.getString("title"));
 			studentProject.setDescription(rs.getString("description"));
 			studentProject.setUserID(rs.getInt("userid"));
 			studentProject.setfName(rs.getString("fname"));
 			studentProject.setAlive(rs.getBoolean("isAlive"));  
-        	System.out.println("before return mapRow:"+ rs.getString("fname"));
-        	return studentProject;
-        	
-        }
-}
+			System.out.println("before return mapRow:"+ rs.getString("fname"));
+			return studentProject;
+
+		}
+	}
+
+
+	public ProjectSubmission createProjectSubmission(final ProjectSubmission projectSubmission) throws DAOException {
+		final StringBuilder query = new StringBuilder();
+		StringBuilder valuesStr = new StringBuilder();
+		
+		Calendar calendar = Calendar.getInstance();
+		java.sql.Date date = new java.sql.Date(calendar.getTime().getTime());
+		
+		projectSubmission.setSubmissionDate(date);
+		
+		System.out.println("Date is coming :"+date);
+		
+		query.append("INSERT INTO projectsubmission(studentid, projectid, gitlink, submissiondate");
+		valuesStr.append(" VALUES(?,?,?,?");
+
+		query.append(")");
+		valuesStr.append(");");
+
+		query.append(valuesStr);
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		System.out.println("query INSIDE create project submission ="+query);
+		try {
+
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+			jdbcTemplate.update(
+					new PreparedStatementCreator() {
+
+						@Override
+						public PreparedStatement createPreparedStatement(Connection con)
+								throws SQLException {
+
+							PreparedStatement ps = con.prepareStatement(query.toString(), new String[] {"sid"});
+
+							int index = 1;
+
+							ps.setInt(index++, projectSubmission.getUserID());
+							ps.setInt(index++, projectSubmission.getProjectId());							
+							ps.setString(index++, projectSubmission.getGitLink());
+							ps.setDate(index++, date);
+							System.out.println("project id projectdaoimpl :"+projectSubmission.getProjectId());
+							return ps;
+						}
+					}, keyHolder);
+
+			projectSubmission.setId(keyHolder.getKey().intValue());
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			DAOException daoe = new DAOException(
+					"Failed to Insert Question in DB.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
+
+		return projectSubmission;
+	}
 
 }

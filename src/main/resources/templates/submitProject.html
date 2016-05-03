@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" th:include="layout :: page">
+<head>
+<title>View Project</title>
+</head>
+<body>
+	<div th:fragment="content">
+
+		<form th:object="${projectSubmission}"
+			th:action="@{/project/submitLink/}" method="post" class="form">
+			<div class="container ">
+				<div class="vertical-center">
+					<div>
+						<dl class="dl-horizontal">
+							<dt>Project id:</dt>
+							<dd>
+								<div id="id" th:utext="${studentProject.id}" />
+							</dd>
+						</dl>
+						<dl class="dl-horizontal">
+							<dt>Title:</dt>
+							<dd>
+								<div id="title" th:utext="${studentProject.title}" />
+							</dd>
+						</dl>
+						<dl class="dl-horizontal">
+							<dt>Descriptions:</dt>
+							<dd>
+								<div id="description" th:utext="${studentProject.description}" />
+							</dd>
+						</dl>
+						<dl class="dl-horizontal">
+							<dt>Created by</dt>
+							<dd>
+								<div id="fname" th:utext="${studentProject.fName}" />
+							</dd>
+						</dl>
+
+					</div>
+				</div>
+				<h4>Project Submission link</h4>
+				<input type="hidden" name="projectId" th:value="${studentProject.id}" />
+				<div id="containerDiv" class="form-group">
+					<div class="projectSubmission" id="projectDataDiv">
+						<table>
+							<tr>
+								<td>Git link</td>
+								<td><textarea rows="1" cols="50" id="projectGitLink"
+										th:field="*{gitLink}" class="form-control"></textarea></td>
+							</tr>
+						</table>
+
+						<input type="submit" value="Submit Link" class="btn btn-primary"
+							id="submit-form" />
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

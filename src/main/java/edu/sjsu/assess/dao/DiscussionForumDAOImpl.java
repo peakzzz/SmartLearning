@@ -129,12 +129,10 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 	
 	/*method to get the replies for a particular post*/
 	public List<ForumReply> getReplys(Integer forumPostId) throws DAOException{
-		System.out.println("Hi in DAO getReplys method");
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT id,fname,description FROM forumreply ");
 		query.append("WHERE ");
 		query.append("forumpostid ="+forumPostId);
-		System.out.println("query building done:"+query);
 		List<ForumReply> ForumReplys = new ArrayList<ForumReply>();
 		try{
 			
@@ -143,13 +141,10 @@ public class DiscussionForumDAOImpl implements DiscussionForumDAO{
 			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString());
 			
 			for (Map<String, Object> row : rows){
-				//System.out.println("inside for");
 				ForumReply freply = new ForumReply();
 				freply.setId((int)row.get("id"));
-				System.out.println("inside for4:"+freply.getId());
 				freply.setFname((String)row.get("fname"));
 				freply.setDescription((String)row.get("description"));
-				System.out.println("inside for4:"+freply.getDescription());
 	        	ForumReplys.add(freply);
 			}
 			//System.out.println("inside try");

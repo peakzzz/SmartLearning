@@ -7,8 +7,25 @@
 		// 	checkboxes.click(function() {
 		// 		submitButt.attr("disabled", !checkboxes.is(":checked"));
 		// 	});
+		
+		
 
 		$("#target").submit(function(event) {
+			var checkedAtLeastOne = false;
+			$("#nive").find("ul").each(function() {
+				alert("found a ul");
+	 			$("li").each(function() {
+	 				alert("Found a li");
+				if ($(this).is(":checked")) {
+			        checkedAtLeastOne = true;
+			    }
+			});
+	 			if(checkedAtLeastOne == false)
+	 				alert("ans all");
+	 			checkedAtLeastOne = false;
+			});
+			
+
 // 			if (!$("[name=checkboxName]:checked").length > 0) {
 // 				alert("ans all. no skipping");
 // 				event.preventDefault();

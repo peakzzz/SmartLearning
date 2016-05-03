@@ -24,7 +24,7 @@
                 <dd><div th:utext="${studentProject.fName}"/></dd>
             </dl>
         </div>
-            <a th:href="@{|/project/submission?projectId=${studentProject.id}|}"><input type="button" class="btn btn-primary" value="Submission"/></a>
+            <a th:href="@{|/project/submit?projectId=${studentProject.id}|}"><input type="button" class="btn btn-primary" value="Submit"/></a>
         <a th:href="@{/project/viewProjects}" class="btn btn-info pull-right ">Back</a>
     </div>
 </div>

@@ -19,15 +19,16 @@
                 <form id = "target" action="#" th:action="@{/testset/submittestset}" th:object="${testset}" method="post">
                     <!--TestForm Id-->
                     <input type="hidden" th:field="*{id}" th:value="${id}"/>
+                    <input type="text" th:field="*{id}" th:value="${id}"/>
                     <div th:each="section, rowStat1: *{sections} ">
                         <h3>Section: <span th:text="${section.category.title}"/></h3>
                         <!--Section category-->
                         <input type="hidden" th:field="*{sections[__${rowStat1.index}__].category.id}" th:value="${section.category.id}"/>
                         <ol>
                             <div th:each="l, rowStat2: *{sections[__${rowStat1.index}__].qaa}">
-                                <div th:if="${l.question.multipleChoice}" class="featurette">
+                                <div id="nive" th:if="${l.question.multipleChoice}" class="featurette">
                                     <strong><li th:text="${l.question.questionText}" ></li></strong>
-                                    <input type="hidden" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].question.id}" th:value="${l.question.id}"/>
+                                    <input type="hidden" name="questionid" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].question.id}" th:value="${l.question.id}"/>
                                     <ul>
                                         <li th:each="option, rowStat3 : *{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].question.options}">
                                             <input name = "checkboxName" type="checkbox" th:field="*{sections[__${rowStat1.index}__].qaa[__${rowStat2.index}__].selectedOptions}" th:value="${option.id}"/>

@@ -7,24 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.sjsu.assess.exception.DiscussionForumException;
-import edu.sjsu.assess.exception.JobCodeException;
-import edu.sjsu.assess.exception.QuestionException;
 import edu.sjsu.assess.model.DiscussionForumSearchParams;
 import edu.sjsu.assess.model.ForumPost;
 import edu.sjsu.assess.model.ForumReply;
-import edu.sjsu.assess.model.JobCode;
-import edu.sjsu.assess.model.JobCodeSearchParams;
-import edu.sjsu.assess.model.Question;
-import edu.sjsu.assess.model.QuestionSearchParams;
 import edu.sjsu.assess.service.DiscussionForumServiceImpl;
-import edu.sjsu.assess.service.Pagination;
 
 
 @Controller
@@ -108,7 +100,6 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 	@RequestMapping(value="/viewPost", method = RequestMethod.GET)
 	public String viewPost(Model model) {
 		
-		System.out.println("Hi in viewPost method");
 		model.addAttribute("error", "");
         model.addAttribute("message", "");
         try{
@@ -149,13 +140,13 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
    
    @RequestMapping(value="/reply/{id}", method = RequestMethod.GET)
    public String replyPost(@PathVariable("id") Integer id, Model model) {
-	   System.out.println("Hi in replyPost method");
 	   try {	
 			ForumPost forumPost = discussionForumService.getPostByID(id);
 			model.addAttribute("forumPost", forumPost);
 	   } catch (DiscussionForumException e) {
 			model.addAttribute("error", e.getMessage());
 	   }
+	   System.out.println("Sandhay is it form reply/{id}");
        return "replyPost";
    }
    /*create reply button invokes this method*/
@@ -166,14 +157,13 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 	   ForumReply savedforumReply = null;
 		model.addAttribute("error", "");
        model.addAttribute("message", "");
-       
        if (forumReply == null) {
            model.addAttribute("error", "Null forumReply Object!");
        }
        else { 
           try {
-	       	    //System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
-	       	    //		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
+	       	    System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
+	       	    		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
 	       	    //System.out.println("forumpostid----------->"+id);
 	      
 	       	    savedforumReply = discussionForumService.saveForumReply(forumReply);
@@ -191,7 +181,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
        ForumReplys.add(forumReply);
        System.out.println("Id of ForumReply :"+forumReply.getId());
        model.addAttribute("ForumReplys", ForumReplys);
-       return "redirect:forum/get/"+forumReply.getForumPostId();
+       return "redirect:/forum/get/"+forumReply.getForumPostId();
 	}
 
     /*reply button invokes this method*/
@@ -210,7 +200,7 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 		}
 		forumReply.setForumPostId(postId);
         model.addAttribute("forumReply", forumReply);
-        System.out.println("Hi in loadCreateReply method:"+postId);
+        System.out.println("Sandhya is it from  reply and post idd request param");
         return "replyPost";
 	} 
 	/*close button invokes this method
