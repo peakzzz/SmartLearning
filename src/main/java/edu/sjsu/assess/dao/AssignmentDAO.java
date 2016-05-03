@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import edu.sjsu.assess.exception.DAOException;
 import edu.sjsu.assess.model.Assignment;
 import edu.sjsu.assess.model.AssignmentSearchParams;
+import edu.sjsu.assess.model.Assignmentoption;
 import edu.sjsu.assess.model.Option;
 import edu.sjsu.assess.model.Question;
 import edu.sjsu.assess.model.QuestionSearchParams;
@@ -33,5 +34,8 @@ public interface AssignmentDAO {
 	public void deleteAssignmentByID(Integer qsID) throws DAOException;
 	
 	public List<Assignment> getAssignmentList2(AssignmentSearchParams searchParams) throws DAOException;
+
+	Assignmentoption saveAssignmentSubmission(Assignmentoption assignment)
+			throws DAOException;
 	
 }

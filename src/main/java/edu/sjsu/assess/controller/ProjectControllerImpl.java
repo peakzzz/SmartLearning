@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.sjsu.assess.exception.ProjectException;
+import edu.sjsu.assess.model.ForumReply;
 import edu.sjsu.assess.model.ProjectSubmission;
 import edu.sjsu.assess.model.StudentProject;
 import edu.sjsu.assess.service.ProjectServiceImpl;
@@ -109,6 +110,14 @@ public class ProjectControllerImpl implements ProjectController{
 		System.out.println("userRole after try catch viewProject controller="+userRole);
 		if(userRole.equals("admin")){
 			System.out.println("inside if block="+userRole);
+			List<ProjectSubmission> projectSubmissions = null;
+			try {
+				projectSubmissions = projectService.getSubmissions(id);
+			} catch (ProjectException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}           
+	        model.addAttribute("projectSubmissions",projectSubmissions);
 			return "viewProject";
 		}
 		else{

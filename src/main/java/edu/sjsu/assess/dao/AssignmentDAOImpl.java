@@ -14,7 +14,9 @@ import javax.sql.DataSource;
 
 import edu.sjsu.assess.model.Assignment;
 import edu.sjsu.assess.model.AssignmentSearchParams;
+import edu.sjsu.assess.model.Assignmentoption;
 import edu.sjsu.assess.model.Category;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -40,8 +42,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
 		
-		query.append("INSERT INTO assignment(questionText, answerText, type, isTrueOrFalse, isMultipleChoice");
-		valuesStr.append(" VALUES(?,?,?,?,?");
+		query.append("INSERT INTO assignment(questionText, type, isTrueOrFalse, isMultipleChoice");
+		valuesStr.append(" VALUES(?,?,?,?");
 		
 		
 		// Optional field category
@@ -94,7 +96,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 							
 							int index = 1;
 							ps.setString(index++, qs.getQuestionText());
-							ps.setString(index++, qs.getAnswerText());
 							ps.setString(index++, qs.getType());
 							ps.setBoolean(index++, qs.isTrueOrFalse());
 							ps.setBoolean(index++, qs.isMultipleChoice());
@@ -155,8 +156,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public Option createOption(final Option op) throws DAOException{
 		
 		final StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO assignment_option(assignmentid, text, isCorrectOption) ");
-		query.append("VALUES(?,?,?)");
+		query.append("INSERT INTO assignment_option(assignmentid, isCorrectOption) ");
+		query.append("VALUES(?,?)");
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
@@ -175,7 +176,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 							int index = 1;
 							
 							ps.setInt(index++, op.getQuestionID());
-							ps.setString(index++, op.getText());
+
 							ps.setBoolean(index++, op.isCorrectOption());
 							
 							return ps;
@@ -204,9 +205,9 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		List<Object> params = new ArrayList<>();
 
 		StringBuilder query = new StringBuilder();
-		query.append("select o.assignmentid, q.level, q.focus, q.questiontext, q.answertext, q.userid, " +
+		query.append("select o.assignmentid, q.level, q.focus, q.questiontext,  q.userid, " +
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
-				"o.id, o.text, o.iscorrectoption, " +
+				"o.id,  o.iscorrectoption, " +
 				"q.categoryid, c.title " +
 				" from assignment q inner join assignment_option o on o.assignmentid=q.id " +
 				"inner join category c on q.categoryid=c.id ");
@@ -216,15 +217,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			params.add(searchParams.getCategoryID());
 		}
 
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.questiontext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
-		
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.answertext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
+
 
 		if(searchParams.getLevel()!=null && !"".equals(searchParams.getLevel().trim())) {
 			conditionList.add("q.level = ?");
@@ -260,7 +253,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 					assignment.setLevel((String) row.get("level"));
 					assignment.setFocus((String) row.get("focus"));
 					assignment.setQuestionText((String) row.get("questiontext"));
-					assignment.setAnswerText((String) row.get("answertext"));
 					assignment.setTrueOrFalse((Boolean) row.get("istrueorfalse"));
 					assignment.setMultipleChoice((Boolean) row.get("ismultiplechoice"));
 					assignment.setUserID((Integer) row.get("userid"));
@@ -279,7 +271,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				Option option = new Option();
 				option.setId((Integer) row.get("id"));
 				option.setCorrectOption((Boolean) row.get("iscorrectoption"));
-				option.setText((String) row.get("text"));
 				option.setQuestionID((Integer) row.get("assignmentid"));
 				assignment.getOptions().add(option);
 			}
@@ -327,15 +318,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			params.add(searchParams.getJobcodeID());
 		}
 
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.questiontext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
-		
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.answertext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
+
 
 		if(searchParams.getLevel()!=null && !"".equals(searchParams.getLevel().trim())) {
 			conditionList.add("q.level = ?");
@@ -417,15 +400,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			params.add(searchParams.getJobcodeID());
 		}
 
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.questiontext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
-		
-		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
-			conditionList.add("q.answertext like ?");
-			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
-		}
+
 
 		if(searchParams.getLevel()!=null && !"".equals(searchParams.getLevel().trim())) {
 			conditionList.add("q.level = ?");
@@ -568,7 +543,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
                 + "SET "
                 + "categoryID = ?, " 
                 + "questionText = ?, "
-                + "answerText = ?, "
                 + "isTrueOrFalse = ?, "
                 + "isMultipleChoice = ?, "
                 + "focus = ?, "
@@ -602,16 +576,14 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	public void updateOptions(List<Option> optionList) throws DAOException
 	{
 		String updateStatement = " UPDATE assignment_option "
-				+ "SET text = ?, "
-				+ "iscorrectoption = ? "
+				+ "SET iscorrectoption = ? "
 				+ "WHERE id = ?";
 		for(Option option: optionList) {
 
 			try{
 				JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
-				jdbcTemplate.update(updateStatement,
-						option.getText(), option.isCorrectOption(), option.getId());
+				jdbcTemplate.update(updateStatement, option.isCorrectOption(), option.getId());
 
 			} catch (Exception e) { e.printStackTrace();
 				e.printStackTrace();
@@ -664,6 +636,57 @@ public class AssignmentDAOImpl implements AssignmentDAO {
             throw daoe;
         }
 	}
+	
+	@Override
+	public Assignmentoption saveAssignmentSubmission(Assignmentoption assignment) throws DAOException
+	{
+		final StringBuilder query = new StringBuilder();
+		StringBuilder valuesStr = new StringBuilder();
+
+		query.append("INSERT INTO assignment_option(assignmentid, studentid, answertext");
+		valuesStr.append(" VALUES(?,?,?");
+
+		query.append(")");
+		valuesStr.append(");");
+
+		query.append(valuesStr);
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		try {
+
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+			jdbcTemplate.update(
+					new PreparedStatementCreator() {
+
+						@Override
+						public PreparedStatement createPreparedStatement(Connection con)
+								throws SQLException {
+
+							PreparedStatement ps = con.prepareStatement(query.toString(), new String[] {"id"});
+
+							int index = 1;
+							ps.setInt(index++, assignment.getAssigmentId());
+							ps.setInt(index++, assignment.getSid());
+							ps.setString(index++, assignment.getAnswerText());
+							return ps;
+						}
+					}, keyHolder);
+
+			assignment.setId(keyHolder.getKey().intValue());
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			DAOException daoe = new DAOException(
+					"Failed to Insert Question in DB.");
+			daoe.setStackTrace(e.getStackTrace());
+			throw daoe;
+		}
+
+		return assignment;
+	}
 
 	public class AssignmentRowMapper implements RowMapper<Assignment>{
 		
@@ -677,7 +700,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 //        	qs.setJobCodeID(rs.getInt("jobID"));
         	qs.setCategoryID(rs.getInt("categoryID"));
         	qs.setQuestionText(rs.getString("questionText"));
-        	qs.setAnswerText(rs.getString("answerText"));
         	qs.setType(rs.getString("type"));
         	qs.setTrueOrFalse(rs.getBoolean("isTrueOrFalse"));
         	qs.setMultipleChoice(rs.getBoolean("isMultipleChoice"));
@@ -691,6 +713,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 	}
 	
 
+	
 	public class OptionRowMapper implements RowMapper<Option>{
 		
 		@Override
@@ -701,7 +724,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			
         	op.setId(rs.getInt("id"));
         	op.setQuestionID(rs.getInt("assignmentid"));
-        	op.setText(rs.getString("text"));
         	op.setCorrectOption(rs.getBoolean("isCorrectOption"));
         	
         	return op;

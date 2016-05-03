@@ -94,8 +94,7 @@
                 
             </div>
             
-            
-             <form th:object="${assignment}" th:action="@{/showAssignment/${id}}" method="post" class="form">
+             <form th:object="${assignment}" th:action="@{/autocorrection/showAssignment/{id}(id=${id})}" method="post" class="form">
                 
 	                <div id="containerDiv" class="form-group">
 	                	<div class="question1" id="quesDiv">
@@ -104,7 +103,7 @@
 		                        
 		                        <tr>
 		                            <td>Answer</td>
-		                            <td><textarea rows="15" cols="80" id="answerText" th:field="*{answerText}" class="form-control" placeholder="Write the solution for the assignment"></textarea></td>
+		                            <td><textarea rows="15" cols="80" name = "answerText" id="answerText" th:field="*{answerText}" class="form-control" placeholder="Write the solution for the assignment"></textarea></td>
 		                        </tr>
 		                        
 							</table>

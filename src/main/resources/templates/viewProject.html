@@ -47,8 +47,8 @@
                 <tr th:each="l : ${projectSubmissions}">
                     <!--<td><a th:text="${l.id}" th:href="@{/jobcode/get/{id}(id=${l.id})}" method="get"></td>
                     <td th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"></td> -->
-                    <td><a th:text="${l.description}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
-                    <td th:text="${l.fname}"></td>
+                    <td><a th:text="${l.gitLink}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
+                    <td th:text="${l.gitLink}"></td>
                 </tr>
             </tbody>
         </table>

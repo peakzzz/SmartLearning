@@ -13,6 +13,7 @@ import edu.sjsu.assess.exception.DAOException;
 import edu.sjsu.assess.exception.QuestionException;
 import edu.sjsu.assess.model.Assignment;
 import edu.sjsu.assess.model.AssignmentSearchParams;
+import edu.sjsu.assess.model.Assignmentoption;
 import edu.sjsu.assess.model.Category;
 import edu.sjsu.assess.model.User;
 import edu.sjsu.assess.util.Utility;
@@ -46,6 +47,28 @@ public class AssignmentServiceImpl implements AssignmentService{
 			//qs.setUserID(1);
 			
 			newQS = assignmentDAO.createAssignment(qs);
+
+		} catch (DAOException e) {
+			throw new QuestionException("Failed to Create Assignment.", e);
+		}
+
+		return newQS;
+	}
+	
+	public Assignmentoption saveAssignmentSubmission(Assignmentoption as) throws QuestionException {
+		
+		Assignmentoption newQS = null;
+		try {
+			String userName = Utility.getLoggedInUserName();
+			
+			if(userName != null){
+				User user = userDAO.getUserByLogin(userName);
+				as.setSid(user.getId());
+			}
+			
+			//qs.setUserID(1);
+			
+			 newQS = assignmentDAO.saveAssignmentSubmission(as);
 
 		} catch (DAOException e) {
 			throw new QuestionException("Failed to Create Assignment.", e);

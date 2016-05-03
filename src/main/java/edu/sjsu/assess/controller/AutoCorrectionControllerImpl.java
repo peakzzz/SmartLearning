@@ -1,37 +1,40 @@
 package edu.sjsu.assess.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import edu.sjsu.assess.exception.QuestionException;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import edu.sjsu.assess.dao.AssignmentDAO;
 import edu.sjsu.assess.exception.JobCodeException;
-import edu.sjsu.assess.service.Pagination;
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import edu.sjsu.assess.exception.QuestionException;
 import edu.sjsu.assess.exception.TestSetException;
 import edu.sjsu.assess.model.Assignment;
 import edu.sjsu.assess.model.AssignmentSearchParams;
+import edu.sjsu.assess.model.Assignmentoption;
 import edu.sjsu.assess.model.Category;
-import edu.sjsu.assess.model.Question;
 import edu.sjsu.assess.model.TestSet;
 import edu.sjsu.assess.model.TestSetCategory;
 import edu.sjsu.assess.model.TestSetSearchParams;
 import edu.sjsu.assess.service.AssignmentServiceImpl;
 import edu.sjsu.assess.service.CategoryServiceImpl;
+import edu.sjsu.assess.service.Pagination;
 import edu.sjsu.assess.service.TestSetServiceImpl;
 import edu.sjsu.assess.util.Utility;
 
@@ -104,21 +107,46 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	        
 	    }
 	    
+	    
 	    @RequestMapping(value="showAssignment/{id}", method = RequestMethod.POST)
-	    public String viewAssignmentResults(String answertext,  @PathVariable("id") int id, Model model) throws QuestionException {
-	        
-	        System.out.println("Results!!");
-	       
-	        AssignmentSearchParams searchParams = new AssignmentSearchParams();
-	            searchParams.setId(id);
-	       
-	        List<Assignment> assignment = assignmentService.searchAssignments(searchParams);
-	        
-	        assignment.get(0).setAnswerText(answertext);
-	        
-	        return "redirect:autocorrection/viewAssignmentResults/"+assignment.get(0).getId();
-	       
-	        
+	    public String viewAssignmentResults(Assignmentoption assignment,@PathVariable("id") Integer id, Model model) throws QuestionException {
+
+	    	ArrayList<Integer> elements = new ArrayList<>();
+        	elements.add(id);
+	    	System.out.println("Results!!");
+	    	assignment.setAssigmentId(id);
+	    	Assignmentoption savedAssignmentoption = assignmentService.saveAssignmentSubmission(assignment);
+	        List<Assignment> assignmentList = assignmentService.getAssignmentsByIds(elements);
+            Assignment question = assignmentList.get(0);
+
+            String questiontext = assignment.getAnswerText();
+            //Copy the question and answer in Emma project
+            //run the pom.xml from emma project 
+            //open new window showing index.html (result of code coverage)
+
+           
+            try{
+
+                if ((new File("C:/Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html")).exists()) {
+
+                    Process p = Runtime
+                       .getRuntime()
+                       .exec("rundll32 url.dll,FileProtocolHandler C://Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html");
+                    p.waitFor();
+
+                } else {
+
+                    System.out.println("File does not exist");
+
+                }
+
+              } catch (Exception ex) {
+                ex.printStackTrace();
+              }
+
+            
+            //String url = "file:///C:/Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html";
+	    	return "redirect:/autocorrection/viewAssignmentTest";
 	    }
 	     
 	    

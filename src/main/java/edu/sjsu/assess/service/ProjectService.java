@@ -12,4 +12,5 @@ public interface ProjectService {
 	public List<StudentProject> getProjects() throws ProjectException;
 	public StudentProject getProjectByID(Integer id) throws ProjectException;
 	public ProjectSubmission saveProjectSubmission(ProjectSubmission projectSubmission) throws ProjectException;
+	public List<ProjectSubmission> getSubmissions(Integer projectId) throws ProjectException;
 }

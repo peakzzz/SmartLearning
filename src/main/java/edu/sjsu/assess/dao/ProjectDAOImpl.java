@@ -23,6 +23,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import edu.sjsu.assess.exception.DAOException;
+import edu.sjsu.assess.model.ForumReply;
 import edu.sjsu.assess.model.ProjectSubmission;
 import edu.sjsu.assess.model.StudentProject;
 
@@ -139,6 +140,41 @@ public class ProjectDAOImpl implements ProjectDAO{
 		}
 
 		return result;
+	}
+	
+	@Override
+	public List<ProjectSubmission> getSubmissionsById(Integer projectId) throws DAOException {
+
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT p.sid,p.gitlink,u.fname FROM projectsubmission p,users u ");
+		query.append("WHERE p.studentid = u.id AND ");
+		query.append("p.projectid ="+projectId);
+		System.out.println("projectdaoimpl query  :"+query);
+		System.out.println("projectdaoimpl prj id "+projectId);
+		List<ProjectSubmission> projectsubmissions = new ArrayList<ProjectSubmission>();
+		try{
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			
+			List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString());
+			
+			for (Map<String, Object> row : rows){
+				ProjectSubmission pSubmission = new ProjectSubmission();
+				pSubmission.setId((int)row.get("sid"));
+				pSubmission.setGitLink((String)row.get("gitlink"));
+				pSubmission.setFname((String)row.get("u.fname"));
+				projectsubmissions.add(pSubmission);
+			}
+			//System.out.println("inside try");
+		} catch (Exception e) {
+            DAOException daoe = new DAOException(
+                    "Failed to get submission.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+        }
+		//System.out.println("before return: "+ forumPosts.get(0).getDescription());
+		return projectsubmissions;
+	
 	}
 
 	public class ForumProjectRowMapper implements RowMapper<StudentProject>{	

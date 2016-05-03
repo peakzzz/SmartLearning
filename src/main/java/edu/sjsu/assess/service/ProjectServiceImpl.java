@@ -77,6 +77,17 @@ public class ProjectServiceImpl implements ProjectService{
 		}
 		return studentProjects;
 	}
+	
+	@Override
+	public List<ProjectSubmission> getSubmissions(Integer projectId) throws ProjectException{
+		List<ProjectSubmission> forumreplys = new ArrayList<>();
+		try {
+			forumreplys = projectDAO.getSubmissionsById(projectId);
+		} catch (DAOException e) {
+			throw new ProjectException("Failed to retrieve submissions for the post.", e);
+		}
+		return forumreplys;
+	}
 
 	@Override
 	public StudentProject getProjectByID(Integer id)

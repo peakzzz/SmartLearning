@@ -12,4 +12,5 @@ public interface ProjectDAO {
 	public List<StudentProject> getProjects() throws DAOException;
 	public StudentProject getProjectByID(Integer id) throws DAOException;
 	public ProjectSubmission createProjectSubmission(ProjectSubmission projectSubmission) throws DAOException;
+	public List<ProjectSubmission> getSubmissionsById(Integer id) throws DAOException;
 }

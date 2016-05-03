@@ -146,7 +146,6 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 	   } catch (DiscussionForumException e) {
 			model.addAttribute("error", e.getMessage());
 	   }
-	   System.out.println("Sandhay is it form reply/{id}");
        return "replyPost";
    }
    /*create reply button invokes this method*/
@@ -162,8 +161,8 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
        }
        else { 
           try {
-	       	    System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
-	       	    		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
+//	       	    System.out.println("Hi in controller createReply method: "+forumReply.getDescription()
+//	       	    		+",name:"+ forumReply.getFname() + ",postid:"+forumReply.getForumPostId());
 	       	    //System.out.println("forumpostid----------->"+id);
 	      
 	       	    savedforumReply = discussionForumService.saveForumReply(forumReply);
@@ -200,7 +199,6 @@ public class DiscussionForumControllerImpl implements DiscussionForumController{
 		}
 		forumReply.setForumPostId(postId);
         model.addAttribute("forumReply", forumReply);
-        System.out.println("Sandhya is it from  reply and post idd request param");
         return "replyPost";
 	} 
 	/*close button invokes this method
