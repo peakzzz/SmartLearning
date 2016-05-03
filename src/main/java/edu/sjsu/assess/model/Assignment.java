@@ -12,7 +12,9 @@ public class Assignment {
 
 	private Category categoryObj;
 	
-	private String questionText;
+	public String questionText;
+	
+	private String answerText;
 	
 	private String type;
 	
@@ -20,9 +22,9 @@ public class Assignment {
 	
 	private boolean isMultipleChoice;
 	
-	private String focus;
+	public String focus;
 	
-	private String level;
+	public String level;
 	
 	private Integer userID;
 	
@@ -147,5 +149,13 @@ public class Assignment {
         }
         return true;
     }
+
+	public String getAnswerText() {
+		return answerText;
+	}
+
+	public void setAnswerText(String answerText) {
+		this.answerText = answerText;
+	}
 
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+
+<head>
+    <title>View Test Set</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/js/jquery-1.10.1.min.js" th:src="@{/js/jquery-1.10.1.min.js}"></script>
+    <div th:fragment="header">
+        <style>
+            td {
+            padding: 10px 15px 10px 15px;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+
+        <table class="table table-hover" style="border-collapse:collapse;">
+            <thead>
+            <tr>
+                <th width="10%">
+                    Question Text
+                </th>
+                <th width="50%">
+                    Level
+                </th>
+                <th width="20%">
+                    Focus
+                </th>
+                <!--<th width="20%">-->
+                    <!--Deadline-->
+                <!--</th>-->
+            </tr>
+            </thead>
+
+            <!--style="padding-left:20px;"-->
+            <tbody data-link="row" class="rowlink">
+                <tr th:each="l : ${results}">
+                    <td><a th:text="${l.id}" th:href="@{viewAssignment/{id}(id=${l.id})}" method="get"/></td>
+
+                    <td th:text="${l.level}"></td>
+                    
+                    <td th:text="${l.focus}"></td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

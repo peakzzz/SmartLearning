@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="layout :: page">
+<head>
+    <title>View Assignment Details</title>
+    <div th:fragment="header">
+        <style>
+            td {
+                padding: 10px 15px 10px 15px;
+            }
+            input[type=text] {
+                width: 400 px;
+                height: 45 px;
+            }
+        </style>
+        <!--
+                /* Script:
+                *   By Default: Keep true or false as disabled and hidden
+                *   For questionType:
+                *       Boolean variables as hidden tags to accommodate radio button & fill values accordingly
+                *       Change of questiontype, update the hidden variables & toggle tables
+                *   For options:
+                *       Checkbox/radio button value should be equal to hidden correctAnswer field
+                *       set values of hidden boolean variables before form submission for selected values
+                */
+        -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+
+                $("#trueOrFalse-table").find("input").attr('disabled', 'disabled');
+                var questionType = $('.questionType').val();
+                $('#'+questionType).val(true);
+                $('.true-field').val(true);
+                $('.false-field').val(false);
+
+               $('.questionType').change(
+                    function(){
+                        var id = $(this).val();
+                        var tableId = id + "-table";
+
+                        $('.questionTypeHidden').each(function(){
+                            var qtHiddenId = $(this).attr('id');
+                            if(id==qtHiddenId) {
+                                $(this).val(true);
+                                var tableId = qtHiddenId+"-table";
+                                $('#'+tableId).find('input').removeAttr('disabled');
+                                $('#'+tableId).show();
+                            }
+                            else {
+                                $(this).val(false);
+                                var tableId = qtHiddenId+"-table";
+                                $('#'+tableId).find('input').attr('disabled', 'disabled');
+                                $('#'+tableId).hide();
+                            }
+                        })
+                    })
+
+                $('#submit-form').click(function(){
+                    $('.correctAnswer:enabled').each(function(){
+                        if($(this).prop('checked')) {
+                            var id = $(this).val();
+                            $('#'+id).val(true);
+                        } else {
+                            var id = $(this).val();
+                            $('#'+id).val(false);
+                        }
+                    })
+                    $('.form').attr('action', $('.action').val());
+                    $('.form').submit();
+                })
+            });
+        </script>
+    </div>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container ">
+        <div class="vertical-center">
+            <div>
+                <dl class="dl-horizontal">
+                    <dt>Question Text:</dt>
+                    <dd><div th:utext="${assignment.questionText}"/></dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Level:</dt>
+                    <dd><div th:utext="${assignment.level}"/></dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Focus:</dt>
+                    <dd><div th:utext="${assignment.focus}"/></dd>
+                </dl>
+                
+            </div>
+            
+            
+             <form th:object="${assignment}" th:action="@{/showAssignment/${id}}" method="post" class="form">
+                
+	                <div id="containerDiv" class="form-group">
+	                	<div class="question1" id="quesDiv">
+	                    
+		                    <table>
+		                        
+		                        <tr>
+		                            <td>Answer</td>
+		                            <td><textarea rows="15" cols="80" id="answerText" th:field="*{answerText}" class="form-control" placeholder="Write the solution for the assignment"></textarea></td>
+		                        </tr>
+		                        
+							</table>
+	                    <!--<a th:href="@{/question/search}"><input type="button" value="Cancel" class="btn btn-primary"/></a>-->
+	             		<input type="button" value="Submit" class="btn btn-primary" id="submit-form"/>
+	             		</div>
+	            	</div>
+            	
+        	</form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

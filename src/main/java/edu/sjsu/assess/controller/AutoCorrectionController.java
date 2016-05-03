@@ -28,7 +28,12 @@ public interface AutoCorrectionController {
 
     public String getAssignmentsForLevel(String category, String level, Model model);
 
-   public String getAllAssignmentsForCategory(String category, String testId,
+    public String getAllAssignmentsForCategory(String category, String testId,
            String testsetCategoryId, Model model);
+
+
+    public String viewAssignmentsList(AssignmentSearchParams searchParams, Integer pageNo, Model model);
+
+	public String viewAssignmentsTestList(AssignmentSearchParams searchParams, Integer pageNo, Model model);
 	
 }

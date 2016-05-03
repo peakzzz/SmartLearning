@@ -156,6 +156,10 @@
                                                 <td width="100px"><label>Question</label></td>
                                                 <td th:text="${assignment.questionText}"></td>
                                             </tr>
+                                             <tr>
+                                                <td width="100px"><label>Solution</label></td>
+                                                <td th:text="${assignment.answerText}"></td>
+                                            </tr>
                                             <tr th:each="option:${assignment.options}">
                                                 <!-- If option is answer -->
                                                 <td th:if="${option.correctOption}" width="100px" align="right">

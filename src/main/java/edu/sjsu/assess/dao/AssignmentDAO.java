@@ -31,9 +31,7 @@ public interface AssignmentDAO {
 	public Option createOption(final Option op) throws DAOException;
 	
 	public void deleteAssignmentByID(Integer qsID) throws DAOException;
-
 	
-
-	
+	public List<Assignment> getAssignmentList2(AssignmentSearchParams searchParams) throws DAOException;
 	
 }

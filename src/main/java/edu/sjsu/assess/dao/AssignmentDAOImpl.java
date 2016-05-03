@@ -40,8 +40,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
 		
-		query.append("INSERT INTO assignment(questionText, type, isTrueOrFalse, isMultipleChoice");
-		valuesStr.append(" VALUES(?,?,?,?");
+		query.append("INSERT INTO assignment(questionText, answerText, type, isTrueOrFalse, isMultipleChoice");
+		valuesStr.append(" VALUES(?,?,?,?,?");
 		
 		
 		// Optional field category
@@ -94,6 +94,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 							
 							int index = 1;
 							ps.setString(index++, qs.getQuestionText());
+							ps.setString(index++, qs.getAnswerText());
 							ps.setString(index++, qs.getType());
 							ps.setBoolean(index++, qs.isTrueOrFalse());
 							ps.setBoolean(index++, qs.isMultipleChoice());
@@ -203,7 +204,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		List<Object> params = new ArrayList<>();
 
 		StringBuilder query = new StringBuilder();
-		query.append("select o.assignmentid, q.level, q.focus, q.questiontext, q.userid, " +
+		query.append("select o.assignmentid, q.level, q.focus, q.questiontext, q.answertext, q.userid, " +
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id, o.text, o.iscorrectoption, " +
 				"q.categoryid, c.title " +
@@ -217,6 +218,11 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 
 		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
 			conditionList.add("q.questiontext like ?");
+			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
+		}
+		
+		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
+			conditionList.add("q.answertext like ?");
 			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
 		}
 
@@ -236,7 +242,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				query.append(" and "+conditionList.get(i));
 			}
 		}
-
+		System.out.println("Preeeeeeeeti");
 		System.out.println(query);
 
 		try {
@@ -254,6 +260,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 					assignment.setLevel((String) row.get("level"));
 					assignment.setFocus((String) row.get("focus"));
 					assignment.setQuestionText((String) row.get("questiontext"));
+					assignment.setAnswerText((String) row.get("answertext"));
 					assignment.setTrueOrFalse((Boolean) row.get("istrueorfalse"));
 					assignment.setMultipleChoice((Boolean) row.get("ismultiplechoice"));
 					assignment.setUserID((Integer) row.get("userid"));
@@ -285,7 +292,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 			throw daoe;
 		}
 
-
+		System.out.println("Assignment Lists:" +assignments);
 		return assignments;
 	}
 	
@@ -322,6 +329,11 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 
 		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
 			conditionList.add("q.questiontext like ?");
+			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
+		}
+		
+		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
+			conditionList.add("q.answertext like ?");
 			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
 		}
 
@@ -361,6 +373,96 @@ public class AssignmentDAOImpl implements AssignmentDAO {
             
             for (Map<String, Object> row : rows){
             	result.add(Integer.parseInt(String.valueOf(row.get("id"))));
+            }
+            
+        } catch (Exception e) {
+			e.printStackTrace();
+            DAOException daoe = new DAOException(
+                    "Failed to get assignments list from DB.");
+            daoe.setStackTrace(e.getStackTrace());
+            throw daoe;
+        }
+
+        return result;
+	}
+	
+	@Override
+	public List<Assignment> getAssignmentList2(AssignmentSearchParams searchParams)
+			throws DAOException {
+
+		StringBuilder query = new StringBuilder();
+
+		Map<String, String> joins = new HashMap<>();
+		List<String> conditionList = new ArrayList<>();
+		List<Object> params = new ArrayList<>();
+
+		query.append("select * from assignment q ");
+
+		if(searchParams.getId()!=null) {
+			conditionList.add("q.id = ?");
+			params.add(searchParams.getId());
+		}
+
+		if(searchParams.getCategoryID()!=null) {
+			conditionList.add("q.categoryid = ?");
+			params.add(searchParams.getCategoryID());
+		}
+
+		if(searchParams.getJobcodeID()!=null) {
+			joins.put("testsetquestions tsq", "tsq.assignmentid = q.id");
+			joins.put("testsetcategories tsc", "tsc.id = tsq.testsetcategoryid");
+			joins.put("testset ts", "ts.id = tsc.testsetid");
+
+			conditionList.add("ts.jobcodeid = ?");
+			params.add(searchParams.getJobcodeID());
+		}
+
+		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
+			conditionList.add("q.questiontext like ?");
+			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
+		}
+		
+		if(searchParams.getText()!=null && !"".equals(searchParams.getText().trim())) {
+			conditionList.add("q.answertext like ?");
+			params.add("%"+searchParams.getText().trim().replaceAll(" ", "%")+"%");
+		}
+
+		if(searchParams.getLevel()!=null && !"".equals(searchParams.getLevel().trim())) {
+			conditionList.add("q.level = ?");
+			params.add(searchParams.getLevel());
+		}
+
+		if(searchParams.getFocus()!=null && !"".equals(searchParams.getFocus().trim())) {
+			conditionList.add("q.focus = ?");
+			params.add(searchParams.getFocus());
+		}
+
+		if(joins!=null && joins.size()>0) {
+			for(String table: joins.keySet()) {
+				query.append(" inner join "+ table);
+				query.append(" on "+ joins.get(table));
+			}
+		}
+
+		if(conditionList!=null && conditionList.size()>0) {
+			query.append(" where " + conditionList.get(0));
+			for(int i=1; i<conditionList.size(); i++) {
+				query.append(" and "+conditionList.get(i));
+			}
+		}
+
+		System.out.println(query.toString());
+        
+        List<Assignment> result = new ArrayList<>();
+        
+        try {
+        	
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(query.toString(), params.toArray());
+            System.out.println("Rows!!!!!" +rows);
+            for (Map<String, Object> row : rows){
+            	result.add(Integer.parseInt(String.valueOf(row.get("id"))), null);
             }
             
         } catch (Exception e) {
@@ -466,6 +568,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
                 + "SET "
                 + "categoryID = ?, " 
                 + "questionText = ?, "
+                + "answerText = ?, "
                 + "isTrueOrFalse = ?, "
                 + "isMultipleChoice = ?, "
                 + "focus = ?, "
@@ -574,6 +677,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 //        	qs.setJobCodeID(rs.getInt("jobID"));
         	qs.setCategoryID(rs.getInt("categoryID"));
         	qs.setQuestionText(rs.getString("questionText"));
+        	qs.setAnswerText(rs.getString("answerText"));
         	qs.setType(rs.getString("type"));
         	qs.setTrueOrFalse(rs.getBoolean("isTrueOrFalse"));
         	qs.setMultipleChoice(rs.getBoolean("isMultipleChoice"));

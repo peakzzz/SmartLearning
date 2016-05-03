@@ -163,6 +163,7 @@
                             <td>Question</td>
                             <td><textarea rows="15" cols="80" id="quesText" th:field="*{questionText}" class="form-control" placeholder="Write the program question for the assignment"></textarea></td>
                         </tr>
+                        
                         <tr>
                             <td colspan="2"><label>Options</label></td>
                         </tr>
@@ -179,16 +180,7 @@
                                         <td><input type="text" th:field="*{options[1].text}" id="answer-1-text" class="form-control"/></td>
                                         <input type="hidden" name="options[1].correctOption" id="correct-1"/>
                                     </tr>
-                                    <tr>
-                                        <td><input type="checkbox" value="correct-2" class="correctAnswer" id="answer-2"/></td>
-                                        <td><input type="text" th:field="*{options[2].text}" id="answer-2-text" class="form-control"/></td>
-                                        <input type="hidden" name="options[2].correctOption" id="correct-2"/>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" value="correct-3" class="correctAnswer" id="answer-3"/></td>
-                                        <td><input type="text" th:field="*{options[3].text}" id="answer-3-text" class="form-control"/></td>
-                                        <input type="hidden" name="options[3].correctOption" id="correct-3"/>
-                                    </tr>
+                                    
                                     
                                 </table>
 
