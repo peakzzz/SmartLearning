@@ -1,362 +1,354 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      th:include="layout :: page">
+	xmlns:th="http://www.thymeleaf.org" th:include="layout :: page">
 <head>
-    <title>Admin Dashboard</title>
-    <div th:fragment="header">
-       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-       <script src="http://code.highcharts.com/highcharts.js"></script>
-		<script src="http://code.highcharts.com/highcharts-more.js"></script>
-		<script src="http://code.highcharts.com/modules/exporting.js"></script>       
-		<script src="http://code.highcharts.com/modules/funnel.js"></script>
-        					<script>
-														// Function to draw job
-														// code to attempt graph
-														function drawJobcodesAttemptGraph(
-																jobCodes,
-																attempt) {
-															$('#container3')
-																	.highcharts(
-																			{
-																				chart : {
-																					type : 'column'
-																				},
-																				title : {
-																					text : 'Job Codes and Attempts'
-																				},
-																				xAxis : {
-																					categories : jobCodes
-																				},
-																				yAxis : {
-																					title : {
-																						text : 'Number of Attempts'
-																					}
-																				},
-																				series : [ {
-																					name : 'Job Codes',
-																					data : attempt
-																				} ]
-																			});
-														}
+<title>Admin Dashboard</title>
+<div th:fragment="header">
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-more.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+	<script src="http://code.highcharts.com/modules/funnel.js"></script>
+	<script>
+		// Function to draw job
+		// code to attempt graph
+		function drawJobcodesAttemptGraph(jobCodes, attempt) {
+			$('#container3').highcharts({
+				chart : {
+					type : 'column'
+				},
+				title : {
+					text : 'Job Codes and Attempts'
+				},
+				xAxis : {
+					categories : jobCodes
+				},
+				yAxis : {
+					title : {
+						text : 'Number of Attempts'
+					}
+				},
+				series : [ {
+					name : 'Job Codes',
+					data : attempt
+				} ]
+			});
+		}
 
-														function drawJobcodesScoreGraph(
-																jobCodes,
-																median, mean) {
-															$('#container2')
-																	.highcharts(
-																			{
-																				chart : {
-																					type : 'bar'
-																				},
-																				title : {
-																					text : 'Job Codes and Score'
-																				},
-																				xAxis : {
-																					categories : jobCodes
-																				},
-																				yAxis : {
-																					title : {
-																						text : 'Scores'
-																					}
-																				},
-																				plotOptions : {
-																					column : {
-																						grouping : true,
-																						shadow : false
-																					}
-																				},
-																				series : [
-																						{
-																							name : 'Avg',
-																							data : mean
-																						}]
-																			});
-														}
+		function drawJobcodesScoreGraph(jobCodes, median, mean) {
+			$('#container2').highcharts({
+				chart : {
+					type : 'bar'
+				},
+				title : {
+					text : 'Job Codes and Score'
+				},
+				xAxis : {
+					categories : jobCodes
+				},
+				yAxis : {
+					title : {
+						text : 'Scores'
+					}
+				},
+				plotOptions : {
+					column : {
+						grouping : true,
+						shadow : false
+					}
+				},
+				series : [ {
+					name : 'Avg',
+					data : mean
+				} ]
+			});
+		}
 
-														function drawTopJobGraph(
-																cont, title,
-																cat, avg, data2) {
-															$(cont)
-																	.highcharts(
-																			{
+		function drawTopJobGraph(cont, title, cat, avg, data2) {
+			$(cont).highcharts({
 
-																				chart : {
-																					type : 'boxplot'
-																				},
+				chart : {
+					type : 'boxplot'
+				},
 
-																				title : {
-																					text : title
-																				},
+				title : {
+					text : title
+				},
 
-																				legend : {
-																					enabled : false
-																				},
+				legend : {
+					enabled : false
+				},
 
-																				xAxis : {
-																					categories : cat,
-																					title : {
-																						text : 'Category'
-																					}
-																				},
+				xAxis : {
+					categories : cat,
+					title : {
+						text : 'Category'
+					}
+				},
 
-																				yAxis : {
-																					title : {
-																						text : 'Score'
-																					},
-																					plotLines : [ {
-																						value : avg,
-																						color : 'red',
-																						width : 1,
-																						label : {
-																							text : 'Theoretical mean: '
-																									.concat(avg),
-																							align : 'center',
-																							style : {
-																								color : 'gray'
-																							}
-																						}
-																					} ]
-																				},
+				yAxis : {
+					title : {
+						text : 'Score'
+					},
+					plotLines : [ {
+						value : avg,
+						color : 'red',
+						width : 1,
+						label : {
+							text : 'Theoretical mean: '.concat(avg),
+							align : 'center',
+							style : {
+								color : 'gray'
+							}
+						}
+					} ]
+				},
 
-																				series : [ {
-																					name : 'Score',
-																					data : data2,
-																					tooltip : {
-																						headerFormat : '<em>Category {point.key}</em><br/>'
-																					}
-																				} ]
+				series : [ {
+					name : 'Score',
+					data : data2,
+					tooltip : {
+						headerFormat : '<em>Category {point.key}</em><br/>'
+					}
+				} ]
 
-																			});
-														}
+			});
+		}
 
-														function drawGraphBasedOnRegistration(cont, title, data2){
-															$(cont)
-															.highcharts(
-																	{
-																		chart : {
-																			type : 'pyramid',
-																			marginRight : 100
-																		},
-																		title : {
-																			text : title,
-																			x : -50
-																		},
-																		plotOptions : {
-																			series : {
-																				dataLabels : {
-																					enabled : true,
-																					format : '<b>{point.name}</b> ({point.y:,.0f})',
-																					color : Highcharts.theme,
-																					softConnector : true
-																				}
-																			}
-																		},
-																		legend : {
-																			enabled : false
-																		},
-																		series : [ {
-																			name : 'Unique users',
-																			data : data2
-																		} ]
-																	});
+		function drawGraphBasedOnRegistration(cont, title, data2) {
+			$(cont).highcharts({
+				chart : {
+					type : 'pyramid',
+					marginRight : 100
+				},
+				title : {
+					text : title,
+					x : -50
+				},
+				plotOptions : {
+					series : {
+						dataLabels : {
+							enabled : true,
+							format : '<b>{point.name}</b> ({point.y:,.0f})',
+							color : Highcharts.theme,
+							softConnector : true
+						}
+					}
+				},
+				legend : {
+					enabled : false
+				},
+				series : [ {
+					name : 'Unique users',
+					data : data2
+				} ]
+			});
 
-														}
+		}
 
-														$
-																.ajax({
-																	url : "/graph/admin",
-																	type : "GET",
-																	contentType : "application/json; charset=utf-8",
-																	dataType : "json",
-																	success : function(
-																			data) {
-																		var jobCodeJsonString = JSON
-																				.stringify(data);
-																		console
-																				.log('success after ajax response'
-																						+ jobCodeJsonString)
-																		var t = $
-																				.parseJSON(jobCodeJsonString);
-																		var jobCodeAttempt = t['jobCodeAttempt'];
-																		var jobCodes = jobCodeAttempt['jobcode'];
-																		var attempt = jobCodeAttempt['attempt'];
+		$
+				.ajax({
+					url : "/graph/admin",
+					type : "GET",
+					contentType : "application/json; charset=utf-8",
+					dataType : "json",
+					success : function(data) {
+						var jobCodeJsonString = JSON.stringify(data);
+						console.log('success after ajax response'
+								+ jobCodeJsonString)
+						var t = $.parseJSON(jobCodeJsonString);
+						var jobCodeAttempt = t['jobCodeAttempt'];
+						var jobCodes = jobCodeAttempt['jobcode'];
+						var attempt = jobCodeAttempt['attempt'];
 
-																		drawJobcodesAttemptGraph(
-																				jobCodes,
-																				attempt);
-																		// job
-																		// code
-																		// to
-																		// mean/median
-																		var jobCodeScore = t['jobCodeScore'];
-																		var jobCode2 = jobCodeScore['jobcode'];
-																		var mean = jobCodeScore['mean'];
-																		var median = jobCodeScore['median'];
-																		drawJobcodesScoreGraph(
-																				jobCode2,
-																				median,
-																				mean);
+						drawJobcodesAttemptGraph(jobCodes, attempt);
+						// job
+						// code
+						// to
+						// mean/median
+						var jobCodeScore = t['jobCodeScore'];
+						var jobCode2 = jobCodeScore['jobcode'];
+						var mean = jobCodeScore['mean'];
+						var median = jobCodeScore['median'];
+						drawJobcodesScoreGraph(jobCode2, median, mean);
 
-																		var topCategory = t['topJobCode'];
-																		var title = topCategory['title'];
-																		var cat = topCategory['category'];
-																		var avg = topCategory['mean'];
-																		var data2 = topCategory['data'];
-																		drawTopJobGraph(
-																				'#container4',
-																				title,
-																				cat,
-																				avg,
-																				data2);
+						var topCategory = t['topJobCode'];
+						var title = topCategory['title'];
+						var cat = topCategory['category'];
+						var avg = topCategory['mean'];
+						var data2 = topCategory['data'];
+						drawTopJobGraph('#container4', title, cat, avg, data2);
 
-																		var topCategory2 = t['nextToTopJobCode'];
-																		var title2 = topCategory2['title'];
-																		var cat2 = topCategory2['category'];
-																		var avg2 = topCategory2['mean'];
-																		var data3 = topCategory2['data'];
-																		drawTopJobGraph(
-																				'#container7',
-																				title2,
-																				cat2,
-																				avg2,
-																				data3);
+						var topCategory2 = t['nextToTopJobCode'];
+						var title2 = topCategory2['title'];
+						var cat2 = topCategory2['category'];
+						var avg2 = topCategory2['mean'];
+						var data3 = topCategory2['data'];
+						drawTopJobGraph('#container7', title2, cat2, avg2,
+								data3);
 
-																		var professionBasedRegistration = t['professionBasedRegistration'];
-																		var title3 = professionBasedRegistration['title'];
-																		var entries = professionBasedRegistration['entries'];
-																		var d2 = [];
-																		$.each(entries,
-																				function(index, value){
-																			var ca = value['category'];
-																			var co = value['count'];
-																			var d3 = [ca,co];
-																			d2[index] = d3;
-																		})
-																		drawGraphBasedOnRegistration('#container5',title3,d2);
+						var professionBasedRegistration = t['professionBasedRegistration'];
+						var title3 = professionBasedRegistration['title'];
+						var entries = professionBasedRegistration['entries'];
+						var d2 = [];
+						$.each(entries, function(index, value) {
+							var ca = value['category'];
+							var co = value['count'];
+							var d3 = [ ca, co ];
+							d2[index] = d3;
+						})
+						drawGraphBasedOnRegistration('#container5', title3, d2);
 
-																		var ageBasedRegisration = t['ageBasedRegisration'];
-																		var title4 = ageBasedRegisration['title'];
-																		var entries2 = ageBasedRegisration['entries'];
-																		var d4 = [];
-																		$.each(entries2,
-																				function(index, value){
-																			var ca = value['category'];
-																			var co = value['count'];
-																			var d3 = [ca,co];
-																			d4[index] = d3;
-																		})
-																		drawGraphBasedOnRegistration('#container6',title4,d4);
-																	},
-																	failure : function(
-																			data) {
-																		console
-																				.log('failure in ajax response:'
-																						+ data);
-																		drawJobcodesAttemptGraph(
-																				new Array(),
-																				new Array());
-																		drawJobcodesScoreGraph(
-																				new Array(),
-																				new Array(),
-																				new Array());
+						var ageBasedRegisration = t['ageBasedRegisration'];
+						var title4 = ageBasedRegisration['title'];
+						var entries2 = ageBasedRegisration['entries'];
+						var d4 = [];
+						$.each(entries2, function(index, value) {
+							var ca = value['category'];
+							var co = value['count'];
+							var d3 = [ ca, co ];
+							d4[index] = d3;
+						})
+						drawGraphBasedOnRegistration('#container6', title4, d4);
+					},
+					failure : function(data) {
+						console.log('failure in ajax response:' + data);
+						drawJobcodesAttemptGraph(new Array(), new Array());
+						drawJobcodesScoreGraph(new Array(), new Array(),
+								new Array());
 
-																		drawTopJobGraph('#container4',
-																				'No Job Code',
-																				new Array(),
-																				0,
-																				[ [] ]);
-																		drawTopJobGraph('#container7',
-																				'No Job Code',
-																				new Array(),
-																				0,
-																				[ [] ]);
-																		drawGraphBasedOnRegistration('#container5','Profession-Based Registration',[[]]);
-																		drawGraphBasedOnRegistration('#container6','Age Based Registration',[[]]);
-																	}
-																});
-													</script>
-	</div>
-    
+						drawTopJobGraph('#container4', 'No Job Code',
+								new Array(), 0, [ [] ]);
+						drawTopJobGraph('#container7', 'No Job Code',
+								new Array(), 0, [ [] ]);
+						drawGraphBasedOnRegistration('#container5',
+								'Profession-Based Registration', [ [] ]);
+						drawGraphBasedOnRegistration('#container6',
+								'Age Based Registration', [ [] ]);
+					}
+				});
+	</script>
+</div>
+
 </head>
 <body>
-<div th:fragment="content">
-    <div class="container">
-         <div class="row">
-             <div class="col-lg-12">
-                 <h1 class="page-header text-center"  style="background-color:#F5F5F5;">Admin Dashboard</h1>
-             </div>
-          </div>
-            <!-- /.row -->
-	   	<div class="row">
-	        <div class="col-lg-6">    	
-	               <div id="container2">
-	               </div>  
-	   		 </div>
-             <div class="col-lg-6">    	
-                <div id="container3">
-                </div>  
-    		 </div>
-	   	</div>
-	   	
-	   	<div class="row">
-	   		<div class="col-lg-6">    	
-                <div id="container4">
-                </div>  
-    		</div>
-    
-    		<div class="col-lg-6">    	
-                <div id="container7">
-                </div>  
-    		</div>
-	   	</div>
-	   	
-	    <div class="row">
-    		<div class="col-lg-6">	
-                <div id="container5">
-                </div>  
-    		</div>
-    		
-    		<div class="col-lg-6">	
-                <div id="container6">
-                </div>  
-    		</div>
-	   	</div>
-	   	
-	   	<div class="row">
-	   		<div class="col-lg-12">    	
-                <div id="container4">
-                </div>  
-    		</div>
-	   	</div>
-	   	            
-    	<div class="row">
-               <div class="col-lg-12">
-                   <div class="panel panel-default">
-                       <div class="panel-heading">
-                           <h3>MOOC Platforms and more...</h3>
-                       </div>
-                       <div class="panel-body">
-                           <h4>The Best MOOC Provider: A Review of Coursera, Udacity and Edx</h4>
-                           <blockquote>
-                               <p>Since the MOOC phenomenon took off two years ago, numerous providers have emerged that students might try out, including Canvas and NovoED in the US, Open2Study in Australia... <a href="http://www.skilledup.com/articles/the-best-mooc-provider-a-review-of-coursera-udacity-and-edx/">(Read more)</a> </p>
-                           </blockquote>
-                           <h4>The Big Three, at a Glance</h4>
-                           <blockquote>
-                               <p>Many places offer MOOCs, and many more will. But Coursera, Udacity and edX are the leading providers... <a href="http://www.nytimes.com/2012/11/04/education/edlife/the-big-three-mooc-providers.html?_r=0">(Read more)</a></p>
-                               <small>EDUCATION LIFE by
-                                   <cite title="The New York Times">Source Title</cite>
-                               </small>
-                           </blockquote>
-                           <h4>The future of higher education</h4>
-                           <iframe width="400" height="300" src="https://www.youtube.com/embed/W7Wpb66Qiq0" frameborder="0" allowfullscreen="true"></iframe>
-                       </div>
-                       <!-- /.panel-body -->
-                   </div>
-                   <!-- /.panel -->
-                   </div>
-         </div>
-    </div>
-    </div>
+	<div th:fragment="content">
+		<div class="container">
+			<div class="row">
+				<div class="row" height="80%">
+					<div class="col-lg-12" height="80%">
+						<h1 class="page-header text-center"
+							style="background-color: #F5F5F5;">Admin Dashboard</h1>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-10" id="tabs">
+						<ul class="nav nav-tabs">
+							<li class="active"><a data-toggle="tab" href="#home">Job code graphs</a></li>
+							<li><a data-toggle="tab" href="#menu1">Category wise graphs</a></li>
+							<li><a data-toggle="tab" href="#menu2">Registration graphs</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="tab-content">
+					<div id="home" class="tab-pane fade in active">
+						<!-- /.row -->
+						<div class="row">
+							<div class="panel panel-green panel-default">
+								<div class="panel-body">
+									<div class="col-lg-6">
+										<div id="container2"></div>
+									</div>
+									<div class="col-lg-6">
+										<div id="container3"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="menu1" class="tab-pane fade">
+						<div class="row">
+							<div class="panel panel-green panel-default">
+								<div class="panel-body">
+									<div class="col-lg-6" height = "80%">
+										<div id="container4"></div>
+									</div>
+
+									<div class="col-lg-6" height = "80%">
+										<div id="container7"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="menu2" class="tab-pane fade">
+						<div class="row">
+							<div class="panel panel-green panel-default">
+								<div class="panel-body">
+									<div class="col-lg-6" height = "80%">
+										<div id="container5"></div>
+									</div>
+
+									<div class="col-lg-6" height = "80%">
+										<div id="container6"></div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-lg-12">
+										<div id="container4"></div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3>MOOC Platforms and more...</h3>
+											</div>
+											<div class="panel-body">
+												<h4>The Best MOOC Provider: A Review of Coursera,
+													Udacity and Edx</h4>
+												<blockquote>
+													<p>
+														Since the MOOC phenomenon took off two years ago, numerous
+														providers have emerged that students might try out,
+														including Canvas and NovoED in the US, Open2Study in
+														Australia... <a
+															href="http://www.skilledup.com/articles/the-best-mooc-provider-a-review-of-coursera-udacity-and-edx/">(Read
+															more)</a>
+													</p>
+												</blockquote>
+												<h4>The Big Three, at a Glance</h4>
+												<blockquote>
+													<p>
+														Many places offer MOOCs, and many more will. But Coursera,
+														Udacity and edX are the leading providers... <a
+															href="http://www.nytimes.com/2012/11/04/education/edlife/the-big-three-mooc-providers.html?_r=0">(Read
+															more)</a>
+													</p>
+													<small>EDUCATION LIFE by <cite
+														title="The New York Times">Source Title</cite>
+													</small>
+												</blockquote>
+												<h4>The future of higher education</h4>
+												<iframe width="400" height="300"
+													src="https://www.youtube.com/embed/W7Wpb66Qiq0"
+													frameborder="0" allowfullscreen="true"></iframe>
+											</div>
+											<!-- /.panel-body -->
+										</div>
+										<!-- /.panel -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

@@ -1,146 +1,148 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      th:include="layout :: page">
+	xmlns:th="http://www.thymeleaf.org" th:include="layout :: page">
 <head>
-    <title>Candidate Dashboard</title>
-    <div th:fragment="header">
-       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-       <script src="http://code.highcharts.com/highcharts.js"></script>
-	   <script src="http://code.highcharts.com/highcharts-more.js"></script>
-	   <script src="http://code.highcharts.com/modules/exporting.js"></script>
-	   
-	   <script>
+<title>Candidate Dashboard</title>
+<div th:fragment="header">
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-more.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+	<script>
 		$
-		.ajax({
-			url : "/graph/candidate",
-			type : "GET",
-			contentType : "application/json; charset=utf-8",
-			dataType : "json",
-			success : function(
-					data) {
-				var jobCodeJsonString = JSON
-				.stringify(data);
-				console
-				.log('success after ajax response'
-						+ jobCodeJsonString);
-				var t = $.parseJSON(jobCodeJsonString);
-				var performanceProgression = t['performanceProgression'];
-				var avg = performanceProgression['avg'];
-				drawPerformanceProgression(avg);
-				
-				var frequencyAttempt = t['frequencyAttempt'];
-				var avg2 = frequencyAttempt['avg'];
-				drawFrequenceAttempt(avg2);
-				
-				var effortsDevoted = t['effortsDevoted'];
-				var content = effortsDevoted['content'];
-				var d4 = [];
-				$.each(content,
-						function(index, value){
-					var ca = value['category'];
-					var co = value['count'];
-					var d3 = [ca,co];
-					d4[index] = d3;
-				})
-				drawEffortsDevoted(d4);
-				
-				var domainWisePerformance = t['domainWisePerformance'];
-				var categories = domainWisePerformance['categories'];
-				var performanceDataList = domainWisePerformance['performanceDataList'];
-				
-				drawDomainWisePerformanceImprovement(categories, performanceDataList);
-			},
-			failure : function(data){
-				console
-				.log('failure in ajax response:'
-						+ data);
-				drawPerformanceProgression([0,0,0,0,0,0,0,0,0,0,0,0]);
-				drawFrequenceAttempt([0,0,0,0,0,0,0,0,0,0,0,0]);
-				drawEffortsDevoted([[]]);
-				}
-			});
-		
-		function drawDomainWisePerformanceImprovement(categories, performanceDataList){
+				.ajax({
+					url : "/graph/candidate",
+					type : "GET",
+					contentType : "application/json; charset=utf-8",
+					dataType : "json",
+					success : function(data) {
+						var jobCodeJsonString = JSON.stringify(data);
+						console.log('success after ajax response'
+								+ jobCodeJsonString);
+						var t = $.parseJSON(jobCodeJsonString);
+						var performanceProgression = t['performanceProgression'];
+						var avg = performanceProgression['avg'];
+						drawPerformanceProgression(avg);
+
+						var frequencyAttempt = t['frequencyAttempt'];
+						var avg2 = frequencyAttempt['avg'];
+						drawFrequenceAttempt(avg2);
+
+						var effortsDevoted = t['effortsDevoted'];
+						var content = effortsDevoted['content'];
+						var d4 = [];
+						$.each(content, function(index, value) {
+							var ca = value['category'];
+							var co = value['count'];
+							var d3 = [ ca, co ];
+							d4[index] = d3;
+						})
+						drawEffortsDevoted(d4);
+
+						var domainWisePerformance = t['domainWisePerformance'];
+						var categories = domainWisePerformance['categories'];
+						var performanceDataList = domainWisePerformance['performanceDataList'];
+
+						drawDomainWisePerformanceImprovement(categories,
+								performanceDataList);
+					},
+					failure : function(data) {
+						console.log('failure in ajax response:' + data);
+						drawPerformanceProgression([ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+								0, 0, 0 ]);
+						drawFrequenceAttempt([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+								0 ]);
+						drawEffortsDevoted([ [] ]);
+					}
+				});
+
+		function drawDomainWisePerformanceImprovement(categories,
+				performanceDataList) {
 			// Build the chart
-			$('#container5').highcharts({
-			
-			        chart: {
-			            polar: true,
-			            type: 'line'
-			        },
-			
-			        title: {
-			            text: 'Domain-wise Performance Improvement',
-			            x: -80
-			        },
-			
-			        pane: {
-			            size: '80%'
-			        },
-			
-			        xAxis: {
-			            categories: categories,
-			            tickmarkPlacement: 'on',
-			            lineWidth: 0
-			        },
-			
-			        yAxis: {
-			            gridLineInterpolation: 'polygon',
-			            lineWidth: 0,
-			            min: 0
-			        },
-			
-			        tooltip: {
-			            shared: true,
-			            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}%</b><br/></span>'
-			        },
-			
-			        legend: {
-			            align: 'right',
-			            verticalAlign: 'top',
-			            y: 70,
-			            layout: 'vertical'
-			        },
-			
-			        series: performanceDataList
-			
-			    });
-		}
-		
-		function drawEffortsDevoted(data2){
-			// Build the chart
-	        $('#container4').highcharts({
-	            chart: {
-	                plotBackgroundColor: null,
-	                plotBorderWidth: null,
-	                plotShadow: false
-	            },
-	            title: {
-	                text: 'Effort devoted to various domains'
-	            },
-	            tooltip: {
-	                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-	            },
-	            plotOptions: {
-	                pie: {
-	                    allowPointSelect: true,
-	                    cursor: 'pointer',
-	                    dataLabels: {
-	                        enabled: false
-	                    },
-	                    showInLegend: true
-	                }
-	            },
-	            series: [{
-	                type: 'pie',
-	                name: 'Domains',
-	                data: data2
-	            }]
-	        });
+			$('#container5')
+					.highcharts(
+							{
+
+								chart : {
+									polar : true,
+									type : 'line'
+								},
+
+								title : {
+									text : 'Domain-wise Performance Improvement',
+									x : -80
+								},
+
+								pane : {
+									size : '80%'
+								},
+
+								xAxis : {
+									categories : categories,
+									tickmarkPlacement : 'on',
+									lineWidth : 0
+								},
+
+								yAxis : {
+									gridLineInterpolation : 'polygon',
+									lineWidth : 0,
+									min : 0
+								},
+
+								tooltip : {
+									shared : true,
+									pointFormat : '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}%</b><br/></span>'
+								},
+
+								legend : {
+									align : 'right',
+									verticalAlign : 'top',
+									y : 70,
+									layout : 'vertical'
+								},
+
+								series : performanceDataList
+
+							});
 		}
 
-		function drawFrequenceAttempt(avg){
+		function drawEffortsDevoted(data2) {
+			// Build the chart
+			$('#container4')
+					.highcharts(
+							{
+								chart : {
+									plotBackgroundColor : null,
+									plotBorderWidth : null,
+									plotShadow : false
+								},
+								title : {
+									text : 'Effort devoted to various domains'
+								},
+								tooltip : {
+									pointFormat : '{series.name}: <b>{point.percentage:.1f}%</b>'
+								},
+								plotOptions : {
+									pie : {
+										allowPointSelect : true,
+										cursor : 'pointer',
+										dataLabels : {
+											enabled : false
+										},
+										showInLegend : true
+									}
+								},
+								series : [ {
+									type : 'pie',
+									name : 'Domains',
+									data : data2
+								} ]
+							});
+		}
+
+		function drawFrequenceAttempt(avg) {
 			$('#container3').highcharts(
 					{
 						chart : {
@@ -150,18 +152,10 @@
 							text : 'Frequency of Attempts'
 						},
 						xAxis : {
-							categories : [ 'January',
-										'February',
-										'March',
-										'April',
-										'May',
-										'June',
-										'July',
-										'August',
-										'September', 
-										'October',
-										'November',
-										'December' ]
+							categories : [ 'January', 'February', 'March',
+									'April', 'May', 'June', 'July', 'August',
+									'September', 'October', 'November',
+									'December' ]
 						},
 						yAxis : {
 							title : {
@@ -172,12 +166,11 @@
 							name : 'Job Codes',
 							data : avg
 						} ]
-					});			
+					});
 		}
-		
-		function drawPerformanceProgression(avg){
-			$('#container2')
-			.highcharts(
+
+		function drawPerformanceProgression(avg) {
+			$('#container2').highcharts(
 					{
 						chart : {
 							type : 'line'
@@ -186,18 +179,10 @@
 							text : 'Performance Progression'
 						},
 						xAxis : {
-							categories : [ 'January',
-											'February',
-											'March',
-											'April',
-											'May',
-											'June',
-											'July',
-											'August',
-											'September', 
-											'October',
-											'November',
-											'December' ]
+							categories : [ 'January', 'February', 'March',
+									'April', 'May', 'June', 'July', 'August',
+									'September', 'October', 'November',
+									'December' ]
 						},
 						yAxis : {
 							title : {
@@ -210,77 +195,100 @@
 								shadow : false
 							}
 						},
-						series : [
-								{
-									name : 'Avg',
-									data : avg
-								}]
+						series : [ {
+							name : 'Avg',
+							data : avg
+						} ]
 					});
-			
+
 		}
-	   </script>
-					
-	</div>
-    
+	</script>
+
+</div>
+
 </head>
 <body>
-<div th:fragment="content">
-    <div class="container">
-         <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header text-center"  style="background-color:#F5F5F5;" >Candidate Dashboard</h1>
-                </div>
-          </div>
-            <!-- /.row -->
-        <div class="row">
-	        <div class="col-lg-6">    	
-	               <div id="container3">
-	               </div>  
-	   		  </div>
-	        <div class="col-lg-6">    	
-	               <div id="container2">
-	               </div>  
-	   		  </div>	   		  
-	   	</div>
-	   	<div class="row">
-	        <div class="col-lg-6">    	
-	               <div id="container5">
-	               </div>  
-	   		  </div>
-              <div class="col-lg-6">    	
-                <div id="container4">
-                </div>  
-    		  </div>	   		  
-	   	</div>
-	   	
-    	<div class="row">
-               <div class="col-lg-12">
-                   <div class="panel panel-default">
-                       <div class="panel-heading">
-                           <h3>MOOC Platforms and more...</h3>
-                       </div>
-                       <div class="panel-body">
-                           <h4>The Best MOOC Provider: A Review of Coursera, Udacity and Edx</h4>
-                           <blockquote>
-                               <p>Since the MOOC phenomenon took off two years ago, numerous providers have emerged that students might try out, including Canvas and NovoED in the US, Open2Study in Australia... <a href="http://www.skilledup.com/articles/the-best-mooc-provider-a-review-of-coursera-udacity-and-edx/">(Read more)</a> </p>
-                           </blockquote>
-                           <h4>The Big Three, at a Glance</h4>
-                           <blockquote>
-                               <p>Many places offer MOOCs, and many more will. But Coursera, Udacity and edX are the leading providers. Here‚Äö√Ñ√∂‚àö√ë‚àö¬•s how they differ <a href="http://www.nytimes.com/2012/11/04/education/edlife/the-big-three-mooc-providers.html?_r=0">(Read more)</a></p>
-                               <small>EDUCATION LIFE by
-                                   <cite title="The New York Times">Source Title</cite>
-                               </small>
-                           </blockquote>
-                           <h4>The future of higher education</h4>
-                           <iframe width="400" height="300" src="https://www.youtube.com/embed/W7Wpb66Qiq0" frameborder="0" allowfullscreen="true"></iframe>
-                       </div>
-                       <!-- /.panel-body -->
-                   </div>
-                   <!-- /.panel -->
-               </div>    		  
-         </div>
-	   	    		  
-    </div>
-</div>
+	<div th:fragment="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="page-header text-center"
+						style="background-color: #F5F5F5;">Candidate Dashboard</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-10" id="tabs">
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#home">Attempts graphs</a></li>
+						<li><a data-toggle="tab" href="#menu1">Performance graphs</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="tab-content">
+				<div id="home" class="tab-pane fade in active">
+					<!-- /.row -->
+					<div class="row">
+						<div class="col-lg-6">
+							<div id="container3"></div>
+						</div>
+						<div class="col-lg-6">
+							<div id="container2"></div>
+						</div>
+					</div>
+				</div>
+				<div id="menu1" class="tab-pane fade">
+					<div class="row">
+						<div class="col-lg-6">
+							<div id="container5"></div>
+						</div>
+						<div class="col-lg-6">
+							<div id="container4"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3>MOOC Platforms and more...</h3>
+							</div>
+							<div class="panel-body">
+								<h4>The Best MOOC Provider: A Review of Coursera, Udacity
+									and Edx</h4>
+								<blockquote>
+									<p>
+										Since the MOOC phenomenon took off two years ago, numerous
+										providers have emerged that students might try out, including
+										Canvas and NovoED in the US, Open2Study in Australia... <a
+											href="http://www.skilledup.com/articles/the-best-mooc-provider-a-review-of-coursera-udacity-and-edx/">(Read
+											more)</a>
+									</p>
+								</blockquote>
+								<h4>The Big Three, at a Glance</h4>
+								<blockquote>
+									<p>
+										Many places offer MOOCs, and many more will. But Coursera,
+										Udacity and edX are the leading providers.
+										Here‚Äö√Ñ√∂‚àö√ë‚àö¬•s how they differ <a
+											href="http://www.nytimes.com/2012/11/04/education/edlife/the-big-three-mooc-providers.html?_r=0">(Read
+											more)</a>
+									</p>
+									<small>EDUCATION LIFE by <cite
+										title="The New York Times">Source Title</cite>
+									</small>
+								</blockquote>
+								<h4>The future of higher education</h4>
+								<iframe width="400" height="300"
+									src="https://www.youtube.com/embed/W7Wpb66Qiq0" frameborder="0"
+									allowfullscreen="true"></iframe>
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
