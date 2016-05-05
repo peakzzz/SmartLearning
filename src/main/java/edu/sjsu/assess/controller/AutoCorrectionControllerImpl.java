@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -105,7 +106,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	            e.printStackTrace();
 	            model.addAttribute("error", "Error fetching results, try again later!");
 	        }
-	        System.out.println("Hello world!!!!");
+	        
 	        return "assignmentdetails";
 	        
 	    }
@@ -121,14 +122,29 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	    	Assignmentoption savedAssignmentoption = assignmentService.saveAssignmentSubmission(assignment);
 	        List<Assignment> assignmentList = assignmentService.getAssignmentsByIds(elements);
             Assignment question = assignmentList.get(0);
-
+            
+            
+        //Copy the question and answer in Emma project
+        //run the pom.xml from emma project 
+        //open new window showing index.html (result of code coverage)
+        
+        //User answer to the assignment question
+        //Write file User answer
             String questiontext = assignment.getAnswerText();
-            //Copy the question and answer in Emma project
-            //run the pom.xml from emma project 
-            //open new window showing index.html (result of code coverage)
-           
-            
-            
+            try{
+            	//path to your file
+                FileWriter fw = new FileWriter("/Users/preetikrishnan/Downloads/Student/src/test/java/cmpe/sjsu/test/PalindromeTest.java");
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(questiontext);
+                bw.newLine();
+                bw.close();
+                System.out.println("Write complete!!!!");
+	        }
+	        catch (Exception e) {
+	        	System.out.println("Errrrr....write answer unsuccessful"+e);
+	        }
+
+        //Maven build and test coverage execution   
             System.out.println("Test coverage execution");      	
            	ProcessBuilder pb = new ProcessBuilder(
            		 "/usr/local/bin/mvn",
@@ -136,6 +152,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
                     "install"
                     
 		    );
+          //path to your file
 		    pb.directory(new File("/Users/preetikrishnan/Downloads/Student"));
 		    pb.redirectErrorStream(true);
 		
@@ -162,11 +179,12 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
             {
             	try
                 {
-                	 
+            		//path to your file
                     if ((new File("/Users/preetikrishnan/Downloads/Student/target/site/jacoco/index.html")).exists()) 
                     {
                     	
-    /*For Linux or Mac*/         	
+    /*For Linux or Mac*/   
+                    	//path to your file
                     	 String file = "/Users/preetikrishnan/Downloads/Student/target/site/jacoco/index.html";
                     	 Process p = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file});
                     	 p.waitFor();
@@ -333,6 +351,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
  	        else {
  	           try {
  	                savedQS = assignmentService.saveAssignment(assignment);
+ 	                System.out.println(savedQS);
  	                model.addAttribute("qs", savedQS);
  	                model.addAttribute("message",
  	                        "Assignment saved successfully.");

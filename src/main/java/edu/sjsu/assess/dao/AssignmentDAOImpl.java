@@ -1,5 +1,7 @@
 package edu.sjsu.assess.dao;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,6 +47,21 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		query.append("INSERT INTO assignment(questionText, question, type, isTrueOrFalse, isMultipleChoice");
 		valuesStr.append(" VALUES(?,?,?,?,?");
 		
+		//Write file Admin question
+        String adminquestion = qs.getQuestion();
+        try{
+        	//path to your file
+            FileWriter fw = new FileWriter("/Users/preetikrishnan/Downloads/Student/src/main/java/cmpe/sjsu/main/PalindromeTester.java");
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(adminquestion);
+            bw.newLine();
+            bw.close();
+            System.out.println("Write complete!!!!");
+        }
+        catch (Exception e) {
+            System.out.println("Errrrr....write question unsuccessful"+e);
+        }
+        
 		
 		// Optional field category
 		final Integer categoryID = qs.getCategoryID();
