@@ -1,10 +1,14 @@
 package edu.sjsu.assess.controller;
 
+import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -93,7 +97,6 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	            printAssignment(assignmentList.get(0));
 	            if (assignmentList != null && assignmentList.size() > 0) {
 	                model.addAttribute("assignment", assignmentList.get(0));
-	                System.out.println("Testinggggggg" +assignmentList.get(0));
 	            } else {
 	                model.addAttribute("error", "No search results");
 	            }
@@ -106,10 +109,10 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	        return "assignmentdetails";
 	        
 	    }
-	    
+	       
 	    
 	    @RequestMapping(value="showAssignment/{id}", method = RequestMethod.POST)
-	    public String viewAssignmentResults(Assignmentoption assignment,@PathVariable("id") Integer id, Model model) throws QuestionException {
+	    public String viewAssignmentResults(Assignmentoption assignment,@PathVariable("id") Integer id, Model model) throws QuestionException, IOException, InterruptedException {
 
 	    	ArrayList<Integer> elements = new ArrayList<>();
         	elements.add(id);
@@ -123,34 +126,78 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
             //Copy the question and answer in Emma project
             //run the pom.xml from emma project 
             //open new window showing index.html (result of code coverage)
-
            
-            try{
-
-                if ((new File("C:/Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html")).exists()) {
-
-                    Process p = Runtime
-                       .getRuntime()
-                       .exec("rundll32 url.dll,FileProtocolHandler C://Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html");
-                    p.waitFor();
-
-                } else {
-
-                    System.out.println("File does not exist");
-
-                }
-
-              } catch (Exception ex) {
-                ex.printStackTrace();
-              }
-
             
-            //String url = "file:///C:/Users//Niveditha//workspace//CareerPAth//Student//target//site//jacoco//index.html";
+            
+            System.out.println("Test coverage execution");      	
+           	ProcessBuilder pb = new ProcessBuilder(
+           		 "/usr/local/bin/mvn",
+                    "clean",
+                    "install"
+                    
+		    );
+		    pb.directory(new File("/Users/preetikrishnan/Downloads/Student"));
+		    pb.redirectErrorStream(true);
+		
+		    try 
+		    {
+		        Process p = pb.start();
+		        try (InputStream is = p.getInputStream()) {
+		            int in = -1;
+		            while ((in = is.read()) != -1) {
+		                System.out.print((char)in);
+		            }
+		        }
+		        int exitCode = p.waitFor();
+		        System.out.println("\nProcess exited with " + exitCode);
+		    } 
+		    
+		    catch (IOException | InterruptedException ex) 
+		    {
+		        ex.printStackTrace();
+		    }
+            
+            
+            finally
+            {
+            	try
+                {
+                	 
+                    if ((new File("/Users/preetikrishnan/Downloads/Student/target/site/jacoco/index.html")).exists()) 
+                    {
+                    	
+    /*For Linux or Mac*/         	
+                    	 String file = "/Users/preetikrishnan/Downloads/Student/target/site/jacoco/index.html";
+                    	 Process p = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file});
+                    	 p.waitFor();
+           
+    /*For Windows*/ 
+//                       Process p = Runtime
+//                         		.getRuntime()      
+//                         		.exec("rundll32 url.dll,FileProtocolHandler path/to/index.html");
+//                       p.waitFor();
+
+                    } else {
+
+                        System.out.println("File does not exist");
+
+                    }
+
+                } 
+                
+                catch (Exception ex) 
+                {
+                    ex.printStackTrace();
+                }
+                
+	           	
+           	
+            }
+
 	    	return "redirect:/autocorrection/viewAssignmentTest";
 	    }
 	     
-	    
- 	    @Override
+		@Override
  	    @RequestMapping(value="/{id}", method = RequestMethod.GET)
  	    public String getAssignment(@PathVariable("id") Integer id, @RequestParam(value="update", required=false) boolean isUpdate, Model model)
  	    {

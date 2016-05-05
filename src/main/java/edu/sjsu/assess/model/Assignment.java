@@ -12,6 +12,8 @@ public class Assignment {
 
 	private Category categoryObj;
 	
+	public String question;
+	
 	public String questionText;
 	
 	private String answerText;
@@ -54,6 +56,14 @@ public class Assignment {
 		this.categoryObj = categoryObj;
 	}
 
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	
 	public String getQuestionText() {
 		return questionText;
 	}

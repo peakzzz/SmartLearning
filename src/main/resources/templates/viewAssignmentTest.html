@@ -24,7 +24,10 @@
             <thead>
             <tr>
                 <th width="10%">
-                    Question Text
+                    Question No.
+                </th>
+                <th width="10%">
+                    Question Text.
                 </th>
                 <th width="50%">
                     Level
@@ -42,6 +45,8 @@
             <tbody data-link="row" class="rowlink">
                 <tr th:each="l : ${results}">
                     <td><a th:text="${l.id}" th:href="@{viewAssignment/{id}(id=${l.id})}" method="get"/></td>
+
+					<td th:text="${l.questionText}"></td>
 
                     <td th:text="${l.level}"></td>
                     

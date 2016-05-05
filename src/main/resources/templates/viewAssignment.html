@@ -42,22 +42,16 @@
                 <tr>
                 </tr>
                 <tr>
-                    <td><label>Question:</label></td>
+                    <td><label>Question Text:</label></td>
                     <td th:text="${assignment.questionText}"></td>
                 </tr>
-                <tr th:each="option:${assignment.options}">
-                    <td th:if="${option.correctOption}">
-                        <input type="checkbox" disabled="disabled" checked="checked"/>
-                    </td>
-                    <td th:if="${option.correctOption}" th:text="${option.text}" style="font-style:italic; font-weight:bold; color:#00CC99"></td>
-                    <td th:unless="${option.correctOption}">
-                        <input type="checkbox" disabled="disabled"/>
-                    </td>
-                    <td th:unless="${option.correctOption}" th:text="${option.text}"></td>
+                <tr>
+                    <td><label>Question:</label></td>
+                    <td><pre th:text="${assignment.question}"></pre></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <a th:href="@{/assignment/{id}(id=${assignment.id}, update=true)}"><input type="button" value="Update" class="btn btn-primary"/></a>
+                    <span><a style="float: left" th:href="@{/autocorrection/viewProgram}" method="get" class="btn btn-info">View Assignment</a></span>
                     </td>
                 </tr>
             </table>

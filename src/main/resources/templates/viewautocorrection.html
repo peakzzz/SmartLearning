@@ -89,7 +89,7 @@
    		<div class="panel panel-default">
 			
 	        <div class="panel-body">
-				<h4>Check if the below program is a palindrome considering all possible test cases</h4>
+				<h4>Assignment Problem</h4>
 	                                                                                  
 	      	</div>
       		<!-- /.panel-body -->
@@ -158,11 +158,16 @@
                        
                     </table>
                     <table>
+                    	<tr>
+                            <td>Question Text</td>
+                            <td><textarea rows="2" cols="20" id="quesText" th:field="*{questionText}" class="form-control" placeholder="Write the question for the assignment"></textarea></td>
+                        </tr>
                         
                         <tr>
                             <td>Question</td>
-                            <td><textarea rows="15" cols="80" id="quesText" th:field="*{questionText}" class="form-control" placeholder="Write the program question for the assignment"></textarea></td>
+                            <td><textarea rows="15" cols="80" id="quesText" th:field="*{question}" class="form-control" placeholder="Write the program for the assignment"></textarea></td>
                         </tr>
+                        
                         
                         <tr>
                             <td colspan="2"><label>Options</label></td>

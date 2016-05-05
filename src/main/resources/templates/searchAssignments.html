@@ -156,27 +156,7 @@
                                                 <td width="100px"><label>Question</label></td>
                                                 <td th:text="${assignment.questionText}"></td>
                                             </tr>
-                                             <tr>
-                                                <td width="100px"><label>Solution</label></td>
-                                                <td th:text="${assignment.answerText}"></td>
-                                            </tr>
-                                            <tr th:each="option:${assignment.options}">
-                                                <!-- If option is answer -->
-                                                <td th:if="${option.correctOption}" width="100px" align="right">
-                                                    <input type="checkbox" disabled="disabled" checked="checked"/>
-                                                </td>
-                                                <td th:if="${option.correctOption}" th:text="${option.text}" style="font-style:italic; font-weight:bold; color:#00CC99"></td>
-                                                <!-- Else -->
-                                                <td th:unless="${option.correctOption}" align="right">
-                                                    <input type="checkbox" disabled="disabled"/>
-                                                </td>
-                                                <td th:unless="${option.correctOption}" th:text="${option.text}"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">
-                                                    <a th:href="@{|/assignment/${assignment.id}?update=true|}"><input type="button" class="btn btn-primary" value="Update"/></a>
-                                                </td>
-                                            </tr>
+                                             
                                         </table>
                                     </div>
                                 

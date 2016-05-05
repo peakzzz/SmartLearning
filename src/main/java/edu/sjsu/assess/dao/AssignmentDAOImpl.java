@@ -42,8 +42,8 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		final StringBuilder query = new StringBuilder();
 		StringBuilder valuesStr = new StringBuilder();
 		
-		query.append("INSERT INTO assignment(questionText, type, isTrueOrFalse, isMultipleChoice");
-		valuesStr.append(" VALUES(?,?,?,?");
+		query.append("INSERT INTO assignment(questionText, question, type, isTrueOrFalse, isMultipleChoice");
+		valuesStr.append(" VALUES(?,?,?,?,?");
 		
 		
 		// Optional field category
@@ -96,6 +96,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 							
 							int index = 1;
 							ps.setString(index++, qs.getQuestionText());
+							ps.setString(index++, qs.getQuestion());
 							ps.setString(index++, qs.getType());
 							ps.setBoolean(index++, qs.isTrueOrFalse());
 							ps.setBoolean(index++, qs.isMultipleChoice());
@@ -205,7 +206,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 		List<Object> params = new ArrayList<>();
 
 		StringBuilder query = new StringBuilder();
-		query.append("select o.assignmentid, q.level, q.focus, q.questiontext,  q.userid, " +
+		query.append("select o.assignmentid, q.level, q.focus, q.questiontext, q.question, q.userid, " +
 				"q.istrueorfalse, q.ismultiplechoice, q.type, " +
 				"o.id,  o.iscorrectoption, " +
 				"q.categoryid, c.title " +
@@ -235,7 +236,6 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 				query.append(" and "+conditionList.get(i));
 			}
 		}
-		System.out.println("Preeeeeeeeti");
 		System.out.println(query);
 
 		try {
@@ -253,6 +253,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 					assignment.setLevel((String) row.get("level"));
 					assignment.setFocus((String) row.get("focus"));
 					assignment.setQuestionText((String) row.get("questiontext"));
+					assignment.setQuestion((String) row.get("question"));
 					assignment.setTrueOrFalse((Boolean) row.get("istrueorfalse"));
 					assignment.setMultipleChoice((Boolean) row.get("ismultiplechoice"));
 					assignment.setUserID((Integer) row.get("userid"));
@@ -543,6 +544,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
                 + "SET "
                 + "categoryID = ?, " 
                 + "questionText = ?, "
+                + "question = ?, "
                 + "isTrueOrFalse = ?, "
                 + "isMultipleChoice = ?, "
                 + "focus = ?, "
@@ -557,6 +559,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 //                    qs.getJobCodeID(),
                     qs.getCategoryID(),
                     qs.getQuestionText(),
+                    qs.getQuestion(),
                     qs.isTrueOrFalse(),
                     qs.isMultipleChoice(),
                     qs.getFocus(),
@@ -700,6 +703,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
 //        	qs.setJobCodeID(rs.getInt("jobID"));
         	qs.setCategoryID(rs.getInt("categoryID"));
         	qs.setQuestionText(rs.getString("questionText"));
+        	qs.setQuestion(rs.getString("question"));
         	qs.setType(rs.getString("type"));
         	qs.setTrueOrFalse(rs.getBoolean("isTrueOrFalse"));
         	qs.setMultipleChoice(rs.getBoolean("isMultipleChoice"));
