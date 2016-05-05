@@ -30,25 +30,25 @@
     </div>
 	
 	  <table class="table table-hover" style="border-collapse:collapse;">
-            <thead>
-            <tr><h4>Submissions for the project</h4></tr>
-            <tr>
-                <th width="60%">
-                    Description
-                </th>
-                <th width="5%">
-                    User Name
-                </th>
-            </tr>
-            </thead>
+				<thead>
+					<tr>
+						<h4>Submissions for the project</h4>
+					</tr>
+					<tr>
+						<th width="30%">User Name</th>
+						<th width="50%">Description</th>
+						<th width = "20">Score</th>
+					</tr>
+				</thead>
 
 
-            <tbody data-link="row" class="rowlink">
+				<tbody data-link="row" class="rowlink">
                 <tr th:each="l : ${projectSubmissions}">
                     <!--<td><a th:text="${l.id}" th:href="@{/jobcode/get/{id}(id=${l.id})}" method="get"></td>
                     <td th:text="${l.title}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"></td> -->
+                    <td th:text="${l.fname}"></td>
                     <td><a th:text="${l.gitLink}" th:href="@{/forum/get/{id}(id=${l.id})}" method="get"/></td>
-                    <td th:text="${l.gitLink}"></td>
+                    <td></td>                    
                 </tr>
             </tbody>
         </table>

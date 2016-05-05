@@ -162,8 +162,9 @@ public class ProjectDAOImpl implements ProjectDAO{
 				ProjectSubmission pSubmission = new ProjectSubmission();
 				pSubmission.setId((int)row.get("sid"));
 				pSubmission.setGitLink((String)row.get("gitlink"));
-				pSubmission.setFname((String)row.get("u.fname"));
+				pSubmission.setFname((String)row.get("fname"));
 				projectsubmissions.add(pSubmission);
+				System.out.println("Fname is retireved successfully in projectdaoimpl  :"+pSubmission.getFname());
 			}
 			//System.out.println("inside try");
 		} catch (Exception e) {
