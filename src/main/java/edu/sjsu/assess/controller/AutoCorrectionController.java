@@ -35,5 +35,7 @@ public interface AutoCorrectionController {
     public String viewAssignmentsList(AssignmentSearchParams searchParams, Integer pageNo, Model model);
 
 	public String viewAssignmentsTestList(AssignmentSearchParams searchParams, Integer pageNo, Model model);
+
+	public String viewAssignmentsTestListAdmin(AssignmentSearchParams searchParams, Integer pageNo, Model model);
 	
 }

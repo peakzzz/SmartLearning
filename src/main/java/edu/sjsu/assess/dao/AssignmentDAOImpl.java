@@ -56,7 +56,7 @@ public class AssignmentDAOImpl implements AssignmentDAO {
             bw.write(adminquestion);
             bw.newLine();
             bw.close();
-            System.out.println("Write complete!!!!");
+            System.out.println("Write question complete!!!!");
         }
         catch (Exception e) {
             System.out.println("Errrrr....write question unsuccessful"+e);

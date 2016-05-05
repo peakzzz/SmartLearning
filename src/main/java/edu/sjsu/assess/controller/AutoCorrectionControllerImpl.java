@@ -110,6 +110,31 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	        return "assignmentdetails";
 	        
 	    }
+	    
+	    @RequestMapping(value="viewAssignmentAdmin/{id}", method = RequestMethod.GET)
+	    public String viewAssignmentTestAdmin(@PathVariable("id") int id, Model model) {
+	        try {
+	            
+	        	ArrayList<Integer> elements = new ArrayList<>();
+	        	elements.add(id);
+	        	
+	            List<Assignment> assignmentList = assignmentService.getAssignmentsByIds(elements);
+	            
+	            printAssignment(assignmentList.get(0));
+	            if (assignmentList != null && assignmentList.size() > 0) {
+	                model.addAttribute("assignment", assignmentList.get(0));
+	            } else {
+	                model.addAttribute("error", "No search results");
+	            }
+
+	        } catch (QuestionException e) {
+	            e.printStackTrace();
+	            model.addAttribute("error", "Error fetching results, try again later!");
+	        }
+	        
+	        return "assignmentdetailsAdmin";
+	        
+	    }
 	       
 	    
 	    @RequestMapping(value="showAssignment/{id}", method = RequestMethod.POST)
@@ -138,7 +163,7 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
                 bw.write(questiontext);
                 bw.newLine();
                 bw.close();
-                System.out.println("Write complete!!!!");
+                System.out.println("Write answer complete!!!!");
 	        }
 	        catch (Exception e) {
 	        	System.out.println("Errrrr....write answer unsuccessful"+e);
@@ -213,6 +238,22 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
             }
 
 	    	return "redirect:/autocorrection/viewAssignmentTest";
+	    }
+	    
+	    
+	    @RequestMapping(value="showAssignmentAdmin/{id}", method = RequestMethod.POST)
+	    public String viewAssignmentResultsAdmin(Assignmentoption assignment,@PathVariable("id") Integer id, Model model) throws QuestionException, IOException, InterruptedException {
+
+	    	ArrayList<Integer> elements = new ArrayList<>();
+        	elements.add(id);
+	    	System.out.println("Results!!");
+	    	assignment.setAssigmentId(id);
+	    	Assignmentoption savedAssignmentoption = assignmentService.saveAssignmentSubmission(assignment);
+	        List<Assignment> assignmentList = assignmentService.getAssignmentsByIds(elements);
+            Assignment question = assignmentList.get(0);
+  
+
+	    	return "redirect:/autocorrection/viewAssignmentTestAdmin";
 	    }
 	     
 		@Override
@@ -334,6 +375,38 @@ public class AutoCorrectionControllerImpl implements AutoCorrectionController {
 	        model.addAttribute("categories", getAllCategories());
 	        model.addAttribute("searchParam", searchParams);
 	        return "viewAssignmentTest";
+	    }
+ 	  
+ 	 @Override
+	    @RequestMapping(value="/viewAssignmentTestAdmin", method = RequestMethod.GET)
+	    public String viewAssignmentsTestListAdmin(AssignmentSearchParams searchParams,
+	            @RequestParam(value="page", required = false) Integer pageNo, Model model){
+	        System.out.println("Viewing assignments");
+	        model.addAttribute("error", "");
+	        model.addAttribute("message", "");
+	        double totalpages = 1;
+	        if(pageNo==null) {
+	            pageNo = 1;
+	        }
+	        try{
+	            List<Assignment> qsList = assignmentService.searchAssignments(searchParams);
+	            if(qsList!=null && qsList.size() > 25) {
+	                Pagination paginationSvc = new Pagination();
+	                qsList = (List<Assignment>) paginationSvc.getResultsForPage(qsList, pageNo);
+	                totalpages = paginationSvc.getTotalPages();
+	            }
+	            System.out.println("Question Lists" +qsList);
+	            model.addAttribute("results", qsList);
+	            model.addAttribute("page", pageNo);
+	            model.addAttribute("totalpages", totalpages);
+	        }
+	        catch(QuestionException e){
+	            model.addAttribute("error", e.getMessage());
+	        }
+
+	        model.addAttribute("categories", getAllCategories());
+	        model.addAttribute("searchParam", searchParams);
+	        return "viewAssignmentTestAdmin";
 	    }
 
 
