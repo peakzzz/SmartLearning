@@ -1,11 +1,9 @@
 # CareerPath
 Repo for Master's Project
 
-
-
-
-1. Created QuestionnaireController & added logic for creating questionnaire.
-2. Created a place holder QuestionnaireDAO interface & QuestionnaireDAOImpl. All questionnaire related operations should go here.
+Educational platform for collaborative and quality learning. 
+Includes job portal integration, learning materials, assessments such as quizzes and assignments, auto correction tool and project collaboration. 
+Data pattern discovery and big data analytics for assessing students learning, improved course suggestion and performance.
 
 //To export the database into pgsql
 pg_dump -U postgres careerpath > careerpath.pgsql
